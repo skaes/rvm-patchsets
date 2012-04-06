@@ -7,13 +7,10 @@ projects. I maintain them using stgit. This repository provides them as patchset
 
 == Usage
 
-First install the patchsets into your RVM path:
+First update RVM, this patches are included by default:
 
-* clone the repository to some convenient place
-* cd into the top level directory
-* run install.sh
-
-This will automatically remove old versions of the patchsets.
+  rvm get head # OR:
+  rvm get stable
 
 Second, reinstall the rubies you want to patch:
 
