@@ -1,5 +1,5 @@
 diff --git a/load.c b/load.c
-index 94a3f1d..0aed1bd 100644
+index 94a3f1d..ccc8c22 100644
 --- a/load.c
 +++ b/load.c
 @@ -129,11 +129,18 @@ loaded_feature_path_i(st_data_t v, st_data_t b, st_data_t f)
@@ -24,7 +24,7 @@ index 94a3f1d..0aed1bd 100644
      int type;
 @@ -142,16 +149,20 @@ rb_feature_p(const char *feature, const char *ext, int rb, int expanded, const c
      if (ext) {
- 	elen = strlen(ext);
+  elen = strlen(ext);
  	len = strlen(feature) - elen;
 +	flen = len;
  	type = rb ? 'r' : 's';
@@ -44,6 +44,15 @@ index 94a3f1d..0aed1bd 100644
  	f = StringValuePtr(v);
  	if ((n = RSTRING_LEN(v)) < len) continue;
  	if (strncmp(f, feature, len) != 0) {
+@@ -182,7 +193,7 @@ rb_feature_p(const char *feature, const char *ext, int rb, int expanded, const c
+ 	    fs.name = feature;
+ 	    fs.len = len;
+ 	    fs.type = type;
+-	    fs.load_path = load_path ? load_path : rb_get_load_path();
++	    fs.load_path = load_path ? load_path : rb_get_expanded_load_path();
+ 	    fs.result = 0;
+ 	    st_foreach(loading_tbl, loaded_feature_path_i, (st_data_t)&fs);
+ 	    if ((f = fs.result) != 0) {
 @@ -250,10 +261,77 @@ rb_feature_provided(const char *feature, const char **loading)
      return FALSE;
  }
