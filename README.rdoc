@@ -64,7 +64,8 @@ there's no guarantee. The following versions are currently supported:
   1.9.2-p320  # current rvm default for MRI-ruby 1.9.2
   1.9.3-p125  #
   1.9.3-p194  #
-  1.9.3-p286  # current rvm default for MRI-ruby 1.9.3
+  1.9.3-p286  #
+  1.9.3-p327  # current rvm default for MRI-ruby 1.9.3
 
 In order to make some patch level N the default for rvm, add the line(s)
 
@@ -142,3 +143,5 @@ enterprise edition)
 * object allocation tracking: http://rubyforge.org/tracker/index.php?func=detail&aid=11497&group_id=426&atid=1700
 * caller for all threads: http://ph7spot.com/musings/caller-for-all-threads
 * load performance patch: https://github.com/ruby/ruby/commit/9ce69e7cef1272c86a93eeb9a1888fe6d2a94704#load.c
+* optimized hashes: https://gist.github.com/4136373
+* array as queue: https://gist.github.com/4136373
