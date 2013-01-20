@@ -65,7 +65,9 @@ there's no guarantee. The following versions are currently supported:
   1.9.3-p125  #
   1.9.3-p194  #
   1.9.3-p286  #
-  1.9.3-p327  # current rvm default for MRI-ruby 1.9.3
+  1.9.3-p327  #
+  1.9.3-p362  # not recommended: segfaults a lot with rails apps
+  1.9.3-p374  # current rvm default for MRI-ruby 1.9.3
 
 In order to make some patch level N the default for rvm, add the line(s)
 
