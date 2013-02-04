@@ -491,7 +491,7 @@ index 66e33a3..4b31f92 100644
        case T_STRING:
  	size += rb_str_memsize(obj);
 diff --git a/gc.c b/gc.c
-index 41daff1..bb7cfac 100644
+index 13dd821..81c867d 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -666,7 +666,7 @@ rb_objspace_free(rb_objspace_t *objspace)
@@ -503,7 +503,7 @@ index 41daff1..bb7cfac 100644
  
  int ruby_disable_gc_stress = 0;
  
-@@ -2230,6 +2230,15 @@ mark_tbl(rb_objspace_t *objspace, st_table *tbl, int lev)
+@@ -2235,6 +2235,15 @@ mark_tbl(rb_objspace_t *objspace, st_table *tbl, int lev)
      st_foreach(tbl, mark_entry, (st_data_t)&arg);
  }
  
@@ -519,7 +519,7 @@ index 41daff1..bb7cfac 100644
  static int
  mark_key(VALUE key, VALUE value, st_data_t data)
  {
-@@ -2308,74 +2317,52 @@ rb_mark_method_entry(const rb_method_entry_t *me)
+@@ -2313,74 +2322,52 @@ rb_mark_method_entry(const rb_method_entry_t *me)
      mark_method_entry(&rb_objspace, me, 0);
  }
  
@@ -619,7 +619,7 @@ index 41daff1..bb7cfac 100644
  }
  
  void
-@@ -2595,7 +2582,7 @@ gc_mark_children(rb_objspace_t *objspace, VALUE ptr, int lev)
+@@ -2600,7 +2587,7 @@ gc_mark_children(rb_objspace_t *objspace, VALUE ptr, int lev)
        case T_CLASS:
        case T_MODULE:
  	mark_m_tbl(objspace, RCLASS_M_TBL(obj), lev);
@@ -628,7 +628,7 @@ index 41daff1..bb7cfac 100644
  	mark_const_tbl(objspace, RCLASS_CONST_TBL(obj), lev);
  	ptr = RCLASS_SUPER(obj);
  	goto again;
-@@ -3170,15 +3157,11 @@ obj_free(rb_objspace_t *objspace, VALUE obj)
+@@ -3175,15 +3162,11 @@ obj_free(rb_objspace_t *objspace, VALUE obj)
        case T_CLASS:
  	rb_clear_cache_by_class((VALUE)obj);
  	rb_free_m_table(RCLASS_M_TBL(obj));
@@ -649,7 +649,7 @@ index 41daff1..bb7cfac 100644
          xfree(RANY(obj)->as.klass.ptr);
  	break;
        case T_STRING:
-@@ -3230,8 +3213,9 @@ obj_free(rb_objspace_t *objspace, VALUE obj)
+@@ -3235,8 +3218,9 @@ obj_free(rb_objspace_t *objspace, VALUE obj)
        case T_COMPLEX:
  	break;
        case T_ICLASS:
@@ -660,7 +660,7 @@ index 41daff1..bb7cfac 100644
  	break;
  
        case T_FLOAT:
-@@ -3348,7 +3332,7 @@ gc_marks(rb_objspace_t *objspace)
+@@ -3353,7 +3337,7 @@ gc_marks(rb_objspace_t *objspace)
      rb_mark_end_proc();
      rb_gc_mark_global_tbl();
  
