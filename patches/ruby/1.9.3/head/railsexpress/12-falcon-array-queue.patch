@@ -1,5 +1,5 @@
 diff --git a/array.c b/array.c
-index c33d106..a459a4a 100644
+index c33d106..747da0e 100644
 --- a/array.c
 +++ b/array.c
 @@ -255,15 +255,24 @@ rb_ary_modify(VALUE ary)
@@ -112,7 +112,7 @@ index c33d106..a459a4a 100644
 +    long oldlen = RARRAY_LEN(ary);
 +
 +    ary_ensure_room_for_push(ary, len);
-+
++copy:
 +    MEMCPY(RARRAY_PTR(ary) + oldlen, ptr, VALUE, len);
 +    ARY_SET_LEN(ary, oldlen + len);
 +    return ary;
