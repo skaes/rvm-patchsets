@@ -80,7 +80,7 @@ index e186cd4..53d9e1b 100644
  
  void
 diff --git a/gc.c b/gc.c
-index 463a2d9..9037212 100644
+index b5fc83c..3110059 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -20,6 +20,7 @@

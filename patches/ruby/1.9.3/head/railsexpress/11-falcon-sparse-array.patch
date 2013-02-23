@@ -484,7 +484,7 @@ index 66e33a3..4b31f92 100644
        case T_STRING:
  	size += rb_str_memsize(obj);
 diff --git a/gc.c b/gc.c
-index 9037212..25d5166f 100644
+index 3110059..56f0217 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -688,7 +688,7 @@ rb_objspace_free(rb_objspace_t *objspace)
@@ -2347,7 +2347,7 @@ index 3da500e..4a61453 100644
      }
      if (rb_cvar_defined(mod, id)) {
 diff --git a/vm.c b/vm.c
-index 04ef956..6edabf6 100644
+index 5a721d0..7bc007a 100644
 --- a/vm.c
 +++ b/vm.c
 @@ -1055,7 +1055,7 @@ static void
@@ -2360,10 +2360,10 @@ index 04ef956..6edabf6 100644
  	st_insert(vm_opt_method_table, (st_data_t)me, (st_data_t)bop);
      }
 diff --git a/vm_insnhelper.c b/vm_insnhelper.c
-index 4f709e6..1bfd131 100644
+index 5f7d1ee..ade417e 100644
 --- a/vm_insnhelper.c
 +++ b/vm_insnhelper.c
-@@ -1183,7 +1183,7 @@ vm_get_ev_const(rb_thread_t *th, const rb_iseq_t *iseq,
+@@ -1179,7 +1179,7 @@ vm_get_ev_const(rb_thread_t *th, const rb_iseq_t *iseq,
  		st_data_t data;
  	      search_continue:
  		if (RCLASS_CONST_TBL(klass) &&
@@ -2372,7 +2372,7 @@ index 4f709e6..1bfd131 100644
  		    val = ((rb_const_entry_t*)data)->value;
  		    if (val == Qundef) {
  			if (am == klass) break;
-@@ -1293,10 +1293,10 @@ vm_getivar(VALUE obj, ID id, IC ic)
+@@ -1289,10 +1289,10 @@ vm_getivar(VALUE obj, ID id, IC ic)
  	    st_data_t index;
  	    long len = ROBJECT_NUMIV(obj);
  	    VALUE *ptr = ROBJECT_IVPTR(obj);
@@ -2385,7 +2385,7 @@ index 4f709e6..1bfd131 100644
  		    if ((long)index < len) {
  			val = ptr[index];
  		    }
-@@ -1346,9 +1346,9 @@ vm_setivar(VALUE obj, ID id, VALUE val, IC ic)
+@@ -1342,9 +1342,9 @@ vm_setivar(VALUE obj, ID id, VALUE val, IC ic)
  	    }
  	}
  	else {
@@ -2398,7 +2398,7 @@ index 4f709e6..1bfd131 100644
  		ic->ic_value.index = index;
  		ic->ic_vmstat = GET_VM_STATE_VERSION();
 diff --git a/vm_method.c b/vm_method.c
-index 6e33603..f1d1774 100644
+index 85cb30c..d45df81 100644
 --- a/vm_method.c
 +++ b/vm_method.c
 @@ -162,7 +162,7 @@ rb_method_entry_make(VALUE klass, ID mid, rb_method_type_t type,
