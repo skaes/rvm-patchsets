@@ -99,7 +99,7 @@ If you want to install versions earlier than 1.9.3, you must install gcc-4.2.
 
 With MacPorts, this is as easy as
 
-  sudo port install appl-gcc42
+  sudo port install apple-gcc42
   sudo ln -s /opt/local/bin/ggc-apple-4.2 /usr/bin/gcc-4.2
 
 Additionally, when compiling ruby, you need to set
