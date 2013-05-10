@@ -12,3 +12,4 @@ railsexpress/11-falcon-sparse-array.patch
 railsexpress/12-falcon-array-queue.patch
 railsexpress/13-railsbench-gc-fixes.patch
 railsexpress/14-show-full-backtrace-on-stack-overflow.patch
+railsexpress/15-configurable-fiber-stack-sizes.patch
