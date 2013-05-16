@@ -69,7 +69,8 @@ there's no guarantee. The following versions are currently supported:
   1.9.3-p362  # not recommended, use p392 or higher
   1.9.3-p374  # not recommended, use p392 or higher
   1.9.3-p385  # not recommended, use p392 or higher
-  1.9.3-p392  # current rvm default for MRI-ruby 1.9.3
+  1.9.3-p392  #
+  1.9.3-p429  # current rvm default for MRI-ruby 1.9.3
 
 In order to make some patch level N the default for rvm, add the line(s)
 
