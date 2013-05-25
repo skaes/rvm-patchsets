@@ -660,10 +660,10 @@ index 3110059..56f0217 100644
      /* mark generic instance variables for special constants */
      rb_mark_generic_ivar_tbl();
 diff --git a/include/ruby/intern.h b/include/ruby/intern.h
-index 372ce1f..06dd40c 100644
+index d2ebf93..124e9e1 100644
 --- a/include/ruby/intern.h
 +++ b/include/ruby/intern.h
-@@ -420,6 +420,7 @@ size_t ruby_stack_length(VALUE**);
+@@ -424,6 +424,7 @@ size_t ruby_stack_length(VALUE**);
  int rb_during_gc(void);
  void rb_gc_mark_locations(VALUE*, VALUE*);
  void rb_mark_tbl(struct st_table*);
@@ -671,7 +671,7 @@ index 372ce1f..06dd40c 100644
  void rb_mark_set(struct st_table*);
  void rb_mark_hash(struct st_table*);
  void rb_gc_mark_maybe(VALUE);
-@@ -853,7 +854,7 @@ VALUE rb_f_trace_var(int, VALUE*);
+@@ -857,7 +858,7 @@ VALUE rb_f_trace_var(int, VALUE*);
  VALUE rb_f_untrace_var(int, VALUE*);
  VALUE rb_f_global_variables(void);
  void rb_alias_variable(ID, ID);
@@ -1333,10 +1333,10 @@ index 6176f48..a67d845 100644
    end
  
 diff --git a/time.c b/time.c
-index 6b6167b..f22debb 100644
+index 6fd36f0..9146414 100644
 --- a/time.c
 +++ b/time.c
-@@ -4718,16 +4718,14 @@ time_mload(VALUE time, VALUE str)
+@@ -4745,16 +4745,14 @@ time_mload(VALUE time, VALUE str)
      long nsec;
      VALUE submicro, nano_num, nano_den, offset;
      wideval_t timew;

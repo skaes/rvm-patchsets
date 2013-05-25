@@ -119,10 +119,10 @@ index fbd8237..8423558 100644
  {
      rb_hash_modify_check(hash);
 diff --git a/include/ruby/intern.h b/include/ruby/intern.h
-index 3766d65..372ce1f 100644
+index 60c3498..d2ebf93 100644
 --- a/include/ruby/intern.h
 +++ b/include/ruby/intern.h
-@@ -61,6 +61,7 @@ VALUE rb_ary_tmp_new(long);
+@@ -65,6 +65,7 @@ VALUE rb_ary_tmp_new(long);
  void rb_ary_free(VALUE);
  void rb_ary_modify(VALUE);
  VALUE rb_ary_freeze(VALUE);
@@ -130,7 +130,7 @@ index 3766d65..372ce1f 100644
  VALUE rb_ary_aref(int, VALUE*, VALUE);
  VALUE rb_ary_subseq(VALUE, long, long);
  void rb_ary_store(VALUE, long, VALUE);
-@@ -448,6 +449,7 @@ VALUE rb_hash_lookup(VALUE, VALUE);
+@@ -452,6 +453,7 @@ VALUE rb_hash_lookup(VALUE, VALUE);
  VALUE rb_hash_lookup2(VALUE, VALUE, VALUE);
  VALUE rb_hash_fetch(VALUE, VALUE);
  VALUE rb_hash_aset(VALUE, VALUE, VALUE);

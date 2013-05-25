@@ -38,10 +38,10 @@ index feb54f1..7f65b98 100644
   *     GC.log String  => String
   *
 diff --git a/include/ruby/intern.h b/include/ruby/intern.h
-index 6e1c2c2..3766d65 100644
+index e3ce65b..60c3498 100644
 --- a/include/ruby/intern.h
 +++ b/include/ruby/intern.h
-@@ -431,6 +431,8 @@ void rb_gc_call_finalizer_at_exit(void);
+@@ -435,6 +435,8 @@ void rb_gc_call_finalizer_at_exit(void);
  VALUE rb_gc_enable(void);
  VALUE rb_gc_disable(void);
  VALUE rb_gc_start(void);

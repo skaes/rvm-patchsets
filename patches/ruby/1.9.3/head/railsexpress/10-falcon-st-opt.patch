@@ -22,10 +22,10 @@ index ccc9647..1d8e442 100644
    {$(VPATH)}timev.h
  string.$(OBJEXT): {$(VPATH)}string.c $(RUBY_H_INCLUDES) {$(VPATH)}re.h \
 diff --git a/configure.in b/configure.in
-index 28ddc31..8c4e3ff 100644
+index bfb905b..a9e0ab5 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -1276,6 +1276,30 @@ if test $rb_cv_stack_end_address != no; then
+@@ -1283,6 +1283,30 @@ if test $rb_cv_stack_end_address != no; then
    AC_DEFINE_UNQUOTED(STACK_END_ADDRESS, $rb_cv_stack_end_address)
  fi
  
@@ -56,7 +56,7 @@ index 28ddc31..8c4e3ff 100644
  dnl Checks for library functions.
  AC_TYPE_GETGROUPS
  AC_TYPE_SIGNAL
-@@ -1375,7 +1399,8 @@ AC_CHECK_FUNCS(fmod killpg wait4 waitpid fork spawnv syscall __syscall chroot ge
+@@ -1382,7 +1406,8 @@ AC_CHECK_FUNCS(fmod killpg wait4 waitpid fork spawnv syscall __syscall chroot ge
  	      setsid telldir seekdir fchmod cosh sinh tanh log2 round\
  	      setuid setgid daemon select_large_fdset setenv unsetenv\
                mktime timegm gmtime_r clock_gettime gettimeofday poll ppoll\
