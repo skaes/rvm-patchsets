@@ -63,15 +63,16 @@ there's no guarantee. The following versions are currently supported:
   1.9.2-p290  #
   1.9.2-p318  #
   1.9.2-p320  # current rvm default for MRI-ruby 1.9.2
-  1.9.3-p125  # not recommended, use p392 or higher
-  1.9.3-p194  # not recommended, use p392 or higher
-  1.9.3-p286  # not recommended, use p392 or higher
-  1.9.3-p327  # not recommended, use p392 or higher
-  1.9.3-p362  # not recommended, use p392 or higher
-  1.9.3-p374  # not recommended, use p392 or higher
-  1.9.3-p385  # not recommended, use p392 or higher
-  1.9.3-p392  #
-  1.9.3-p429  # current rvm default for MRI-ruby 1.9.3
+  1.9.3-p125  # not recommended, use p448 or head
+  1.9.3-p194  # not recommended, use p448 or head
+  1.9.3-p286  # not recommended, use p448 or head
+  1.9.3-p327  # not recommended, use p448 or head
+  1.9.3-p362  # not recommended, use p448 or head
+  1.9.3-p374  # not recommended, use p448 or head
+  1.9.3-p385  # not recommended, use p448 or head
+  1.9.3-p448  # not recommended, use p448 or head
+  1.9.3-p429  # not recommended, use p448 or head
+  1.9.3-p448  # current rvm default for MRI-ruby 1.9.3
 
 In order to make some patch level N the default for rvm, add the line(s)
 
