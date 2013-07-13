@@ -1119,7 +1119,7 @@ index 0000000..a7879ab
 +}
 +#endif
 diff --git a/st.c b/st.c
-index 8c238c3..3bd1162 100644
+index 8c238c3..5a682cd 100644
 --- a/st.c
 +++ b/st.c
 @@ -7,6 +7,7 @@
@@ -2037,21 +2037,32 @@ index 8c238c3..3bd1162 100644
  	    *key = ptr->key;
  	    if (value != 0) *value = ptr->record;
  	    ptr->key = ptr->record = never;
-@@ -707,6 +965,13 @@ st_shift(register st_table *table, register st_data_t *key, st_data_t *value)
+@@ -707,24 +965,29 @@ st_shift(register st_table *table, register st_data_t *key, st_data_t *value)
          return 0;
      }
  
+-    if (table->entries_packed) {
+-        if (value != 0) *value = (st_data_t)table->bins[1];
+-        *key = (st_data_t)table->bins[0];
+-        table->num_entries--;
+-        memmove(&table->bins[0], &table->bins[2],
+-                sizeof(struct st_table_entry*) * 2*table->num_entries);
 +    if (ULTRAPACKED(table)) {
 +        if (value != 0) *value = UPVAL(table);
 +        *key = UPKEY(table);
 +        remove_upacked_entry(table);
-+        return 1;
+         return 1;
+     }
+ 
++    if (table->entries_packed) {
++	if (value != 0) *value = PVAL(table, 0);
++	*key = PKEY(table, 0);
++	remove_packed_entry(table, 0);
++	return 1;
 +    }
 +
-     if (table->entries_packed) {
-         if (value != 0) *value = (st_data_t)table->bins[1];
-         *key = (st_data_t)table->bins[0];
-@@ -721,10 +986,10 @@ st_shift(register st_table *table, register st_data_t *key, st_data_t *value)
+     hash_val = do_hash_bin(table->head->key, table);
+     prev = &table->bins[hash_val];
      for (;(ptr = *prev) != 0; prev = &ptr->next) {
  	if (ptr == table->head) {
  	    *prev = ptr->next;
@@ -2064,7 +2075,7 @@ index 8c238c3..3bd1162 100644
              return 1;
  	}
      }
-@@ -740,17 +1005,23 @@ st_cleanup_safe(st_table *table, st_data_t never)
+@@ -740,17 +1003,23 @@ st_cleanup_safe(st_table *table, st_data_t never)
      st_table_entry *ptr, **last, *tmp;
      st_index_t i;
  
@@ -2094,7 +2105,7 @@ index 8c238c3..3bd1162 100644
  	table->num_entries = j;
  	return;
      }
-@@ -761,7 +1032,7 @@ st_cleanup_safe(st_table *table, st_data_t never)
+@@ -761,7 +1030,7 @@ st_cleanup_safe(st_table *table, st_data_t never)
  	    if (ptr->key == never) {
  		tmp = ptr;
  		*last = ptr = ptr->next;
@@ -2103,7 +2114,7 @@ index 8c238c3..3bd1162 100644
  	    }
  	    else {
  		ptr = *(last = &ptr->next);
-@@ -771,50 +1042,78 @@ st_cleanup_safe(st_table *table, st_data_t never)
+@@ -771,50 +1040,78 @@ st_cleanup_safe(st_table *table, st_data_t never)
  }
  
  int
@@ -2206,7 +2217,7 @@ index 8c238c3..3bd1162 100644
      }
      else {
  	ptr = table->head;
-@@ -822,6 +1121,8 @@ st_foreach(st_table *table, int (*func)(ANYARGS), st_data_t arg)
+@@ -822,6 +1119,8 @@ st_foreach(st_table *table, int (*func)(ANYARGS), st_data_t arg)
  
      if (ptr != 0) {
  	do {
@@ -2215,7 +2226,7 @@ index 8c238c3..3bd1162 100644
  	    i = ptr->hash % table->num_bins;
  	    retval = (*func)(ptr->key, ptr->record, arg);
  	  unpacked:
-@@ -847,10 +1148,100 @@ st_foreach(st_table *table, int (*func)(ANYARGS), st_data_t arg)
+@@ -847,10 +1146,100 @@ st_foreach(st_table *table, int (*func)(ANYARGS), st_data_t arg)
  		for (; (tmp = *last) != 0; last = &tmp->next) {
  		    if (ptr == tmp) {
  			tmp = ptr->fore;
@@ -2319,7 +2330,7 @@ index 8c238c3..3bd1162 100644
  			ptr = tmp;
  			break;
  		    }
-@@ -873,13 +1264,13 @@ st_reverse_foreach(st_table *table, int (*func)(ANYARGS), st_data_t arg)
+@@ -873,13 +1262,13 @@ st_reverse_foreach(st_table *table, int (*func)(ANYARGS), st_data_t arg)
          for (i = table->num_entries-1; 0 <= i; i--) {
              int j;
              st_data_t key, val;
@@ -2336,7 +2347,7 @@ index 8c238c3..3bd1162 100644
                          break;
                  }
                  if (j == table->num_entries) {
-@@ -893,9 +1284,7 @@ st_reverse_foreach(st_table *table, int (*func)(ANYARGS), st_data_t arg)
+@@ -893,9 +1282,7 @@ st_reverse_foreach(st_table *table, int (*func)(ANYARGS), st_data_t arg)
  	      case ST_STOP:
  		return 0;
  	      case ST_DELETE:
@@ -2347,7 +2358,7 @@ index 8c238c3..3bd1162 100644
                  break;
              }
          }
-@@ -928,8 +1317,8 @@ st_reverse_foreach(st_table *table, int (*func)(ANYARGS), st_data_t arg)
+@@ -928,8 +1315,8 @@ st_reverse_foreach(st_table *table, int (*func)(ANYARGS), st_data_t arg)
  		    if (ptr == tmp) {
  			tmp = ptr->back;
  			*last = ptr->next;
