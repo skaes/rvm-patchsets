@@ -70,7 +70,6 @@ there's no guarantee. The following versions are currently supported:
   1.9.3-p362  # not recommended, use p448 or head
   1.9.3-p374  # not recommended, use p448 or head
   1.9.3-p385  # not recommended, use p448 or head
-  1.9.3-p448  # not recommended, use p448 or head
   1.9.3-p429  # not recommended, use p448 or head
   1.9.3-p448  # current rvm default for MRI-ruby 1.9.3
 
