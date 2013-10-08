@@ -25,6 +25,9 @@ If rvm isn't update to date yet, or you can easily install them from this reposi
 
 This will automatically remove old versions of the patchsets.
 
+Note: if you are using zsh you might experience problems. It seems that
+switching to bash fixes these (see https://github.com/skaes/rvm-patchsets/issues/20).
+
 === Step 2
 
 Reinstall the rubies you want to patch:
