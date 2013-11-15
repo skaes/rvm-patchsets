@@ -1,5 +1,7 @@
 #!/bin/bash
 find $rvm_path/patches $rvm_path/patchsets -name '*railsexpress*' | xargs rm -rf
+find $rvm_path/patches $rvm_path/patchsets -name '*float_warnings*' | xargs rm -rf
+
 cp -rp patches patchsets $rvm_path
 
 if [[ "`uname -a`" =~ (Darwin Kernel Version 12) ]]; then
