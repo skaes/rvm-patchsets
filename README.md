@@ -39,70 +39,76 @@ Reinstall the rubies you want to patch with railsexpress:
 
 Alternatively, you can pass the ruby version to reinstall to the install script:
 
-    ./install.sh 1.8.7 1.9.2 1.9.3
+    ./install.sh 1.9.3 2.0.0
 
 If you don't want to mess up your vanilla rubies, pass a -n flag to rvm when installing
 the patches:
 
-    rvm reinstall 1.8.7 --patch railsexpress -n railsexpress
-    rvm reinstall 1.9.2 --patch railsexpress -n railsexpress
-    rvm reinstall 1.9.3 --patch railsexpress -n railsexpress
-    rvm reinstall 2.0.0 --patch railsexpress -n railsexpress
+    rvm install 1.8.7 --patch railsexpress -n railsexpress
+    rvm install 1.9.2 --patch railsexpress -n railsexpress
+    rvm install 1.9.3 --patch railsexpress -n railsexpress
+    rvm install 2.0.0 --patch railsexpress -n railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
-    rvm use 1.9.2-railsexpress
+    rvm use 2.0.0-railsexpress
 
 Reinstall the rubies you want to patch with float_warnings accordingly:
 
-    rvm reinstall 1.9.3 --patch float_warnings
-    rvm reinstall 2.0.0 --patch float_warnings
+    rvm install 1.9.3 --patch float_warnings -n float_warnings
+    rvm install 2.0.0 --patch float_warnings -n float_warnings
 
 ## Notes
 
 The patches are for specific versions of ruby. They might work with later versions, but
 there's no guarantee. The following versions are currently supported:
 
-    1.8.7-p334  # not recommended, as p352 fixes a serious GC corruption problem
-    1.8.7-p352  # not recommended, use at least p358
-    1.8.7-p357  # fixes a DOS vulnerability in 1.8.7
-    1.8.7-p358  #
-    1.8.7-p370  #
+    1.8.7-p334  # not recommended, use p371 or head
+    1.8.7-p352  # not recommended, use p371 or head
+    1.8.7-p357  # not recommended, use p371 or head
+    1.8.7-p358  # not recommended, use p371 or head
+    1.8.7-p370  # not recommended, use p371 or head
     1.8.7-p371  # current rvm default for MRI-ruby 1.8.7
-    1.9.2-p180  #
-    1.9.2-p290  #
-    1.9.2-p318  #
-    1.9.2-p320  # current rvm default for MRI-ruby 1.9.2
-    1.9.3-p125  # not recommended, use p448 or head
-    1.9.3-p194  # not recommended, use p448 or head
-    1.9.3-p286  # not recommended, use p448 or head
-    1.9.3-p327  # not recommended, use p448 or head
-    1.9.3-p362  # not recommended, use p448 or head
-    1.9.3-p374  # not recommended, use p448 or head
-    1.9.3-p385  # not recommended, use p448 or head
-    1.9.3-p429  # not recommended, use p448 or head
-    1.9.3-p448  # current rvm default for MRI-ruby 1.9.3
+    1.9.2-p180  # not recommended, use 1.9.3 or 2.0.0
+    1.9.2-p290  # not recommended, use 1.9.3 or 2.0.0
+    1.9.2-p318  # not recommended, use 1.9.3 or 2.0.0
+    1.9.2-p320  # not recommended, use 1.9.3 or 2.0.0
+    1.9.3-p125  # not recommended, use p484 or head
+    1.9.3-p194  # not recommended, use p484 or head
+    1.9.3-p286  # not recommended, use p484 or head
+    1.9.3-p327  # not recommended, use p484 or head
+    1.9.3-p362  # not recommended, use p484 or head
+    1.9.3-p374  # not recommended, use p484 or head
+    1.9.3-p385  # not recommended, use p484 or head
+    1.9.3-p429  # not recommended, use p484 or head
+    1.9.3-p448  # not recommended, use p484 or head
+    1.9.3-p484  # current rvm default for MRI-ruby 1.9.3
+
+    2.0.0-p353  # current rvm default for MRI-ruby 2.0.0
 
 In order to make some patch level N the default for rvm, add the line(s)
 
     ruby_1.8.7_patch_level=N
     ruby_1.9.3_patch_level=N
+    ruby_2.0.0_patch_level=N
 
 to $rvm_path/user/db.
 
 To enable heap dump support, pass the --enable-gcdebug option to the rvm install command.
 
-    rvm reinstall 1.8.7 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm reinstall 1.9.2 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm reinstall 1.9.3 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 1.9.3 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 2.0.0 --patch railsexpress -n gcdebug -C --enable-gcdebug
 
 If rvm cannot configure your ruby, update your rvm install.
 
-If you're like me and prefer to manage the libraries needed for installing ruby yourself,
-for example using MacPorts or HomeBrew, then you need to tell the ruby compilation process
-where these libraries are:
+If you're like me and prefer to manage the libraries needed for
+installing ruby yourself, for example using MacPorts or HomeBrew, then
+you might need to tell the ruby compilation process where these
+libraries are:
 
     rvm reinstall 1.9.3 --patch railsexpress -C --with-opt-dir=/opt/local
+
+For up to date rvm installs, use the rvm autolib(s) feature.
 
 ### Installing on Mountain Lion
 
@@ -120,23 +126,20 @@ Additionally, when compiling ruby, you might need to set
 Script `install.sh` will set `CPPFLAGS` automatically for you.
 
 
-### Using patches for ruby-branches (1.8.7/1.9.3 only)
+### Using patches for ruby-branches
 
-The most recent patch level on the ruby_1_8_7 branch is 360. If you want to use it, you
-can install the corresponding ruby version with the following command:
+You can install more recent ruby versions from the ruby source
+repositories using rvm's branch install feature. Example:
 
-    rvm reinstall 1.8.7-head --patch railsexpress -n railsexpress
+    rvm install 1.9.3-head --patch railsexpress -n railsexpress
 
 You can then use it with the command
 
-    rvm use 1.8.7-head-railsexpress
+    rvm use 1.9.3-head-railsexpress
 
-Note that the patch contained in patch level 359 fixes a serious bug in the ruby
-marshaling code, which can crash the ruby interpreter.
+On 2.0.0, you can install head similarly:
 
-On 1.9.3, you can install head similarly:
-
-    rvm reinstall 1.9.3-head --patch railsexpress -n railsexpress
+    rvm install 2.0.0-head --patch railsexpress -n railsexpress
 
 ### Patch Improvements
 
@@ -147,7 +150,7 @@ Instead, add new patches on top of the existing ones. Then they will have a chan
 
 ## Caveats
 
-* All patches are provided without any warranty. Use at your own risk!
+All patches are provided without any warranty. Use at your own risk!
 
 ## Credits
 
