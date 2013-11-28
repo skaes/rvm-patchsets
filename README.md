@@ -30,17 +30,18 @@ switching to bash fixes these (see https://github.com/skaes/rvm-patchsets/issues
 
 ### Step 2
 
-Reinstall the rubies you want to patch:
+Reinstall the rubies you want to patch with railsexpress:
 
     rvm reinstall 1.8.7 --patch railsexpress
     rvm reinstall 1.9.2 --patch railsexpress
     rvm reinstall 1.9.3 --patch railsexpress
+    rvm reinstall 2.0.0 --patch railsexpress
 
 Alternatively, you can pass the ruby version to reinstall to the install script:
 
     ./install.sh 1.9.3 2.0.0
 
-IF you don't want to mess up your vanilla rubies, pass a -n flag to rvm when installing
+If you don't want to mess up your vanilla rubies, pass a -n flag to rvm when installing
 the patches:
 
     rvm install 1.8.7 --patch railsexpress -n railsexpress
@@ -51,6 +52,11 @@ the patches:
 This will then require you to specify the ruby version for rvm like so:
 
     rvm use 2.0.0-railsexpress
+
+Reinstall the rubies you want to patch with float_warnings accordingly:
+
+    rvm install 1.9.3 --patch float_warnings -n float_warnings
+    rvm install 2.0.0 --patch float_warnings -n float_warnings
 
 ## Notes
 
