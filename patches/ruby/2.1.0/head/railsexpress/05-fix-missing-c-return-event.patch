@@ -1,0 +1,45 @@
+diff --git a/test/ruby/test_settracefunc.rb b/test/ruby/test_settracefunc.rb
+index b106ea5..8a128f5 100644
+--- a/test/ruby/test_settracefunc.rb
++++ b/test/ruby/test_settracefunc.rb
+@@ -1066,4 +1066,19 @@ class TestSetTraceFunc < Test::Unit::TestCase
+       :b_return
+     ], events)
+   end
++
++  def test_const_missing
++    bug59398 = '[ruby-core:59398]'
++    events = []
++    assert !defined?(MISSING_CONSTANT_59398)
++    TracePoint.new(:c_call, :c_return){|tp|
++      events << tp.event if tp.defined_class == Module && tp.method_id == :const_missing
++    }.enable{
++      MISSING_CONSTANT_59398 rescue nil
++    }
++    assert_equal([
++      :c_call,
++      :c_return
++    ], events, bug59398)
++  end
+ end
+diff --git a/variable.c b/variable.c
+index 350bb58..47b7ea6 100644
+--- a/variable.c
++++ b/variable.c
+@@ -19,6 +19,7 @@
+ #include "constant.h"
+ #include "internal.h"
+ #include "id.h"
++#include "vm_core.h"
+ 
+ st_table *rb_global_tbl;
+ static ID autoload, classpath, tmp_classpath, classid;
+@@ -1518,6 +1519,8 @@ const_missing(VALUE klass, ID id)
+ VALUE
+ rb_mod_const_missing(VALUE klass, VALUE name)
+ {
++    rb_thread_t *th = GET_THREAD();
++    EXEC_EVENT_HOOK(th, RUBY_EVENT_C_RETURN, rb_cModule, idConst_missing, rb_cModule, Qnil);
+     rb_frame_pop(); /* pop frame for "const_missing" */
+     uninitialized_constant(klass, rb_to_id(name));
+ 
