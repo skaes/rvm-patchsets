@@ -32,53 +32,34 @@ switching to bash fixes these (see https://github.com/skaes/rvm-patchsets/issues
 
 Reinstall the rubies you want to patch:
 
-    rvm reinstall 1.8.7 --patch railsexpress
-    rvm reinstall 1.9.2 --patch railsexpress
     rvm reinstall 1.9.3 --patch railsexpress
+    rvm reinstall 2.0.0 --patch railsexpress
+    rvm reinstall 2.1.0 --patch railsexpress
 
 Alternatively, you can pass the ruby version to reinstall to the install script:
 
-    ./install.sh 1.9.3 2.0.0
+    ./install.sh 1.9.3 2.0.0 2.1.0
 
 IF you don't want to mess up your vanilla rubies, pass a -n flag to rvm when installing
 the patches:
 
-    rvm install 1.8.7 --patch railsexpress -n railsexpress
-    rvm install 1.9.2 --patch railsexpress -n railsexpress
     rvm install 1.9.3 --patch railsexpress -n railsexpress
     rvm install 2.0.0 --patch railsexpress -n railsexpress
+    rvm install 2.1.0 --patch railsexpress -n railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
-    rvm use 2.0.0-railsexpress
+    rvm use 2.1.0-railsexpress
 
 ## Notes
 
 The patches are for specific versions of ruby. They might work with later versions, but
 there's no guarantee. The following versions are currently supported:
 
-    1.8.7-p334  # not recommended, use p371 or head
-    1.8.7-p352  # not recommended, use p371 or head
-    1.8.7-p357  # not recommended, use p371 or head
-    1.8.7-p358  # not recommended, use p371 or head
-    1.8.7-p370  # not recommended, use p371 or head
-    1.8.7-p371  # current rvm default for MRI-ruby 1.8.7
-    1.9.2-p180  # not recommended, use 1.9.3 or 2.0.0
-    1.9.2-p290  # not recommended, use 1.9.3 or 2.0.0
-    1.9.2-p318  # not recommended, use 1.9.3 or 2.0.0
-    1.9.2-p320  # not recommended, use 1.9.3 or 2.0.0
-    1.9.3-p125  # not recommended, use p484 or head
-    1.9.3-p194  # not recommended, use p484 or head
-    1.9.3-p286  # not recommended, use p484 or head
-    1.9.3-p327  # not recommended, use p484 or head
-    1.9.3-p362  # not recommended, use p484 or head
-    1.9.3-p374  # not recommended, use p484 or head
-    1.9.3-p385  # not recommended, use p484 or head
-    1.9.3-p429  # not recommended, use p484 or head
-    1.9.3-p448  # not recommended, use p484 or head
+    1.9.3-p392  # current rvm default for MRI-ruby 1.9.3
     1.9.3-p484  # current rvm default for MRI-ruby 1.9.3
-
     2.0.0-p353  # current rvm default for MRI-ruby 2.0.0
+    2.1.0       # current rvm default for MRI-ruby 2.1.0
 
 In order to make some patch level N the default for rvm, add the line(s)
 
@@ -92,6 +73,7 @@ To enable heap dump support, pass the --enable-gcdebug option to the rvm install
 
     rvm install 1.9.3 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.0.0 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    # not yet available for 2.1.0
 
 If rvm cannot configure your ruby, update your rvm install.
 
@@ -125,15 +107,15 @@ Script `install.sh` will set `CPPFLAGS` automatically for you.
 You can install more recent ruby versions from the ruby source
 repositories using rvm's branch install feature. Example:
 
-    rvm install 1.9.3-head --patch railsexpress -n railsexpress
+    rvm install 2.0.0-head --patch railsexpress -n railsexpress
 
 You can then use it with the command
 
-    rvm use 1.9.3-head-railsexpress
+    rvm use 2.0.0-head-railsexpress
 
-On 2.0.0, you can install head similarly:
+On 2.1.0, you can install head similarly:
 
-    rvm install 2.0.0-head --patch railsexpress -n railsexpress
+    rvm install 2.1.0-head --patch railsexpress -n railsexpress
 
 ### Patch Improvements
 
@@ -150,6 +132,7 @@ All patches are provided without any warranty. Use at your own risk!
 
 * Some of the patches are based on the work of others
 * Some of the the patches are included in ruby enterprise edition
+* The set of integrated patces depend on the ruby version
 * A modified version of my GC patches have been included in stock ruby
 
 * sigvtalrm patch: http://timetobleed.com/ruby-threading-bugfix-small-fix-goes-a-long-way
