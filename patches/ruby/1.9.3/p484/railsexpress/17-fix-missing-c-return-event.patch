@@ -16,10 +16,10 @@ index fb5afc0..ec98e45 100644
  }
  
 diff --git a/test/ruby/test_settracefunc.rb b/test/ruby/test_settracefunc.rb
-index d6c6d06..f8db22b 100644
+index d6c6d06..97ce61b 100644
 --- a/test/ruby/test_settracefunc.rb
 +++ b/test/ruby/test_settracefunc.rb
-@@ -389,6 +389,74 @@ class TestSetTraceFunc < Test::Unit::TestCase
+@@ -389,6 +389,91 @@ class TestSetTraceFunc < Test::Unit::TestCase
      assert_equal(self, ok, bug3921)
    end
  
@@ -91,6 +91,36 @@ index d6c6d06..f8db22b 100644
 +    ], events, "should use alias method name for tracing c methods")
 +  end
 +
++  def test_method_missing
++    bug59398 = '[ruby-core:59398]'
++    events = []
++    assert !respond_to?(:missing_method_59398)
++    eval <<-EOF.gsub(/^.*?: /, "")
++     1: set_trace_func(Proc.new { |event, file, lineno, mid, binding, klass|
++     2:   events << [event, mid, klass] if event =~ /call|return/ && mid.to_s =~ /method_missing/
++     3: })
++     4: missing_method_59398 rescue nil
++     5: set_trace_func(nil)
++    EOF
++    assert_equal([
++      ["c-call", :method_missing, BasicObject],
++      ["c-return", :method_missing, BasicObject]
++    ], events, bug59398)
++  end
++
    class << self
      define_method(:method_added, Module.method(:method_added))
    end
+diff --git a/vm_eval.c b/vm_eval.c
+index 2291001..78c670c 100644
+--- a/vm_eval.c
++++ b/vm_eval.c
+@@ -554,7 +554,7 @@ raise_method_missing(rb_thread_t *th, int argc, const VALUE *argv, VALUE obj,
+ 	exc = rb_class_new_instance(n, args, exc);
+ 
+ 	if (!(last_call_status & NOEX_MISSING)) {
+-	    th->cfp = RUBY_VM_PREVIOUS_CONTROL_FRAME(th->cfp);
++            rb_frame_pop();
+ 	}
+ 	rb_exc_raise(exc);
+     }
