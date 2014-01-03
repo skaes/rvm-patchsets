@@ -1,0 +1,118 @@
+diff --git a/ChangeLog b/ChangeLog
+index 0349f7c..cb0c6ac 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,13 @@
++Thu Dec 26 03:28:11 2013  Koichi Sasada  <ko1@atdot.net>
++
++	* vm_insnhelper.c (argument_error): insert dummy frame to make
++	  a backtrace object intead of modify backtrace string array.
++	  [Bug #9295]
++
++	* test/ruby/test_backtrace.rb: add a test for this patch.
++	  fix test to compare a result of Exception#backtrace with
++	  a result of Exception#backtrace_locations.
++
+ Wed Dec 25 16:58:31 2013  Nobuyoshi Nakada  <nobu@ruby-lang.org>
+ 
+ 	* proc.c (rb_mod_define_method): consider visibility only if self
+diff --git a/test/ruby/test_backtrace.rb b/test/ruby/test_backtrace.rb
+index aded544..6ec13e4 100644
+--- a/test/ruby/test_backtrace.rb
++++ b/test/ruby/test_backtrace.rb
+@@ -19,17 +19,16 @@ class TestBacktrace < Test::Unit::TestCase
+   end
+ 
+   def test_exception_backtrace_locations
+-    bt = Fiber.new{
++    backtrace, backtrace_locations = Fiber.new{
+       begin
+         raise
+       rescue => e
+-        e.backtrace_locations
++        [e.backtrace, e.backtrace_locations]
+       end
+     }.resume
+-    assert_equal(1, bt.size)
+-    assert_match(/.+:\d+:.+/, bt[0].to_s)
++    assert_equal(backtrace, backtrace_locations.map{|e| e.to_s})
+ 
+-    bt = Fiber.new{
++    backtrace, backtrace_locations = Fiber.new{
+       begin
+         begin
+           helper_test_exception_backtrace_locations
+@@ -37,11 +36,34 @@ class TestBacktrace < Test::Unit::TestCase
+           raise
+         end
+       rescue => e
+-        e.backtrace_locations
++        [e.backtrace, e.backtrace_locations]
++      end
++    }.resume
++    assert_equal(backtrace, backtrace_locations.map{|e| e.to_s})
++  end
++
++  def call_helper_test_exception_backtrace_locations
++    helper_test_exception_backtrace_locations(:bad_argument)
++  end
++
++  def test_argument_error_backtrace_locations
++    backtrace, backtrace_locations = Fiber.new{
++      begin
++        helper_test_exception_backtrace_locations(1)
++      rescue ArgumentError => e
++        [e.backtrace, e.backtrace_locations]
++      end
++    }.resume
++    assert_equal(backtrace, backtrace_locations.map{|e| e.to_s})
++
++    backtrace, backtrace_locations = Fiber.new{
++      begin
++        call_helper_test_exception_backtrace_locations
++      rescue ArgumentError => e
++        [e.backtrace, e.backtrace_locations]
+       end
+     }.resume
+-    assert_equal(2, bt.size)
+-    assert_match(/helper_test_exception_backtrace_locations/, bt[0].to_s)
++    assert_equal(backtrace, backtrace_locations.map{|e| e.to_s})
+   end
+ 
+   def test_caller_lev
+diff --git a/vm_insnhelper.c b/vm_insnhelper.c
+index 99b0c75..c8cbaa0 100644
+--- a/vm_insnhelper.c
++++ b/vm_insnhelper.c
+@@ -126,20 +126,22 @@ NORETURN(static void argument_error(const rb_iseq_t *iseq, int miss_argc, int mi
+ static void
+ argument_error(const rb_iseq_t *iseq, int miss_argc, int min_argc, int max_argc)
+ {
++    rb_thread_t *th = GET_THREAD();
+     VALUE exc = rb_arg_error_new(miss_argc, min_argc, max_argc);
+-    VALUE bt = rb_make_backtrace();
+-    VALUE err_line = 0;
++    VALUE at;
+ 
+     if (iseq) {
+-	int line_no = FIX2INT(rb_iseq_first_lineno(iseq->self));
+-
+-	err_line = rb_sprintf("%s:%d:in `%s'",
+-			      RSTRING_PTR(iseq->location.path),
+-			      line_no, RSTRING_PTR(iseq->location.label));
+-	rb_funcall(bt, rb_intern("unshift"), 1, err_line);
++	vm_push_frame(th, iseq, VM_FRAME_MAGIC_METHOD, Qnil /* self */, Qnil /* klass */, Qnil /* specval*/,
++		      iseq->iseq_encoded, th->cfp->sp, 0 /* local_size */, 0 /* me */, 0 /* stack_max */);
++	at = rb_vm_backtrace_object();
++	vm_pop_frame(th);
++    }
++    else {
++	at = rb_vm_backtrace_object();
+     }
+ 
+-    rb_funcall(exc, rb_intern("set_backtrace"), 1, bt);
++    rb_iv_set(exc, "bt_locations", at);
++    rb_funcall(exc, rb_intern("set_backtrace"), 1, at);
+     rb_exc_raise(exc);
+ }
+ 
