@@ -1,0 +1,4227 @@
+diff --git a/ChangeLog b/ChangeLog
+index 0349f7c..66ef0e4 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,216 @@
++Thu Feb 6 08:23:28 2014  Eric Wong  <e@80x24.org>
++
++	* ext/thread/thread.c (rb_szqueue_max_set): use correct queue and
++	  limit wakeups.  [Bug #9343][ruby-core:60517]
++	* test/thread/test_queue.rb (test_sized_queue_assign_max):
++	  test for bug
++
++Thu Feb  6 11:27:39 2014  Eric Hodel  <drbrain@segment7.net>
++
++	* lib/rubygems: RubyGems 2.2.2 which contains the following bug fixes:
++	  http://rubygems.rubyforge.org/rubygems-update/History_txt.html#label-2.2.2+%2F+2014-02-05
++	  https://bugs.ruby-lang.org/issues/9489
++
++Thu Feb  6 11:23:59 2014  Koichi Sasada  <ko1@atdot.net>
++
++	* gc.c (ruby_gc_set_params): if RUBY_GC_OLDMALLOC_LIMIT is provided,
++	  then set objspace->rgengc.oldmalloc_increase_limit.
++	  Without this fix, the env variable RUBY_GC_OLDMALLOC_LIMIT
++	  does not work.
++
++	* gc.c (get_envparam_int): accept a value equals to lowerbounds.
++
++	* gc.c (get_envparam_double): ditto.
++
++Wed Feb  5 23:57:05 2014  Charlie Somerville  <charliesome@ruby-lang.org>
++
++	* ext/thread/thread.c (rb_szqueue_push): check GET_SZQUEUE_WAITERS
++	  instead of GET_QUEUE_WAITERS to prevent deadlock. Patch by Eric Wong.
++	  [Bug #9302] [ruby-core:59324]
++
++	* test/thread/test_queue.rb: add test
++
++Wed Feb  5 23:43:30 2014  NAKAMURA Usaku  <usa@ruby-lang.org>
++
++	* hash.c (rb_objid_hash): should return `long'.  brushup r44534.
++
++	* object.c (rb_obj_hash): follow above change.
++
++Wed Feb  5 23:43:30 2014  NAKAMURA Usaku  <usa@ruby-lang.org>
++
++	* hash.c (rb_any_hash): should treat the return value of rb_objid_hash()
++	  as `long', because ruby assumes the hash value of the object id of
++	  an object is `long'.
++	  this fixes test failures on mswin64 introduced at r44525.
++
++Wed Feb  5 23:43:30 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* hash.c (rb_objid_hash): return hash value from object ID with a
++	  salt, extract from rb_any_hash().
++
++	* object.c (rb_obj_hash): return same value as rb_any_hash().
++	  fix r44125.  [ruby-core:59638] [Bug #9381]
++
++Wed Feb  5 22:28:41 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* vm_insnhelper.c (vm_search_super_method): allow bound method from a
++	  module, yet another method transplanting.
++
++Wed Feb  5 22:28:41 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* vm_insnhelper.c (vm_search_super_method): when super called in a
++	  bound UnboundMethod generated from a module, no superclass is
++	  found since the current defined class is the module, then call
++	  method_missing in that case.  [ruby-core:59619] [Bug #9377]
++
++Wed Feb  5 21:57:40 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* ext/socket/socket.c (rsock_syserr_fail_host_port): add errno
++	  argument version anduse rb_syserr_fail_str() instead of
++	  rb_sys_fail_str() with restoring errno.
++
++	* ext/socket/socket.c (rsock_syserr_fail_path): ditto, and
++	  rb_syserr_fail().
++
++	* ext/socket/socket.c (rsock_sys_fail_sockaddr): ditto, use
++	  rsock_syserr_fail_raddrinfo().
++
++	* ext/socket/socket.c (rsock_sys_fail_raddrinfo): ditto.
++
++	* ext/socket/socket.c (setup_domain_and_type): ditto.
++
++Wed Feb  5 21:57:40 2014  Eric Wong  <normalperson@yhbt.net>
++
++	* ext/socket/socket.c (rsock_sys_fail_host_port): save and restore errno
++	  before calling rb_sys_fail_str to prevent [BUG] errno == 0.
++	  Patch by Eric Wong. [ruby-core:59498] [Bug #9352]
++
++	* ext/socket/socket.c (rsock_sys_fail_path): ditto
++	* ext/socket/socket.c (rsock_sys_fail_sockaddr): ditto
++	* ext/socket/socket.c (rsock_sys_fail_raddrinfo): ditto
++	* ext/socket/socket.c (rsock_sys_fail_raddrinfo_or_sockaddr): ditto
++
++Wed Feb  5 21:12:02 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* lib/timeout.rb (Timeout::ExitException.catch): pass arguments
++	  for new instance.
++
++	* lib/timeout.rb (Timeout::ExitException#exception): fallback to
++	  Timeout::Error if couldn't throw.  [ruby-dev:47872] [Bug #9380]
++
++	* lib/timeout.rb (Timeout#timeout): initialize ExitException with
++	  message for the fallback case.
++
++Wed Feb  5 21:12:02 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* lib/timeout.rb (Timeout#timeout): should not rescue ordinarily
++	  raised ExitException, which should not be thrown.
++
++	* lib/timeout.rb (Timeout::ExitException.catch): set @thread only if
++	  it ought to be caught.
++
++	* lib/timeout.rb (Timeout#timeout): when a custom exception is given,
++	  no instance is needed to be caught, so defer creating new instance
++	  until it is raised.  [ruby-core:59511] [Bug #9354]
++
++Wed Feb  5 17:55:28 2014  Aman Gupta <ruby@tmm1.net>
++
++	* array.c (ary_add_hash): Fix consistency issue between Array#uniq and
++	  Array#uniq! [Bug #9340] [ruby-core:59457]
++	* test/ruby/test_array.rb (class TestArray): regression test for above.
++
++Wed Feb  5 11:48:42 2014  Charlie Somerville  <charliesome@ruby-lang.org>
++
++	* struct.c (rb_struct_set): return assigned value from setter method
++	  rather than struct object. [Bug #9353] [ruby-core:59509]
++
++	* test/ruby/test_struct.rb (test_setter_method_returns_value): add test
++
++Wed Feb  5 11:13:21 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* string.c (rb_str_modify_expand): enable capacity and disable
++	  assocation with packed objects when setting capa, so that
++	  pack("p") string fails to unpack properly after modified.
++
++Sun Feb  2 22:39:28 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* lib/delegate.rb (Delegator): keep source information methods
++	  which start and end with '__'.  [ruby-core:59718] [Bug #9403]
++
++Fri Jan 31 12:10:16 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* proc.c (mnew_from_me): keep iclass as-is, to make inheritance
++	  chain consistent.  [ruby-core:59358] [Bug #9315]
++
++	* proc.c (method_owner): return the original defined_class from
++	  prepended iclass, instead.
++
++Fri Jan 31 12:05:59 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* configure.in: let mingw do something black-magic, and check if
++	  _gmtime64_s() is available actually.
++
++	* win32/win32.c (gmtime_s, localtime_s): use _gmtime64_s() and
++	  _localtime64_s() if available, not depending on very confusing
++	  mingw variants macros.  based on the patch by phasis68 (Heesob
++	  Park) at [ruby-core:58764].  [ruby-core:58391] [Bug #9119]
++
++Thu Jan 30 15:02:35 2014  Shugo Maeda  <shugo@ruby-lang.org>
++
++	* configure.in: use $@ instead of $(.TARGET) because .TARGET is not
++	  supported by GNU make.
++
++Mon Jan 27 16:49:52 2014  Kenta Murata  <mrkn@mrkn.jp>
++
++	* ext/bigdecimal/bigdecimal.c (BigDecimal_divide): Add an additional
++	  digit for the quotient to be compatible with bigdecimal 1.2.1 and
++	  the former.  [ruby-core:59365] [#9316] [#9305]
++
++	* test/bigdecimal/test_bigdecimal.rb: tests for the above change.
++
++	* ext/bigdecimal/bigdecimal.gemspec: bigdecimal version 1.2.4.
++
++Mon Jan 27 16:45:34 2014  Yamashita Yuu  <yamashita@geishatokyo.com>
++
++	* ext/openssl/ossl_ssl.c (Init_ossl_ssl): Declare a constant
++	  `OP_MSIE_SSLV2_RSA_PADDING` only if the macro is defined.  The
++	  `SSL_OP_MSIE_SSLV2_RSA_PADDING` has been removed from latest
++	  snapshot of OpenSSL 1.0.1.  [Fixes GH-488]
++
++Thu Jan 23 10:37:24 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* hash.c (HAS_EXTRA_STATES): warn extra states only when something
++	  differ.  [ruby-core:59254] [Bug #9275]
++
++Thu Jan  9 14:05:24 2014  NAKAMURA Usaku  <usa@ruby-lang.org>
++
++	* win32/{setup.mak,Makefile.sub}: update fake.rb like
++	  template/fake.rb.in.
++
++Thu Jan  9 14:05:24 2014  NAKAMURA Usaku  <usa@ruby-lang.org>
++
++	* win32/Makefile.sub (fake.rb): should depend on version.h because
++	  if RUBY_VERSION is updated, fake.rb need to say the new version
++	  to avoid install error in rbconfig.rb.
++
++Thu Jan  9 08:21:00 2014  Aman Gupta <ruby@tmm1.net>
++
++	* test/net/imap/cacert.pem: generate new CA cert, since the last one
++	  expired. [Bug #9341] [ruby-core:59459]
++	* test/net/imap/server.crt: new server cert signed with updated CA.
++	* test/net/imap/Makefile: add `make regen_certs` to automate this
++	  process.
++
++Thu Dec 26 03:28:11 2013  Koichi Sasada  <ko1@atdot.net>
++
++	* vm_insnhelper.c (argument_error): insert dummy frame to make
++	  a backtrace object intead of modify backtrace string array.
++	  [Bug #9295]
++
++	* test/ruby/test_backtrace.rb: add a test for this patch.
++	  fix test to compare a result of Exception#backtrace with
++	  a result of Exception#backtrace_locations.
++
+ Wed Dec 25 16:58:31 2013  Nobuyoshi Nakada  <nobu@ruby-lang.org>
+ 
+ 	* proc.c (rb_mod_define_method): consider visibility only if self
+diff --git a/NEWS b/NEWS
+index 59251a4..afd15fa 100644
+--- a/NEWS
++++ b/NEWS
+@@ -114,6 +114,7 @@ with all sufficient information, see the ChangeLog file.
+     * Process.clock_getres
+ 
+ * String
++  * "literal".freeze is now optimized to return the same object
+   * New methods:
+     * String#scrub and String#scrub! verify and fix invalid byte sequence.
+       If you want to use this function with older Ruby,
+@@ -133,6 +134,10 @@ with all sufficient information, see the ChangeLog file.
+ 
+ === Core classes compatibility issues (excluding feature bug fixes)
+ 
++* Dir
++  * incompatible changes:
++    * Dir#glob returns composed characters (previously Apple Modofied UTF-8).
++
+ * Hash
+   * incompatible changes:
+     * Hash#reject will return plain Hash object in the future versions, that
+@@ -250,7 +255,7 @@ String
+ * REXML::Parsers::SAX2Parser
+   * Fixes wrong number of arguments of entitydecl event. Document of the event
+     says "an array of the entity declaration" but implementation passes two
+-    or more arguments. It is an implementation bug but it breaks backword
++    or more arguments. It is an implementation bug but it breaks backward
+     compatibility.
+ 
+ * REXML::Parsers::StreamParser
+@@ -271,6 +276,8 @@ String
+     * Improved, iterative resolver (compared to RubyGems 2.1 and earlier)
+     * Support for a sharing a GEM_HOME across ruby platforms and versions
+ 
++  * Updated to 2.2.2.  Fixes some minor bugs and performance regressions.
++
+     For a complete list of enhancements and bug fixes see:
+     https://github.com/rubygems/rubygems/tree/master/History.txt
+ 
+diff --git a/array.c b/array.c
+index 45713c5..ff77a3e 100644
+--- a/array.c
++++ b/array.c
+@@ -3904,7 +3904,9 @@ ary_add_hash(VALUE hash, VALUE ary)
+ 
+     for (i=0; i<RARRAY_LEN(ary); i++) {
+ 	VALUE elt = RARRAY_AREF(ary, i);
+-	rb_hash_aset(hash, elt, elt);
++	if (rb_hash_lookup2(hash, elt, Qundef) == Qundef) {
++	    rb_hash_aset(hash, elt, elt);
++	}
+     }
+     return hash;
+ }
+diff --git a/bootstraptest/test_method.rb b/bootstraptest/test_method.rb
+index 4282bc6..0a7cb0a 100644
+--- a/bootstraptest/test_method.rb
++++ b/bootstraptest/test_method.rb
+@@ -957,8 +957,8 @@ assert_equal 'ok', %q{
+ 
+ assert_normal_exit %q{
+   begin
+-    Process.setrlimit(Process::RLIMIT_STACK, 4_202_496)
+-    # FreeBSD fails this less than 4M + 8K bytes.
++    Process.setrlimit(Process::RLIMIT_STACK, 4_206_592)
++    # FreeBSD SEGVs this less than 4M + 12K bytes.
+   rescue Exception
+     exit
+   end
+diff --git a/configure.in b/configure.in
+index ea14b94..84f176d 100644
+--- a/configure.in
++++ b/configure.in
+@@ -888,6 +888,7 @@ AC_ARG_WITH(winnt-ver,
+ AS_CASE(["$target_os"],
+ [mingw*], [
+   RUBY_APPEND_OPTION(CPPFLAGS, -D_WIN32_WINNT=$with_winnt_ver)
++  RUBY_APPEND_OPTION(CPPFLAGS, -D__MINGW_USE_VC2005_COMPAT)
+ ])
+ 
+ AS_CASE(["$target_os"],
+@@ -1040,6 +1041,7 @@ main()
+ 		if test x"$ac_cv_type_NET_LUID" = xyes; then
+ 		    AC_DEFINE(HAVE_TYPE_NET_LUID, 1)
+ 		fi
++		AC_CHECK_FUNCS(_gmtime64_s)
+ 		AC_LIBOBJ([langinfo])
+ 		],
+ [os2-emx*], [	LIBS="-lm $LIBS"
+@@ -2656,7 +2658,7 @@ if test "$with_dln_a_out" != yes; then
+ 			: ${LDSHARED='$(CC) -shared'}
+ 			if test "$rb_cv_binary_elf" = yes; then
+ 			    LDFLAGS="$LDFLAGS -rdynamic"
+-			    DLDFLAGS="$DLDFLAGS "'-Wl,-soname,$(.TARGET)'
++			    DLDFLAGS="$DLDFLAGS "'-Wl,-soname,$@'
+ 			else
+ 			  test "$GCC" = yes && test "$rb_cv_prog_gnu_ld" = yes || LDSHARED='$(LD) -Bshareable'
+ 			fi
+diff --git a/ext/bigdecimal/bigdecimal.c b/ext/bigdecimal/bigdecimal.c
+index e0b7c01..8537817 100644
+--- a/ext/bigdecimal/bigdecimal.c
++++ b/ext/bigdecimal/bigdecimal.c
+@@ -1221,8 +1221,10 @@ BigDecimal_divide(Real **c, Real **res, Real **div, VALUE self, VALUE r)
+ 
+     *div = b;
+     mx = a->Prec + vabs(a->exponent);
+-    if (mx<b->Prec + vabs(b->exponent)) mx = b->Prec + vabs(b->exponent);
+-    mx =(mx + 1) * VpBaseFig();
++    if (mx < b->Prec + vabs(b->exponent)) mx = b->Prec + vabs(b->exponent);
++    mx++; /* NOTE: An additional digit is needed for the compatibility to
++                   the version 1.2.1 and the former.  */
++    mx = (mx + 1) * VpBaseFig();
+     GUARD_OBJ((*c), VpCreateRbObject(mx, "#0"));
+     GUARD_OBJ((*res), VpCreateRbObject((mx+1) * 2 +(VpBaseFig() + 1), "#0"));
+     VpDivd(*c, *res, a, b);
+diff --git a/ext/bigdecimal/bigdecimal.gemspec b/ext/bigdecimal/bigdecimal.gemspec
+index 676e05b..7be9d72 100644
+--- a/ext/bigdecimal/bigdecimal.gemspec
++++ b/ext/bigdecimal/bigdecimal.gemspec
+@@ -1,5 +1,5 @@
+ # -*- ruby -*-
+-_VERSION = "1.2.3"
++_VERSION = "1.2.4"
+ date = %w$Date::                           $[1]
+ 
+ Gem::Specification.new do |s|
+diff --git a/ext/openssl/ossl_ssl.c b/ext/openssl/ossl_ssl.c
+index ec71350..206470c 100644
+--- a/ext/openssl/ossl_ssl.c
++++ b/ext/openssl/ossl_ssl.c
+@@ -2229,7 +2229,9 @@ Init_ossl_ssl()
+     ossl_ssl_def_const(OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG);
+     ossl_ssl_def_const(OP_SSLREF2_REUSE_CERT_TYPE_BUG);
+     ossl_ssl_def_const(OP_MICROSOFT_BIG_SSLV3_BUFFER);
++#if defined(SSL_OP_MSIE_SSLV2_RSA_PADDING)
+     ossl_ssl_def_const(OP_MSIE_SSLV2_RSA_PADDING);
++#endif
+     ossl_ssl_def_const(OP_SSLEAY_080_CLIENT_DH_BUG);
+     ossl_ssl_def_const(OP_TLS_D5_BUG);
+     ossl_ssl_def_const(OP_TLS_BLOCK_PADDING_BUG);
+diff --git a/ext/socket/rubysocket.h b/ext/socket/rubysocket.h
+index 97c02fc..c74fb32 100644
+--- a/ext/socket/rubysocket.h
++++ b/ext/socket/rubysocket.h
+@@ -374,6 +374,12 @@ void rsock_init_sockopt(void);
+ void rsock_init_sockifaddr(void);
+ void rsock_init_socket_init(void);
+ 
++NORETURN(void rsock_syserr_fail_host_port(int err, const char *, VALUE, VALUE));
++NORETURN(void rsock_syserr_fail_path(int err, const char *, VALUE));
++NORETURN(void rsock_syserr_fail_sockaddr(int err, const char *mesg, struct sockaddr *addr, socklen_t len));
++NORETURN(void rsock_syserr_fail_raddrinfo(int err, const char *mesg, VALUE rai));
++NORETURN(void rsock_syserr_fail_raddrinfo_or_sockaddr(int err, const char *mesg, VALUE addr, VALUE rai));
++
+ NORETURN(void rsock_sys_fail_host_port(const char *, VALUE, VALUE));
+ NORETURN(void rsock_sys_fail_path(const char *, VALUE));
+ NORETURN(void rsock_sys_fail_sockaddr(const char *, struct sockaddr *addr, socklen_t len));
+diff --git a/ext/socket/socket.c b/ext/socket/socket.c
+index 5fd7465..c7fc5b7 100644
+--- a/ext/socket/socket.c
++++ b/ext/socket/socket.c
+@@ -15,6 +15,12 @@ static VALUE sock_s_unpack_sockaddr_in(VALUE, VALUE);
+ void
+ rsock_sys_fail_host_port(const char *mesg, VALUE host, VALUE port)
+ {
++    rsock_syserr_fail_host_port(errno, mesg, host, port);
++}
++
++void
++rsock_syserr_fail_host_port(int err, const char *mesg, VALUE host, VALUE port)
++{
+     VALUE message;
+ 
+     port = rb_String(port);
+@@ -22,13 +28,20 @@ rsock_sys_fail_host_port(const char *mesg, VALUE host, VALUE port)
+     message = rb_sprintf("%s for \"%s\" port %s",
+ 	    mesg, StringValueCStr(host), StringValueCStr(port));
+ 
+-    rb_sys_fail_str(message);
++    rb_syserr_fail_str(err, message);
+ }
+ 
+ void
+ rsock_sys_fail_path(const char *mesg, VALUE path)
+ {
++    rsock_syserr_fail_path(errno, mesg, path);
++}
++
++void
++rsock_syserr_fail_path(int err, const char *mesg, VALUE path)
++{
+     VALUE message;
++
+     if (RB_TYPE_P(path, T_STRING)) {
+         if (memchr(RSTRING_PTR(path), '\0', RSTRING_LEN(path))) {
+             path = rb_str_inspect(path);
+@@ -39,45 +52,64 @@ rsock_sys_fail_path(const char *mesg, VALUE path)
+             message = rb_sprintf("%s for \"%s\"", mesg,
+                     StringValueCStr(path));
+         }
+-        rb_sys_fail_str(message);
++	rb_syserr_fail_str(err, message);
+     }
+     else {
+-        rb_sys_fail(mesg);
++	rb_syserr_fail(err, mesg);
+     }
+ }
+ 
+ void
+ rsock_sys_fail_sockaddr(const char *mesg, struct sockaddr *addr, socklen_t len)
+ {
++    rsock_syserr_fail_sockaddr(errno, mesg, addr, len);
++}
++
++void
++rsock_syserr_fail_sockaddr(int err, const char *mesg, struct sockaddr *addr, socklen_t len)
++{
+     VALUE rai;
+ 
+     rai = rsock_addrinfo_new(addr, len, PF_UNSPEC, 0, 0, Qnil, Qnil);
+ 
+-    rsock_sys_fail_raddrinfo(mesg, rai);
++    rsock_syserr_fail_raddrinfo(err, mesg, rai);
+ }
+ 
+ void
+ rsock_sys_fail_raddrinfo(const char *mesg, VALUE rai)
+ {
++    rsock_syserr_fail_raddrinfo(errno, mesg, rai);
++}
++
++void
++rsock_syserr_fail_raddrinfo(int err, const char *mesg, VALUE rai)
++{
+     VALUE str, message;
+ 
+     str = rsock_addrinfo_inspect_sockaddr(rai);
+     message = rb_sprintf("%s for %s", mesg, StringValueCStr(str));
+ 
+-    rb_sys_fail_str(message);
++    rb_syserr_fail_str(err, message);
+ }
+ 
+ void
+ rsock_sys_fail_raddrinfo_or_sockaddr(const char *mesg, VALUE addr, VALUE rai)
+ {
++    rsock_syserr_fail_raddrinfo_or_sockaddr(errno, mesg, addr, rai);
++}
++
++void
++rsock_syserr_fail_raddrinfo_or_sockaddr(int err, const char *mesg, VALUE addr, VALUE rai)
++{
+     if (NIL_P(rai)) {
+         StringValue(addr);
+-        rsock_sys_fail_sockaddr(mesg,
++
++	rsock_syserr_fail_sockaddr(err, mesg,
+             (struct sockaddr *)RSTRING_PTR(addr),
+             (socklen_t)RSTRING_LEN(addr)); /* overflow should be checked already */
+     }
+     else
+-        rsock_sys_fail_raddrinfo(mesg, rai);
++	rsock_syserr_fail_raddrinfo(err, mesg, rai);
+ }
+ 
+ static void
+diff --git a/ext/thread/thread.c b/ext/thread/thread.c
+index b8be5d8..a8f675c 100644
+--- a/ext/thread/thread.c
++++ b/ext/thread/thread.c
+@@ -437,7 +437,7 @@ rb_szqueue_max_set(VALUE self, VALUE vmax)
+ 	diff = max - GET_SZQUEUE_ULONGMAX(self);
+     }
+     RSTRUCT_SET(self, SZQUEUE_MAX, vmax);
+-    while (diff > 0 && !NIL_P(t = rb_ary_shift(GET_QUEUE_QUE(self)))) {
++    while (diff-- > 0 && !NIL_P(t = rb_ary_shift(GET_SZQUEUE_WAITERS(self)))) {
+ 	rb_thread_wakeup_alive(t);
+     }
+     return vmax;
+@@ -459,7 +459,7 @@ static VALUE
+ rb_szqueue_push(VALUE self, VALUE obj)
+ {
+     struct waiting_delete args;
+-    args.waiting = GET_QUEUE_WAITERS(self);
++    args.waiting = GET_SZQUEUE_WAITERS(self);
+     args.th      = rb_thread_current();
+ 
+     while (queue_length(self) >= GET_SZQUEUE_ULONGMAX(self)) {
+diff --git a/gc.c b/gc.c
+index 19e942d..e51b727 100644
+--- a/gc.c
++++ b/gc.c
+@@ -2916,7 +2916,9 @@ gc_before_sweep(rb_objspace_t *objspace)
+ 	    }
+ 	}
+ 
+-	if (0) fprintf(stderr, "%d\t%d\t%u\t%u\t%d\n", (int)rb_gc_count(), objspace->rgengc.need_major_gc,
++	if (0) fprintf(stderr, "%d\t%d\t%u\t%u\t%d\n",
++		       (int)rb_gc_count(),
++		       (int)objspace->rgengc.need_major_gc,
+ 		       (unsigned int)objspace->rgengc.oldmalloc_increase,
+ 		       (unsigned int)objspace->rgengc.oldmalloc_increase_limit,
+ 		       (unsigned int)gc_params.oldmalloc_limit_max);
+@@ -5647,7 +5649,7 @@ get_envparam_int(const char *name, unsigned int *default_value, int lower_bound)
+ 
+     if (ptr != NULL) {
+ 	val = atoi(ptr);
+-	if (val > lower_bound) {
++	if (val >= lower_bound) {
+ 	    if (RTEST(ruby_verbose)) fprintf(stderr, "%s=%d (%d)\n", name, val, *default_value);
+ 	    *default_value = val;
+ 	    return 1;
+@@ -5667,7 +5669,7 @@ get_envparam_double(const char *name, double *default_value, double lower_bound)
+ 
+     if (ptr != NULL) {
+ 	val = strtod(ptr, NULL);
+-	if (val > lower_bound) {
++	if (val >= lower_bound) {
+ 	    if (RTEST(ruby_verbose)) fprintf(stderr, "%s=%f (%f)\n", name, val, *default_value);
+ 	    *default_value = val;
+ 	    return 1;
+@@ -5746,7 +5748,10 @@ ruby_gc_set_params(int safe_level)
+     get_envparam_double("RUBY_GC_MALLOC_LIMIT_GROWTH_FACTOR", &gc_params.malloc_limit_growth_factor, 1.0);
+ 
+ #ifdef RGENGC_ESTIMATE_OLDMALLOC
+-    get_envparam_int("RUBY_GC_OLDMALLOC_LIMIT", &gc_params.oldmalloc_limit_min, 0);
++    if (get_envparam_int("RUBY_GC_OLDMALLOC_LIMIT", &gc_params.oldmalloc_limit_min, 0)) {
++	rb_objspace_t *objspace = &rb_objspace;
++	objspace->rgengc.oldmalloc_increase_limit = gc_params.oldmalloc_limit_min;
++    }
+     get_envparam_int("RUBY_GC_OLDMALLOC_LIMIT_MAX", &gc_params.oldmalloc_limit_max, 0);
+     get_envparam_double("RUBY_GC_OLDMALLOC_LIMIT_GROWTH_FACTOR", &gc_params.oldmalloc_limit_growth_factor, 1.0);
+ #endif
+diff --git a/hash.c b/hash.c
+index 1fa40b1..1c285c2 100644
+--- a/hash.c
++++ b/hash.c
+@@ -27,12 +27,24 @@
+ # endif
+ #endif
+ 
+-#define HAS_MISC_ATTRIBUTES(hash, klass) ( \
+-    (klass = rb_obj_class(hash)) != rb_cHash || \
+-    (klass = 0, \
+-     FL_TEST((hash), FL_EXIVAR|FL_TAINT|HASH_PROC_DEFAULT) ||	\
+-     !NIL_P(RHASH_IFNONE(hash))))
+-#define HASH_REJECT_COPY_MISC_ATTRIBUTES 1
++#define HAS_EXTRA_STATES(hash, klass) ( \
++    ((klass = has_extra_methods(rb_obj_class(hash))) != 0) || \
++    FL_TEST((hash), FL_EXIVAR|FL_TAINT|HASH_PROC_DEFAULT) || \
++    !NIL_P(RHASH_IFNONE(hash)))
++#define HASH_REJECT_COPY_EXTRA_STATES 1
++
++static VALUE
++has_extra_methods(VALUE klass)
++{
++    const VALUE base = rb_cHash;
++    VALUE c = klass;
++    while (c != base) {
++	st_table *mtbl = RCLASS_M_TBL(c);
++	if (mtbl && mtbl->num_entries) return klass;
++	c = RCLASS_SUPER(c);
++    }
++    return 0;
++}
+ 
+ static VALUE rb_hash_s_try_convert(VALUE, VALUE);
+ 
+@@ -111,6 +123,8 @@ rb_hash(VALUE obj)
+     return hval;
+ }
+ 
++long rb_objid_hash(st_index_t index);
++
+ static st_index_t
+ rb_any_hash(VALUE a)
+ {
+@@ -119,9 +133,7 @@ rb_any_hash(VALUE a)
+ 
+     if (SPECIAL_CONST_P(a)) {
+ 	if (a == Qundef) return 0;
+-	hnum = rb_hash_start((st_index_t)a);
+-	hnum = rb_hash_uint(hnum, (st_index_t)rb_any_hash);
+-	hnum = rb_hash_end(hnum);
++	hnum = rb_objid_hash((st_index_t)a);
+     }
+     else if (BUILTIN_TYPE(a) == T_STRING) {
+ 	hnum = rb_str_hash(a);
+@@ -134,6 +146,15 @@ rb_any_hash(VALUE a)
+     return (st_index_t)RSHIFT(hnum, 1);
+ }
+ 
++long
++rb_objid_hash(st_index_t index)
++{
++    st_index_t hnum = rb_hash_start(index);
++    hnum = rb_hash_uint(hnum, (st_index_t)rb_any_hash);
++    hnum = rb_hash_end(hnum);
++    return hnum;
++}
++
+ static const struct st_hash_type objhash = {
+     rb_any_cmp,
+     rb_any_hash,
+@@ -1133,11 +1154,11 @@ rb_hash_reject(VALUE hash)
+     RETURN_SIZED_ENUMERATOR(hash, 0, 0, hash_enum_size);
+     if (RTEST(ruby_verbose)) {
+ 	VALUE klass;
+-	if (HAS_MISC_ATTRIBUTES(hash, klass)) {
+-#if HASH_REJECT_COPY_MISC_ATTRIBUTES
+-	    rb_warn("copying unguaranteed attributes: %+"PRIsVALUE, hash);
+-	    rb_warn("following atributes will not be copied in the future version:");
+-	    if (klass != rb_cHash) {
++	if (HAS_EXTRA_STATES(hash, klass)) {
++#if HASH_REJECT_COPY_EXTRA_STATES
++	    rb_warn("copying extra states: %+"PRIsVALUE, hash);
++	    rb_warn("following states will not be copied in the future version:");
++	    if (klass) {
+ 		rb_warn("  subclass: %+"PRIsVALUE, klass);
+ 	    }
+ 	    if (FL_TEST(hash, FL_EXIVAR)) {
+@@ -1153,8 +1174,7 @@ rb_hash_reject(VALUE hash)
+ 	    else if (!NIL_P(RHASH_IFNONE(hash)))
+ 		rb_warn("  default value: %+"PRIsVALUE, RHASH_IFNONE(hash));
+ #else
+-	    rb_warn("unguaranteed attributes are not copied: %+"PRIsVALUE, hash);
+-	    rb_warn("following atributes are ignored now:");
++	    rb_warn("extra states are no longer copied: %+"PRIsVALUE, hash);
+ #endif
+ 	}
+     }
+diff --git a/lib/delegate.rb b/lib/delegate.rb
+index c33f7e4..d790229 100644
+--- a/lib/delegate.rb
++++ b/lib/delegate.rb
+@@ -48,7 +48,7 @@ class Delegator < BasicObject
+       undef_method m
+     end
+     private_instance_methods.each do |m|
+-      if /\Ablock_given\?\z|iterator\?\z|\A__raise__\z/ =~ m
++      if /\Ablock_given\?\z|iterator\?\z|\A__.*__\z/ =~ m
+         next
+       end
+       undef_method m
+diff --git a/lib/rubygems.rb b/lib/rubygems.rb
+index 73c4846..456273e 100644
+--- a/lib/rubygems.rb
++++ b/lib/rubygems.rb
+@@ -8,7 +8,7 @@
+ require 'rbconfig'
+ 
+ module Gem
+-  VERSION = '2.2.0'
++  VERSION = '2.2.2'
+ end
+ 
+ # Must be first since it unloads the prelude from 1.9.2
+@@ -572,7 +572,7 @@ module Gem
+   # gem's paths are inserted before site lib directory by default.
+ 
+   def self.load_path_insert_index
+-    index = $LOAD_PATH.index ConfigMap[:sitelibdir]
++    index = $LOAD_PATH.index RbConfig::CONFIG['sitelibdir']
+ 
+     index
+   end
+@@ -743,8 +743,8 @@ module Gem
+   def self.prefix
+     prefix = File.dirname RUBYGEMS_DIR
+ 
+-    if prefix != File.expand_path(ConfigMap[:sitelibdir]) and
+-       prefix != File.expand_path(ConfigMap[:libdir]) and
++    if prefix != File.expand_path(RbConfig::CONFIG['sitelibdir']) and
++       prefix != File.expand_path(RbConfig::CONFIG['libdir']) and
+        'lib' == File.basename(RUBYGEMS_DIR) then
+       prefix
+     end
+@@ -765,6 +765,10 @@ module Gem
+       f.flock(File::LOCK_EX)
+       f.read
+     end
++  rescue Errno::EACCES
++    open path, 'rb' do |f|
++      f.read
++    end
+   end
+ 
+   ##
+@@ -772,8 +776,8 @@ module Gem
+ 
+   def self.ruby
+     if @ruby.nil? then
+-      @ruby = File.join(ConfigMap[:bindir],
+-                        "#{ConfigMap[:ruby_install_name]}#{ConfigMap[:EXEEXT]}")
++      @ruby = File.join(RbConfig::CONFIG['bindir'],
++                        "#{RbConfig::CONFIG['ruby_install_name']}#{RbConfig::CONFIG['EXEEXT']}")
+ 
+       @ruby = "\"#{@ruby}\"" if @ruby =~ /\s/
+     end
+@@ -785,8 +789,7 @@ module Gem
+   # Returns a String containing the API compatibility version of Ruby
+ 
+   def self.ruby_api_version
+-    @ruby_api_version ||=
+-      "#{ConfigMap[:MAJOR]}.#{ConfigMap[:MINOR]}.#{ConfigMap[:TEENY]}"
++    @ruby_api_version ||= RbConfig::CONFIG['ruby_version'].dup
+   end
+ 
+   ##
+diff --git a/lib/rubygems/available_set.rb b/lib/rubygems/available_set.rb
+index d8655af..fabdd6e 100644
+--- a/lib/rubygems/available_set.rb
++++ b/lib/rubygems/available_set.rb
+@@ -4,9 +4,12 @@ class Gem::AvailableSet
+ 
+   Tuple = Struct.new(:spec, :source)
+ 
++  attr_accessor :remote # :nodoc:
++
+   def initialize
+     @set = []
+     @sorted = nil
++    @remote = true
+   end
+ 
+   attr_reader :set
+diff --git a/lib/rubygems/basic_specification.rb b/lib/rubygems/basic_specification.rb
+index a52377f..470a6eb 100644
+--- a/lib/rubygems/basic_specification.rb
++++ b/lib/rubygems/basic_specification.rb
+@@ -207,6 +207,24 @@ class Gem::BasicSpecification
+   end
+ 
+   ##
++  # Returns the paths to the source files for use with analysis and
++  # documentation tools.  These paths are relative to full_gem_path.
++
++  def source_paths
++    paths = raw_require_paths.dup
++
++    if @extensions then
++      ext_dirs = @extensions.map do |extension|
++        extension.split(File::SEPARATOR, 2).first
++      end.uniq
++
++      paths.concat ext_dirs
++    end
++
++    paths.uniq
++  end
++
++  ##
+   # Return a Gem::Specification from this gem
+ 
+   def to_spec
+diff --git a/lib/rubygems/commands/contents_command.rb b/lib/rubygems/commands/contents_command.rb
+index 9721884..603f1d0 100644
+--- a/lib/rubygems/commands/contents_command.rb
++++ b/lib/rubygems/commands/contents_command.rb
+@@ -94,11 +94,11 @@ prefix or only the files that are requireable.
+     spec.files.sort.map do |file|
+       case file
+       when /\A#{spec.bindir}\//
+-        [Gem::ConfigMap[:bindir], $POSTMATCH]
++        [RbConfig::CONFIG['bindir'], $POSTMATCH]
+       when /\.so\z/
+-        [Gem::ConfigMap[:archdir], file]
++        [RbConfig::CONFIG['archdir'], file]
+       else
+-        [Gem::ConfigMap[:rubylibdir], file]
++        [RbConfig::CONFIG['rubylibdir'], file]
+       end
+     end
+   end
+diff --git a/lib/rubygems/commands/generate_index_command.rb b/lib/rubygems/commands/generate_index_command.rb
+index a7db013..ca6f694 100644
+--- a/lib/rubygems/commands/generate_index_command.rb
++++ b/lib/rubygems/commands/generate_index_command.rb
+@@ -62,7 +62,7 @@ Marshal::MINOR_VERSION constants.  It is used to ensure compatibility.
+   end
+ 
+   def execute
+-    # This is always true becasue it's the only way now.
++    # This is always true because it's the only way now.
+     options[:build_modern] = true
+ 
+     if not File.exist?(options[:directory]) or
+diff --git a/lib/rubygems/commands/install_command.rb b/lib/rubygems/commands/install_command.rb
+index 4485eb1..8219eef 100644
+--- a/lib/rubygems/commands/install_command.rb
++++ b/lib/rubygems/commands/install_command.rb
+@@ -228,7 +228,18 @@ to write the specification by hand.  For example:
+   def install_gem_without_dependencies name, req # :nodoc:
+     gem = nil
+ 
+-    if remote? then
++    if local? then
++      if name =~ /\.gem$/ and File.file? name then
++        source = Gem::Source::SpecificFile.new name
++        spec = source.spec
++      else
++        source = Gem::Source::Local.new
++        spec = source.find_gem name, req
++      end
++      gem = source.download spec if spec
++    end
++
++    if remote? and not gem then
+       dependency = Gem::Dependency.new name, req
+       dependency.prerelease = options[:prerelease]
+ 
+@@ -236,13 +247,6 @@ to write the specification by hand.  For example:
+       gem = fetcher.download_to_cache dependency
+     end
+ 
+-    if local? and not gem then
+-      source = Gem::Source::Local.new
+-      spec = source.find_gem name, req
+-
+-      gem = source.download spec
+-    end
+-
+     inst = Gem::Installer.new gem, options
+     inst.install
+ 
+diff --git a/lib/rubygems/commands/setup_command.rb b/lib/rubygems/commands/setup_command.rb
+index face77f..681db0d 100644
+--- a/lib/rubygems/commands/setup_command.rb
++++ b/lib/rubygems/commands/setup_command.rb
+@@ -13,7 +13,7 @@ class Gem::Commands::SetupCommand < Gem::Command
+ 
+     super 'setup', 'Install RubyGems',
+           :format_executable => true, :document => %w[ri],
+-          :site_or_vendor => :sitelibdir,
++          :site_or_vendor => 'sitelibdir',
+           :destdir => '', :prefix => '', :previous_version => ''
+ 
+     add_option '--previous-version=VERSION',
+@@ -36,7 +36,7 @@ class Gem::Commands::SetupCommand < Gem::Command
+ 
+     add_option '--[no-]vendor',
+                'Install into vendorlibdir not sitelibdir' do |vendor, options|
+-      options[:site_or_vendor] = vendor ? :vendorlibdir : :sitelibdir
++      options[:site_or_vendor] = vendor ? 'vendorlibdir' : 'sitelibdir'
+     end
+ 
+     add_option '--[no-]format-executable',
+@@ -343,19 +343,19 @@ TEXT
+     site_or_vendor = options[:site_or_vendor]
+ 
+     if prefix.empty? then
+-      lib_dir = Gem::ConfigMap[site_or_vendor]
+-      bin_dir = Gem::ConfigMap[:bindir]
++      lib_dir = RbConfig::CONFIG[site_or_vendor]
++      bin_dir = RbConfig::CONFIG['bindir']
+     else
+       # Apple installed RubyGems into libdir, and RubyGems <= 1.1.0 gets
+       # confused about installation location, so switch back to
+       # sitelibdir/vendorlibdir.
+       if defined?(APPLE_GEM_HOME) and
+         # just in case Apple and RubyGems don't get this patched up proper.
+-        (prefix == Gem::ConfigMap[:libdir] or
++        (prefix == RbConfig::CONFIG['libdir'] or
+          # this one is important
+-         prefix == File.join(Gem::ConfigMap[:libdir], 'ruby')) then
+-         lib_dir = Gem::ConfigMap[site_or_vendor]
+-         bin_dir = Gem::ConfigMap[:bindir]
++         prefix == File.join(RbConfig::CONFIG['libdir'], 'ruby')) then
++         lib_dir = RbConfig::CONFIG[site_or_vendor]
++         bin_dir = RbConfig::CONFIG['bindir']
+       else
+         lib_dir = File.join prefix, 'lib'
+         bin_dir = File.join prefix, 'bin'
+diff --git a/lib/rubygems/compatibility.rb b/lib/rubygems/compatibility.rb
+index 5e8618f..d06ade1 100644
+--- a/lib/rubygems/compatibility.rb
++++ b/lib/rubygems/compatibility.rb
+@@ -33,6 +33,8 @@ end
+ module Gem
+   RubyGemsVersion = VERSION
+ 
++  # TODO remove at RubyGems 3
++
+   RbConfigPriorities = %w[
+     MAJOR
+     MINOR
+@@ -45,7 +47,7 @@ module Gem
+   unless defined?(ConfigMap)
+     ##
+     # Configuration settings from ::RbConfig
+-    ConfigMap = Hash.new do |cm, key|
++    ConfigMap = Hash.new do |cm, key| # TODO remove at RubyGems 3
+       cm[key] = RbConfig::CONFIG[key.to_s]
+     end
+   else
+diff --git a/lib/rubygems/config_file.rb b/lib/rubygems/config_file.rb
+index 1acae9b..cf14017 100644
+--- a/lib/rubygems/config_file.rb
++++ b/lib/rubygems/config_file.rb
+@@ -137,9 +137,10 @@ class Gem::ConfigFile
+   attr_reader :ssl_verify_mode
+ 
+   ##
+-  # Path name of directory or file of openssl CA certificate, used for remote https connection
++  # Path name of directory or file of openssl CA certificate, used for remote
++  # https connection
+ 
+-  attr_reader :ssl_ca_cert
++  attr_accessor :ssl_ca_cert
+ 
+   ##
+   # Path name of directory or file of openssl client certificate, used for remote https connection with client authentication
+diff --git a/lib/rubygems/defaults.rb b/lib/rubygems/defaults.rb
+index 715c0b7..6924f48 100644
+--- a/lib/rubygems/defaults.rb
++++ b/lib/rubygems/defaults.rb
+@@ -29,22 +29,22 @@ module Gem
+   def self.default_dir
+     path = if defined? RUBY_FRAMEWORK_VERSION then
+              [
+-               File.dirname(ConfigMap[:sitedir]),
++               File.dirname(RbConfig::CONFIG['sitedir']),
+                'Gems',
+-               ConfigMap[:ruby_version]
++               RbConfig::CONFIG['ruby_version']
+              ]
+-           elsif ConfigMap[:rubylibprefix] then
++           elsif RbConfig::CONFIG['rubylibprefix'] then
+              [
+-              ConfigMap[:rubylibprefix],
++              RbConfig::CONFIG['rubylibprefix'],
+               'gems',
+-              ConfigMap[:ruby_version]
++              RbConfig::CONFIG['ruby_version']
+              ]
+            else
+              [
+-               ConfigMap[:libdir],
++               RbConfig::CONFIG['libdir'],
+                ruby_engine,
+                'gems',
+-               ConfigMap[:ruby_version]
++               RbConfig::CONFIG['ruby_version']
+              ]
+            end
+ 
+@@ -74,7 +74,7 @@ module Gem
+ 
+   def self.user_dir
+     parts = [Gem.user_home, '.gem', ruby_engine]
+-    parts << ConfigMap[:ruby_version] unless ConfigMap[:ruby_version].empty?
++    parts << RbConfig::CONFIG['ruby_version'] unless RbConfig::CONFIG['ruby_version'].empty?
+     File.join parts
+   end
+ 
+@@ -100,7 +100,7 @@ module Gem
+   # Deduce Ruby's --program-prefix and --program-suffix from its install name
+ 
+   def self.default_exec_format
+-    exec_format = ConfigMap[:ruby_install_name].sub('ruby', '%s') rescue '%s'
++    exec_format = RbConfig::CONFIG['ruby_install_name'].sub('ruby', '%s') rescue '%s'
+ 
+     unless exec_format =~ /%s/ then
+       raise Gem::Exception,
+@@ -117,7 +117,7 @@ module Gem
+     if defined? RUBY_FRAMEWORK_VERSION then # mac framework support
+       '/usr/bin'
+     else # generic install
+-      ConfigMap[:bindir]
++      RbConfig::CONFIG['bindir']
+     end
+   end
+ 
+diff --git a/lib/rubygems/dependency_installer.rb b/lib/rubygems/dependency_installer.rb
+index b7babf6..da6994a 100644
+--- a/lib/rubygems/dependency_installer.rb
++++ b/lib/rubygems/dependency_installer.rb
+@@ -419,6 +419,7 @@ class Gem::DependencyInstaller
+ 
+     request_set = as.to_request_set install_development_deps
+     request_set.soft_missing = @force
++    request_set.remote = false unless consider_remote?
+ 
+     installer_set = Gem::Resolver::InstallerSet.new @domain
+     installer_set.always_install.concat request_set.always_install
+diff --git a/lib/rubygems/deprecate.rb b/lib/rubygems/deprecate.rb
+index 274d6a5..e19360d 100644
+--- a/lib/rubygems/deprecate.rb
++++ b/lib/rubygems/deprecate.rb
+@@ -50,7 +50,7 @@ module Gem::Deprecate
+     class_eval {
+       old = "_deprecated_#{name}"
+       alias_method old, name
+-      define_method name do |*args, &block| # TODO: really works on 1.8.7?
++      define_method name do |*args, &block|
+         klass = self.kind_of? Module
+         target = klass ? "#{self}." : "#{self.class}#"
+         msg = [ "NOTE: #{target}#{name} is deprecated",
+diff --git a/lib/rubygems/ext/ext_conf_builder.rb b/lib/rubygems/ext/ext_conf_builder.rb
+index 402aa96..990fd18 100644
+--- a/lib/rubygems/ext/ext_conf_builder.rb
++++ b/lib/rubygems/ext/ext_conf_builder.rb
+@@ -34,7 +34,11 @@ class Gem::Ext::ExtConfBuilder < Gem::Ext::Builder
+         ENV["RUBYOPT"] = ["-r#{siteconf_path}", rubyopt].compact.join(' ')
+         cmd = [Gem.ruby, File.basename(extension), *args].join ' '
+ 
+-        run cmd, results
++        begin
++          run cmd, results
++        ensure
++          FileUtils.mv 'mkmf.log', dest_path if File.exist? 'mkmf.log'
++        end
+ 
+         ENV["DESTDIR"] = nil
+         ENV["RUBYOPT"] = rubyopt
+diff --git a/lib/rubygems/installer.rb b/lib/rubygems/installer.rb
+index f8eb2c2..c809816 100644
+--- a/lib/rubygems/installer.rb
++++ b/lib/rubygems/installer.rb
+@@ -480,7 +480,7 @@ class Gem::Installer
+   #
+ 
+   def shebang(bin_file_name)
+-    ruby_name = Gem::ConfigMap[:ruby_install_name] if @env_shebang
++    ruby_name = RbConfig::CONFIG['ruby_install_name'] if @env_shebang
+     path = File.join gem_dir, spec.bindir, bin_file_name
+     first_line = File.open(path, "rb") {|file| file.gets}
+ 
+@@ -493,7 +493,7 @@ class Gem::Installer
+ 
+     if which = Gem.configuration[:custom_shebang]
+       # replace bin_file_name with "ruby" to avoid endless loops
+-      which = which.gsub(/ #{bin_file_name}$/," #{Gem::ConfigMap[:ruby_install_name]}")
++      which = which.gsub(/ #{bin_file_name}$/," #{RbConfig::CONFIG['ruby_install_name']}")
+ 
+       which = which.gsub(/\$(\w+)/) do
+         case $1
+@@ -641,7 +641,7 @@ version = "#{Gem::Requirement.default}"
+ if ARGV.first
+   str = ARGV.first
+   str = str.dup.force_encoding("BINARY") if str.respond_to? :force_encoding
+-  if str =~ /\\A_(.*)_\\z/
++  if str =~ /\\A_(.*)_\\z/ and Gem::Version.correct?($1) then
+     version = $1
+     ARGV.shift
+   end
+diff --git a/lib/rubygems/package/tar_header.rb b/lib/rubygems/package/tar_header.rb
+index 28da1db..f9ab13a 100644
+--- a/lib/rubygems/package/tar_header.rb
++++ b/lib/rubygems/package/tar_header.rb
+@@ -134,7 +134,7 @@ class Gem::Package::TarHeader
+     vals[:gid] ||= 0
+     vals[:mtime] ||= 0
+     vals[:checksum] ||= ""
+-    vals[:typeflag] ||= "0"
++    vals[:typeflag] = "0" if vals[:typeflag].nil? || vals[:typeflag].empty?
+     vals[:magic] ||= "ustar"
+     vals[:version] ||= "00"
+     vals[:uname] ||= "wheel"
+diff --git a/lib/rubygems/platform.rb b/lib/rubygems/platform.rb
+index e050959..1bcd754 100644
+--- a/lib/rubygems/platform.rb
++++ b/lib/rubygems/platform.rb
+@@ -16,7 +16,7 @@ class Gem::Platform
+   attr_accessor :version
+ 
+   def self.local
+-    arch = Gem::ConfigMap[:arch]
++    arch = RbConfig::CONFIG['arch']
+     arch = "#{arch}_60" if arch =~ /mswin32$/
+     @local ||= new(arch)
+   end
+diff --git a/lib/rubygems/rdoc.rb b/lib/rubygems/rdoc.rb
+index 52249dc..633bd89 100644
+--- a/lib/rubygems/rdoc.rb
++++ b/lib/rubygems/rdoc.rb
+@@ -193,7 +193,7 @@ class Gem::RDoc # :nodoc: all
+     ::RDoc::Parser::C.reset
+ 
+     args = @spec.rdoc_options
+-    args.concat @spec.require_paths
++    args.concat @spec.source_paths
+     args.concat @spec.extra_rdoc_files
+ 
+     case config_args = Gem.configuration[:rdoc]
+diff --git a/lib/rubygems/remote_fetcher.rb b/lib/rubygems/remote_fetcher.rb
+index e32c024..58991ca 100644
+--- a/lib/rubygems/remote_fetcher.rb
++++ b/lib/rubygems/remote_fetcher.rb
+@@ -131,11 +131,19 @@ class Gem::RemoteFetcher
+ 
+     FileUtils.mkdir_p cache_dir rescue nil unless File.exist? cache_dir
+ 
+-   # Always escape URI's to deal with potential spaces and such
+-    unless URI::Generic === source_uri
+-      source_uri = URI.parse(URI.const_defined?(:DEFAULT_PARSER) ?
+-                             URI::DEFAULT_PARSER.escape(source_uri.to_s) :
+-                             URI.escape(source_uri.to_s))
++    # Always escape URI's to deal with potential spaces and such
++    # It should also be considered that source_uri may already be
++    # a valid URI with escaped characters. e.g. "{DESede}" is encoded
++    # as "%7BDESede%7D". If this is escaped again the percentage
++    # symbols will be escaped.
++    unless source_uri.is_a?(URI::Generic)
++      begin
++        source_uri = URI.parse(source_uri)
++      rescue
++        source_uri = URI.parse(URI.const_defined?(:DEFAULT_PARSER) ?
++                               URI::DEFAULT_PARSER.escape(source_uri.to_s) :
++                               URI.escape(source_uri.to_s))
++      end
+     end
+ 
+     scheme = source_uri.scheme
+@@ -285,20 +293,20 @@ class Gem::RemoteFetcher
+   def cache_update_path uri, path = nil, update = true
+     mtime = path && File.stat(path).mtime rescue nil
+ 
+-    if mtime && Net::HTTPNotModified === fetch_path(uri, mtime, true)
+-      Gem.read_binary(path)
+-    else
+-      data = fetch_path(uri)
++    data = fetch_path(uri, mtime)
+ 
+-      if update and path then
+-        open(path, 'wb') do |io|
+-          io.flock(File::LOCK_EX)
+-          io.write data
+-        end
+-      end
++    if data == nil # indicates the server returned 304 Not Modified
++      return Gem.read_binary(path)
++    end
+ 
+-      data
++    if update and path
++      open(path, 'wb') do |io|
++        io.flock(File::LOCK_EX)
++        io.write data
++      end
+     end
++
++    data
+   end
+ 
+   ##
+diff --git a/lib/rubygems/request.rb b/lib/rubygems/request.rb
+index e870763..d2f076f 100644
+--- a/lib/rubygems/request.rb
++++ b/lib/rubygems/request.rb
+@@ -48,15 +48,14 @@ class Gem::Request
+       connection.key = OpenSSL::PKey::RSA.new pem
+     end
+ 
++    store.set_default_paths
++    add_rubygems_trusted_certs(store)
+     if Gem.configuration.ssl_ca_cert
+       if File.directory? Gem.configuration.ssl_ca_cert
+         store.add_path Gem.configuration.ssl_ca_cert
+       else
+         store.add_file Gem.configuration.ssl_ca_cert
+       end
+-    else
+-      store.set_default_paths
+-      add_rubygems_trusted_certs(store)
+     end
+     connection.cert_store = store
+   rescue LoadError => e
+@@ -106,7 +105,8 @@ class Gem::Request
+     request = @request_class.new @uri.request_uri
+ 
+     unless @uri.nil? || @uri.user.nil? || @uri.user.empty? then
+-      request.basic_auth @uri.user, @uri.password
++      request.basic_auth Gem::UriFormatter.new(@uri.user).unescape,
++                         Gem::UriFormatter.new(@uri.password).unescape
+     end
+ 
+     request.add_field 'User-Agent', @user_agent
+diff --git a/lib/rubygems/request_set.rb b/lib/rubygems/request_set.rb
+index aa3f27c..fb54e34 100644
+--- a/lib/rubygems/request_set.rb
++++ b/lib/rubygems/request_set.rb
+@@ -39,6 +39,11 @@ class Gem::RequestSet
+   attr_accessor :ignore_dependencies
+ 
+   ##
++  # When false no remote sets are used for resolving gems.
++
++  attr_accessor :remote
++
++  ##
+   # Sets used for resolution
+ 
+   attr_reader :sets # :nodoc:
+@@ -71,6 +76,7 @@ class Gem::RequestSet
+     @git_set             = nil
+     @ignore_dependencies = false
+     @install_dir         = Gem.dir
++    @remote              = true
+     @requests            = []
+     @sets                = []
+     @soft_missing        = false
+@@ -150,6 +156,7 @@ class Gem::RequestSet
+     gemdeps = options[:gemdeps]
+ 
+     @install_dir = options[:install_dir] || Gem.dir
++    @remote      = options[:domain] != :local
+ 
+     load_gemdeps gemdeps, options[:without_groups]
+ 
+@@ -235,6 +242,7 @@ class Gem::RequestSet
+     @sets << @vendor_set
+ 
+     set = Gem::Resolver.compose_sets(*@sets)
++    set.remote = @remote
+ 
+     resolver = Gem::Resolver.new @dependencies, set
+     resolver.development         = @development
+diff --git a/lib/rubygems/request_set/lockfile.rb b/lib/rubygems/request_set/lockfile.rb
+index 522caf1..0433d2a 100644
+--- a/lib/rubygems/request_set/lockfile.rb
++++ b/lib/rubygems/request_set/lockfile.rb
+@@ -303,7 +303,12 @@ class Gem::RequestSet::Lockfile
+         type, data, = get [:text, :requirement]
+ 
+         if type == :text and column == 4 then
+-          last_spec = set.add name, data, Gem::Platform::RUBY
++          version, platform = data.split '-', 2
++
++          platform =
++            platform ? Gem::Platform.new(platform) : Gem::Platform::RUBY
++
++          last_spec = set.add name, version, platform
+         else
+           dependency = parse_dependency name, data
+ 
+diff --git a/lib/rubygems/resolver.rb b/lib/rubygems/resolver.rb
+index d455e03..65e92bb 100644
+--- a/lib/rubygems/resolver.rb
++++ b/lib/rubygems/resolver.rb
+@@ -59,6 +59,8 @@ class Gem::Resolver
+ 
+     sets = sets.map do |set|
+       case set
++      when Gem::Resolver::BestSet then
++        set
+       when Gem::Resolver::ComposedSet then
+         set.sets
+       else
+@@ -179,27 +181,6 @@ class Gem::Resolver
+   end
+ 
+   ##
+-  # Finds the State in +states+ that matches the +conflict+ so that we can try
+-  # other possible sets.
+-  #
+-  # If no good candidate is found, the first state is tried.
+-
+-  def find_conflict_state conflict, states # :nodoc:
+-    until states.empty? do
+-      state = states.pop
+-
+-      explain :consider, state.dep, conflict.failed_dep
+-
+-      if conflict.for_spec? state.spec
+-        state.conflicts << [state.spec, conflict]
+-        return state
+-      end
+-    end
+-
+-    nil
+-  end
+-
+-  ##
+   # Extracts the specifications that may be able to fulfill +dependency+ and
+   # returns those that match the local platform and all those that match.
+ 
+diff --git a/lib/rubygems/resolver/api_set.rb b/lib/rubygems/resolver/api_set.rb
+index 89ee3c9..5475e62 100644
+--- a/lib/rubygems/resolver/api_set.rb
++++ b/lib/rubygems/resolver/api_set.rb
+@@ -25,10 +25,12 @@ class Gem::Resolver::APISet < Gem::Resolver::Set
+   # http://guides.rubygems.org/rubygems-org-api
+ 
+   def initialize dep_uri = 'https://rubygems.org/api/v1/dependencies'
++    super()
++
+     dep_uri = URI dep_uri unless URI === dep_uri # for ruby 1.8
+ 
+     @dep_uri = dep_uri
+-    @uri     = dep_uri + '../../..'
++    @uri     = dep_uri + '../..'
+ 
+     @data   = Hash.new { |h,k| h[k] = [] }
+     @source = Gem::Source.new @uri
+@@ -41,6 +43,8 @@ class Gem::Resolver::APISet < Gem::Resolver::Set
+   def find_all req
+     res = []
+ 
++    return res unless @remote
++
+     versions(req.name).each do |ver|
+       if req.dependency.match? req.name, ver[:number]
+         res << Gem::Resolver::APISpecification.new(self, ver)
+@@ -55,6 +59,7 @@ class Gem::Resolver::APISet < Gem::Resolver::Set
+   # data for DependencyRequests +reqs+.
+ 
+   def prefetch reqs
++    return unless @remote
+     names = reqs.map { |r| r.dependency.name }
+     needed = names - @data.keys
+ 
+diff --git a/lib/rubygems/resolver/best_set.rb b/lib/rubygems/resolver/best_set.rb
+index fa6c9f8..20bb948 100644
+--- a/lib/rubygems/resolver/best_set.rb
++++ b/lib/rubygems/resolver/best_set.rb
+@@ -12,11 +12,30 @@ class Gem::Resolver::BestSet < Gem::Resolver::ComposedSet
+   def initialize sources = Gem.sources
+     super()
+ 
+-    sources.each_source do |source|
++    @sources = sources
++  end
++
++  ##
++  # Picks which sets to use for the configured sources.
++
++  def pick_sets # :nodoc:
++    @sources.each_source do |source|
+       @sets << source.dependency_resolver_set
+     end
+   end
+ 
++  def find_all req # :nodoc:
++    pick_sets if @remote and @sets.empty?
++
++    super
++  end
++
++  def prefetch reqs # :nodoc:
++    pick_sets if @remote and @sets.empty?
++
++    super
++  end
++
+   def pretty_print q # :nodoc:
+     q.group 2, '[BestSet', ']' do
+       q.breakable
+diff --git a/lib/rubygems/resolver/composed_set.rb b/lib/rubygems/resolver/composed_set.rb
+index 19227e0..6f912b0 100644
+--- a/lib/rubygems/resolver/composed_set.rb
++++ b/lib/rubygems/resolver/composed_set.rb
+@@ -16,10 +16,21 @@ class Gem::Resolver::ComposedSet < Gem::Resolver::Set
+   # Gem::Resolver::compose_sets instead.
+ 
+   def initialize *sets
++    super()
++
+     @sets = sets
+   end
+ 
+   ##
++  # Sets the remote network access for all composed sets.
++
++  def remote= remote
++    super
++
++    @sets.each { |set| set.remote = remote }
++  end
++
++  ##
+   # Finds all specs matching +req+ in all sets.
+ 
+   def find_all req
+diff --git a/lib/rubygems/resolver/git_set.rb b/lib/rubygems/resolver/git_set.rb
+index 1a2b230..d32710e 100644
+--- a/lib/rubygems/resolver/git_set.rb
++++ b/lib/rubygems/resolver/git_set.rb
+@@ -33,6 +33,8 @@ class Gem::Resolver::GitSet < Gem::Resolver::Set
+   attr_reader :specs # :nodoc:
+ 
+   def initialize # :nodoc:
++    super()
++
+     @git             = ENV['git'] || 'git'
+     @need_submodules = {}
+     @repositories    = {}
+@@ -91,6 +93,7 @@ class Gem::Resolver::GitSet < Gem::Resolver::Set
+     @repositories.each do |name, (repository, reference)|
+       source = Gem::Source::Git.new name, repository, reference
+       source.root_dir = @root_dir
++      source.remote = @remote
+ 
+       source.specs.each do |spec|
+         git_spec = Gem::Resolver::GitSpecification.new self, spec, source
+diff --git a/lib/rubygems/resolver/index_set.rb b/lib/rubygems/resolver/index_set.rb
+index a6ef56b..ef01f0f 100644
+--- a/lib/rubygems/resolver/index_set.rb
++++ b/lib/rubygems/resolver/index_set.rb
+@@ -5,6 +5,8 @@
+ class Gem::Resolver::IndexSet < Gem::Resolver::Set
+ 
+   def initialize source = nil # :nodoc:
++    super()
++
+     @f =
+       if source then
+         sources = Gem::SourceList.from [source]
+@@ -34,6 +36,8 @@ class Gem::Resolver::IndexSet < Gem::Resolver::Set
+   def find_all req
+     res = []
+ 
++    return res unless @remote
++
+     name = req.dependency.name
+ 
+     @all[name].each do |uri, n|
+diff --git a/lib/rubygems/resolver/installer_set.rb b/lib/rubygems/resolver/installer_set.rb
+index e35e0aa..045c893 100644
+--- a/lib/rubygems/resolver/installer_set.rb
++++ b/lib/rubygems/resolver/installer_set.rb
+@@ -24,15 +24,17 @@ class Gem::Resolver::InstallerSet < Gem::Resolver::Set
+   # Creates a new InstallerSet that will look for gems in +domain+.
+ 
+   def initialize domain
++    super()
++
+     @domain = domain
++    @remote = consider_remote?
+ 
+     @f = Gem::SpecFetcher.fetcher
+ 
+-    @all = Hash.new { |h,k| h[k] = [] }
+     @always_install      = []
+     @ignore_dependencies = false
+     @ignore_installed    = false
+-    @loaded_remote_specs = []
++    @remote_set          = Gem::Resolver::BestSet.new
+     @specs               = {}
+   end
+ 
+@@ -79,16 +81,7 @@ class Gem::Resolver::InstallerSet < Gem::Resolver::Set
+       end
+     end
+ 
+-    if consider_remote? then
+-      load_remote_specs dep
+-
+-      @all[name].each do |remote_source, n|
+-        if dep.match? n then
+-          res << Gem::Resolver::IndexSpecification.new(
+-            self, n.name, n.version, remote_source, n.platform)
+-        end
+-      end
+-    end
++    res.concat @remote_set.find_all req if consider_remote?
+ 
+     res
+   end
+@@ -102,27 +95,6 @@ class Gem::Resolver::InstallerSet < Gem::Resolver::Set
+   end
+ 
+   ##
+-  # Loads remote prerelease specs if +dep+ is a prerelease dependency
+-
+-  def load_remote_specs dep # :nodoc:
+-    types = [:released]
+-    types << :prerelease if dep.prerelease?
+-
+-    types.each do |type|
+-      next if @loaded_remote_specs.include? type
+-      @loaded_remote_specs << type
+-
+-      list, = @f.available_specs type
+-
+-      list.each do |uri, specs|
+-        specs.each do |n|
+-          @all[n.name] << [uri, n]
+-        end
+-      end
+-    end
+-  end
+-
+-  ##
+   # Called from IndexSpecification to get a true Specification
+   # object.
+ 
+@@ -151,5 +123,16 @@ class Gem::Resolver::InstallerSet < Gem::Resolver::Set
+     end
+   end
+ 
++  def remote= remote # :nodoc:
++    case @domain
++    when :local then
++      @domain = :both if remote
++    when :remote then
++      @domain = nil unless remote
++    when :both then
++      @domain = :local unless remote
++    end
++  end
++
+ end
+ 
+diff --git a/lib/rubygems/resolver/lock_set.rb b/lib/rubygems/resolver/lock_set.rb
+index cdb41b2..f498757 100644
+--- a/lib/rubygems/resolver/lock_set.rb
++++ b/lib/rubygems/resolver/lock_set.rb
+@@ -9,6 +9,8 @@ class Gem::Resolver::LockSet < Gem::Resolver::Set
+   # Creates a new LockSet from the given +source+
+ 
+   def initialize source
++    super()
++
+     @source = Gem::Source::Lock.new source
+     @specs  = []
+   end
+diff --git a/lib/rubygems/resolver/set.rb b/lib/rubygems/resolver/set.rb
+index 32c137e..f053b65 100644
+--- a/lib/rubygems/resolver/set.rb
++++ b/lib/rubygems/resolver/set.rb
+@@ -5,6 +5,15 @@
+ class Gem::Resolver::Set
+ 
+   ##
++  # Set to true to disable network access for this set
++
++  attr_accessor :remote
++
++  def initialize # :nodoc:
++    @remote = true
++  end
++
++  ##
+   # The find_all method must be implemented.  It returns all Resolver
+   # Specification objects matching the given DependencyRequest +req+.
+ 
+@@ -23,5 +32,13 @@ class Gem::Resolver::Set
+   def prefetch reqs
+   end
+ 
++  ##
++  # When true, this set is allowed to access the network when looking up
++  # specifications or dependencies.
++
++  def remote? # :nodoc:
++    @remote
++  end
++
+ end
+ 
+diff --git a/lib/rubygems/resolver/vendor_set.rb b/lib/rubygems/resolver/vendor_set.rb
+index 3db637f..6e86707 100644
+--- a/lib/rubygems/resolver/vendor_set.rb
++++ b/lib/rubygems/resolver/vendor_set.rb
+@@ -21,6 +21,8 @@ class Gem::Resolver::VendorSet < Gem::Resolver::Set
+   attr_reader :specs # :nodoc:
+ 
+   def initialize # :nodoc:
++    super()
++
+     @directories = {}
+     @specs       = {}
+   end
+diff --git a/lib/rubygems/security.rb b/lib/rubygems/security.rb
+index bfd6fd2..8c5fb7d 100644
+--- a/lib/rubygems/security.rb
++++ b/lib/rubygems/security.rb
+@@ -120,11 +120,11 @@ end
+ # * HighSecurity - Here's the bugger that got us into this mess.
+ #   The HighSecurity policy is identical to the MediumSecurity policy,
+ #   except that it does not allow unsigned gems.  A malicious user
+-#   doesn't have a whole lot of options here; he can't modify the
+-#   package contents without invalidating the signature, and he can't
++#   doesn't have a whole lot of options here; they can't modify the
++#   package contents without invalidating the signature, and they can't
+ #   modify or remove signature or the signing certificate chain, or
+ #   RubyGems will simply refuse to install the package.  Oh well, maybe
+-#   he'll have better luck causing problems for CPAN users instead :).
++#   they'll have better luck causing problems for CPAN users instead :).
+ #
+ # The reason RubyGems refused to install your shiny new signed gem was because
+ # it was from an untrusted source.  Well, your code is infallible (naturally),
+diff --git a/lib/rubygems/source/git.rb b/lib/rubygems/source/git.rb
+index 28178a5..2e3fa03 100644
+--- a/lib/rubygems/source/git.rb
++++ b/lib/rubygems/source/git.rb
+@@ -24,6 +24,11 @@ class Gem::Source::Git < Gem::Source
+   attr_reader :reference
+ 
+   ##
++  # When false the cache for this repository will not be updated.
++
++  attr_accessor :remote
++
++  ##
+   # The git repository this gem is sourced from.
+ 
+   attr_reader :repository
+@@ -53,6 +58,7 @@ class Gem::Source::Git < Gem::Source
+     @reference       = reference
+     @need_submodules = submodules
+ 
++    @remote   = true
+     @root_dir = Gem.dir
+     @git      = ENV['git'] || 'git'
+   end
+@@ -85,6 +91,8 @@ class Gem::Source::Git < Gem::Source
+   def checkout # :nodoc:
+     cache
+ 
++    return false unless File.exist? repo_cache_dir
++
+     unless File.exist? install_dir then
+       system @git, 'clone', '--quiet', '--no-checkout',
+              repo_cache_dir, install_dir
+@@ -107,6 +115,8 @@ class Gem::Source::Git < Gem::Source
+   # Creates a local cache repository for the git gem.
+ 
+   def cache # :nodoc:
++    return unless @remote
++
+     if File.exist? repo_cache_dir then
+       Dir.chdir repo_cache_dir do
+         system @git, 'fetch', '--quiet', '--force', '--tags',
+@@ -142,6 +152,8 @@ class Gem::Source::Git < Gem::Source
+   # The directory where the git gem will be installed.
+ 
+   def install_dir # :nodoc:
++    return unless File.exist? repo_cache_dir
++
+     File.join base_dir, 'gems', "#{@name}-#{dir_shortref}"
+   end
+ 
+@@ -177,6 +189,8 @@ class Gem::Source::Git < Gem::Source
+   def specs
+     checkout
+ 
++    return [] unless install_dir
++
+     Dir.chdir install_dir do
+       Dir['{,*,*/*}.gemspec'].map do |spec_file|
+         directory = File.dirname spec_file
+diff --git a/lib/rubygems/specification.rb b/lib/rubygems/specification.rb
+index 59d71d3..f4e609a 100644
+--- a/lib/rubygems/specification.rb
++++ b/lib/rubygems/specification.rb
+@@ -241,6 +241,28 @@ class Gem::Specification < Gem::BasicSpecification
+   attr_reader :summary
+ 
+   ##
++  # Singular writer for #authors
++  #
++  # Usage:
++  #
++  #   spec.author = 'John Jones'
++
++  def author= o
++    self.authors = [o]
++  end
++
++  ##
++  # Sets the list of authors, ensuring it is an array.
++  #
++  # Usage:
++  #
++  #   spec.authors = ['John Jones', 'Mary Smith']
++
++  def authors= value
++    @authors = Array(value).flatten.grep(String)
++  end
++
++  ##
+   # The platform this gem runs on.
+   #
+   # This is usually Gem::Platform::RUBY or Gem::Platform::CURRENT.
+@@ -327,7 +349,7 @@ class Gem::Specification < Gem::BasicSpecification
+               add_bindir(@executables),
+               @extra_rdoc_files,
+               @extensions,
+-             ].flatten.sort.uniq.compact
++             ].flatten.uniq.compact.sort
+   end
+ 
+   ######################################################################
+@@ -443,28 +465,6 @@ class Gem::Specification < Gem::BasicSpecification
+   end
+ 
+   ##
+-  # Singular writer for #authors
+-  #
+-  # Usage:
+-  #
+-  #   spec.author = 'John Jones'
+-
+-  def author= o
+-    self.authors = [o]
+-  end
+-
+-  ##
+-  # Sets the list of authors, ensuring it is an array.
+-  #
+-  # Usage:
+-  #
+-  #   spec.authors = ['John Jones', 'Mary Smith']
+-
+-  def authors= value
+-    @authors = Array(value).flatten.grep(String)
+-  end
+-
+-  ##
+   # Executables included in the gem.
+   #
+   # For example, the rake gem has rake as an executable. You don’t specify the
+diff --git a/lib/rubygems/test_case.rb b/lib/rubygems/test_case.rb
+index 8dc37d6..328731d 100644
+--- a/lib/rubygems/test_case.rb
++++ b/lib/rubygems/test_case.rb
+@@ -115,6 +115,23 @@ class Gem::TestCase < MiniTest::Unit::TestCase
+     assert File.exist?(path), msg
+   end
+ 
++  ##
++  # Sets the ENABLE_SHARED entry in RbConfig::CONFIG to +value+ and restores
++  # the original value when the block ends
++
++  def enable_shared value
++    enable_shared = RbConfig::CONFIG['ENABLE_SHARED']
++    RbConfig::CONFIG['ENABLE_SHARED'] = value
++
++    yield
++  ensure
++    if enable_shared then
++      RbConfig::CONFIG['enable_shared'] = enable_shared
++    else
++      RbConfig::CONFIG.delete 'enable_shared'
++    end
++  end
++
+   # TODO: move to minitest
+   def refute_path_exists path, msg = nil
+     msg = message(msg) { "Expected path '#{path}' to not exist" }
+@@ -294,10 +311,10 @@ class Gem::TestCase < MiniTest::Unit::TestCase
+ 
+     Gem.searcher = nil
+     Gem::SpecFetcher.fetcher = nil
+-    @orig_BASERUBY = Gem::ConfigMap[:BASERUBY]
+-    Gem::ConfigMap[:BASERUBY] = Gem::ConfigMap[:ruby_install_name]
++    @orig_BASERUBY = RbConfig::CONFIG['BASERUBY']
++    RbConfig::CONFIG['BASERUBY'] = RbConfig::CONFIG['ruby_install_name']
+ 
+-    @orig_arch = Gem::ConfigMap[:arch]
++    @orig_arch = RbConfig::CONFIG['arch']
+ 
+     if win_platform?
+       util_set_arch 'i386-mswin32'
+@@ -315,8 +332,12 @@ class Gem::TestCase < MiniTest::Unit::TestCase
+   def teardown
+     $LOAD_PATH.replace @orig_LOAD_PATH if @orig_LOAD_PATH
+ 
+-    Gem::ConfigMap[:BASERUBY] = @orig_BASERUBY
+-    Gem::ConfigMap[:arch] = @orig_arch
++    if @orig_BASERUBY
++      RbConfig::CONFIG['BASERUBY'] = @orig_BASERUBY
++    else
++      RbConfig::CONFIG.delete('BASERUBY')
++    end
++    RbConfig::CONFIG['arch'] = @orig_arch
+ 
+     if defined? Gem::RemoteFetcher then
+       Gem::RemoteFetcher.fetcher = nil
+@@ -898,7 +919,7 @@ Also, a list:
+   # Set the platform to +arch+
+ 
+   def util_set_arch(arch)
+-    Gem::ConfigMap[:arch] = arch
++    RbConfig::CONFIG['arch'] = arch
+     platform = Gem::Platform.new arch
+ 
+     Gem.instance_variable_set :@platforms, nil
+@@ -1245,10 +1266,17 @@ Also, a list:
+   class StaticSet
+ 
+     ##
++    # A StaticSet ignores remote because it has a fixed set of gems.
++
++    attr_accessor :remote
++
++    ##
+     # Creates a new StaticSet for the given +specs+
+ 
+     def initialize(specs)
+       @specs = specs
++
++      @remote = true
+     end
+ 
+     ##
+diff --git a/lib/rubygems/uninstaller.rb b/lib/rubygems/uninstaller.rb
+index 4cb2a1d..fa83833 100644
+--- a/lib/rubygems/uninstaller.rb
++++ b/lib/rubygems/uninstaller.rb
+@@ -237,7 +237,7 @@ class Gem::Uninstaller
+     unless path_ok?(@gem_home, spec) or
+            (@user_install and path_ok?(Gem.user_dir, spec)) then
+       e = Gem::GemNotInHomeException.new \
+-            "Gem is not installed in directory #{@gem_home}"
++            "Gem '#{spec.full_name}' is not installed in directory #{@gem_home}"
+       e.spec = spec
+ 
+       raise e
+diff --git a/lib/rubygems/version.rb b/lib/rubygems/version.rb
+index fda8b0b..2066332 100644
+--- a/lib/rubygems/version.rb
++++ b/lib/rubygems/version.rb
+@@ -22,6 +22,11 @@
+ # 3. 1.0.a.2
+ # 4. 0.9
+ #
++# If you want to specify a version restriction that includes both prereleases
++# and regular releases of the 1.x series this is the best way:
++#
++#   s.add_dependency 'example', '>= 1.0.0.a', '< 2.0.0'
++#
+ # == How Software Changes
+ #
+ # Users expect to be able to specify a version constraint that gives them
+@@ -81,8 +86,8 @@
+ #
+ # * Any "public" release of a gem should have a different version.  Normally
+ #   that means incrementing the build number.  This means a developer can
+-#   generate builds all day long for himself, but as soon as he/she makes a
+-#   public release, the version must be updated.
++#   generate builds all day long, but as soon as they make a public release,
++#   the version must be updated.
+ #
+ # === Examples
+ #
+@@ -99,26 +104,25 @@
+ # Version 1.1.1:: Fixed a bug in the linked list implementation.
+ # Version 1.1.2:: Fixed a bug introduced in the last fix.
+ #
+-# Client A needs a stack with basic push/pop capability.  He writes to the
+-# original interface (no <tt>top</tt>), so his version constraint looks
+-# like:
++# Client A needs a stack with basic push/pop capability.  They write to the
++# original interface (no <tt>top</tt>), so their version constraint looks like:
+ #
+ #   gem 'stack', '~> 0.0'
+ #
+ # Essentially, any version is OK with Client A.  An incompatible change to
+-# the library will cause him grief, but he is willing to take the chance (we
+-# call Client A optimistic).
++# the library will cause them grief, but they are willing to take the chance
++# (we call Client A optimistic).
+ #
+-# Client B is just like Client A except for two things: (1) He uses the
+-# <tt>depth</tt> method and (2) he is worried about future
+-# incompatibilities, so he writes his version constraint like this:
++# Client B is just like Client A except for two things: (1) They use the
++# <tt>depth</tt> method and (2) they are worried about future
++# incompatibilities, so they write their version constraint like this:
+ #
+ #   gem 'stack', '~> 0.1'
+ #
+ # The <tt>depth</tt> method was introduced in version 0.1.0, so that version
+ # or anything later is fine, as long as the version stays below version 1.0
+ # where incompatibilities are introduced.  We call Client B pessimistic
+-# because he is worried about incompatible future changes (it is OK to be
++# because they are worried about incompatible future changes (it is OK to be
+ # pessimistic!).
+ #
+ # == Preventing Version Catastrophe:
+@@ -185,6 +189,8 @@ class Gem::Version
+   @@all = {}
+ 
+   def self.new version # :nodoc:
++    return super unless Gem::VERSION == self.class
++
+     @@all[version] ||= super
+   end
+ 
+diff --git a/lib/timeout.rb b/lib/timeout.rb
+index ad951d2..d805dce 100644
+--- a/lib/timeout.rb
++++ b/lib/timeout.rb
+@@ -26,16 +26,25 @@ module Timeout
+   class Error < RuntimeError
+   end
+   class ExitException < ::Exception # :nodoc:
+-    attr_reader :klass, :thread
++    attr_reader :thread
+ 
+-    def initialize(*)
+-      super
+-      @thread = Thread.current
+-      freeze
++    def self.catch(*args)
++      exc = new(*args)
++      exc.instance_variable_set(:@thread, Thread.current)
++      exc.freeze
++      ::Kernel.catch(exc) {yield exc}
+     end
+ 
+     def exception(*)
+-      throw(self, caller) if self.thread == Thread.current
++      if self.thread == Thread.current
++        bt = caller
++        begin
++          throw(self, bt)
++        rescue ArgumentError => e
++          raise unless e.message.start_with?("uncaught throw")
++          raise Error, message, backtrace
++        end
++      end
+       self
+     end
+   end
+@@ -67,7 +76,7 @@ module Timeout
+     return yield(sec) if sec == nil or sec.zero?
+     message = "execution expired"
+     e = Error
+-    bt = catch((klass||ExitException).new) do |exception|
++    bl = proc do |exception|
+       begin
+         x = Thread.current
+         y = Thread.start {
+@@ -80,8 +89,6 @@ module Timeout
+           end
+         }
+         return yield(sec)
+-      rescue (klass||ExitException) => e
+-        e.backtrace
+       ensure
+         if y
+           y.kill
+@@ -89,6 +96,15 @@ module Timeout
+         end
+       end
+     end
++    if klass
++      begin
++        bl.call(klass)
++      rescue klass => e
++        bt = e.backtrace
++      end
++    else
++      bt = ExitException.catch(message, &bl)
++    end
+     rej = /\A#{Regexp.quote(__FILE__)}:#{__LINE__-4}\z/o
+     bt.reject! {|m| rej =~ m}
+     level = -caller(CALLER_OFFSET).size
+diff --git a/object.c b/object.c
+index 466ec75..bb43b46 100644
+--- a/object.c
++++ b/object.c
+@@ -161,6 +161,7 @@ rb_obj_equal(VALUE obj1, VALUE obj2)
+ VALUE
+ rb_obj_hash(VALUE obj)
+ {
++    long rb_objid_hash(st_index_t index);
+     VALUE oid = rb_obj_id(obj);
+ #if SIZEOF_LONG == SIZEOF_VOIDP
+     st_index_t index = NUM2LONG(oid);
+@@ -169,8 +170,7 @@ rb_obj_hash(VALUE obj)
+ #else
+ # error not supported
+ #endif
+-    st_index_t h = rb_hash_end(rb_hash_start(index));
+-    return LONG2FIX(h);
++    return LONG2FIX(rb_objid_hash(index));
+ }
+ 
+ /*
+diff --git a/proc.c b/proc.c
+index f8b2e3b..e52beaf 100644
+--- a/proc.c
++++ b/proc.c
+@@ -1171,10 +1171,6 @@ mnew_from_me(rb_method_entry_t *me, VALUE defined_class, VALUE klass,
+ 	goto again;
+     }
+ 
+-    if (RB_TYPE_P(defined_class, T_ICLASS)) {
+-	defined_class = RBASIC_CLASS(defined_class);
+-    }
+-
+     klass = defined_class;
+ 
+     while (rclass != klass &&
+@@ -1396,9 +1392,16 @@ static VALUE
+ method_owner(VALUE obj)
+ {
+     struct METHOD *data;
++    VALUE defined_class;
+ 
+     TypedData_Get_Struct(obj, struct METHOD, &method_data_type, data);
+-    return data->defined_class;
++    defined_class = data->defined_class;
++
++    if (RB_TYPE_P(defined_class, T_ICLASS)) {
++	defined_class = RBASIC_CLASS(defined_class);
++    }
++
++    return defined_class;
+ }
+ 
+ void
+diff --git a/string.c b/string.c
+index 900f900..cc30786 100644
+--- a/string.c
++++ b/string.c
+@@ -1465,6 +1465,7 @@ rb_str_modify_expand(VALUE str, long expand)
+ 	int termlen = TERM_LEN(str);
+ 	if (!STR_EMBED_P(str)) {
+ 	    REALLOC_N(RSTRING(str)->as.heap.ptr, char, capa + termlen);
++	    STR_UNSET_NOCAPA(str);
+ 	    RSTRING(str)->as.heap.aux.capa = capa;
+ 	}
+ 	else if (capa + termlen > RSTRING_EMBED_LEN_MAX + 1) {
+diff --git a/struct.c b/struct.c
+index 6be512e..2e026fb 100644
+--- a/struct.c
++++ b/struct.c
+@@ -156,7 +156,8 @@ rb_struct_set(VALUE obj, VALUE val)
+     for (i=0; i<len; i++) {
+ 	slot = RARRAY_AREF(members, i);
+ 	if (rb_id_attrset(SYM2ID(slot)) == rb_frame_this_func()) {
+-	    return RSTRUCT_SET(obj, i, val);
++	    RSTRUCT_SET(obj, i, val);
++	    return val;
+ 	}
+     }
+     rb_name_error(rb_frame_this_func(), "`%s' is not a struct member",
+diff --git a/test/bigdecimal/test_bigdecimal.rb b/test/bigdecimal/test_bigdecimal.rb
+index 6fdc422..02bb5a5 100644
+--- a/test/bigdecimal/test_bigdecimal.rb
++++ b/test/bigdecimal/test_bigdecimal.rb
+@@ -701,6 +701,10 @@ class TestBigDecimal < Test::Unit::TestCase
+     assert_equal(BigDecimal::SIGN_NEGATIVE_ZERO, (BigDecimal.new("-0") / 1).sign)
+     assert_equal(2, BigDecimal.new("2") / 1)
+     assert_equal(-2, BigDecimal.new("2") / -1)
++
++    assert_equal(BigDecimal('1486.868686869'), BigDecimal('1472.0') / BigDecimal('0.99'), '[ruby-core:59365] [#9316]')
++
++    assert_equal(4.124045235, BigDecimal('0.9932') / (700 * BigDecimal('0.344045') / BigDecimal('1000.0')), '[#9305]')
+   end
+ 
+   def test_div_with_float
+diff --git a/test/dl/test_base.rb b/test/dl/test_base.rb
+index a07056d..dafba6e 100644
+--- a/test/dl/test_base.rb
++++ b/test/dl/test_base.rb
+@@ -39,6 +39,9 @@ when /gnu/	#GNU/Hurd
+ when /mirbsd/
+   libc_so = "/usr/lib/libc.so.41.10"
+   libm_so = "/usr/lib/libm.so.7.0"
++when /freebsd/
++  libc_so = "/lib/libc.so.7"
++  libm_so = "/lib/libm.so.5"
+ when /bsd|dragonfly/
+   libc_so = "/usr/lib/libc.so"
+   libm_so = "/usr/lib/libm.so"
+diff --git a/test/dl/test_handle.rb b/test/dl/test_handle.rb
+index 4ef93ad..83b8af1 100644
+--- a/test/dl/test_handle.rb
++++ b/test/dl/test_handle.rb
+@@ -181,7 +181,7 @@ module DL
+       # In general uses of dlerror(3) should call it before use it.
+       require 'socket'
+       Socket.gethostbyname("localhost")
+-      DL.dlopen("/usr/lib/libc.so").sym('strcpy')
++      DL.dlopen("/lib/libc.so.7").sym('strcpy')
+     end if /freebsd/=~ RUBY_PLATFORM
+   end
+ end
+diff --git a/test/fiddle/helper.rb b/test/fiddle/helper.rb
+index 404c137..f58077e 100644
+--- a/test/fiddle/helper.rb
++++ b/test/fiddle/helper.rb
+@@ -40,6 +40,9 @@ when /gnu/	#GNU/Hurd
+ when /mirbsd/
+   libc_so = "/usr/lib/libc.so.41.10"
+   libm_so = "/usr/lib/libm.so.7.0"
++when /freebsd/
++  libc_so = "/lib/libc.so.7"
++  libm_so = "/lib/libm.so.5"
+ when /bsd|dragonfly/
+   libc_so = "/usr/lib/libc.so"
+   libm_so = "/usr/lib/libm.so"
+diff --git a/test/fiddle/test_handle.rb b/test/fiddle/test_handle.rb
+index 2af3e5c..c598cc3 100644
+--- a/test/fiddle/test_handle.rb
++++ b/test/fiddle/test_handle.rb
+@@ -183,7 +183,7 @@ module Fiddle
+       # In general uses of dlerror(3) should call it before use it.
+       require 'socket'
+       Socket.gethostbyname("localhost")
+-      Fiddle.dlopen("/usr/lib/libc.so").sym('strcpy')
++      Fiddle.dlopen("/lib/libc.so.7").sym('strcpy')
+     end if /freebsd/=~ RUBY_PLATFORM
+   end
+ end if defined?(Fiddle)
+diff --git a/test/net/imap/cacert.pem b/test/net/imap/cacert.pem
+index bd7e68a..7073387 100644
+--- a/test/net/imap/cacert.pem
++++ b/test/net/imap/cacert.pem
+@@ -2,59 +2,65 @@ Certificate:
+     Data:
+         Version: 3 (0x2)
+         Serial Number:
+-            9f:dc:f7:94:98:05:43:4c
++            b9:90:a2:bf:62:69:17:9c
+         Signature Algorithm: sha1WithRSAEncryption
+         Issuer: C=JP, ST=Shimane, L=Matz-e city, O=Ruby Core Team, CN=Ruby Test CA/emailAddress=security@ruby-lang.org
+         Validity
+-            Not Before: Dec 23 10:21:33 2010 GMT
+-            Not After : Jan  1 10:21:33 2014 GMT
++            Not Before: Jan  3 01:34:17 2014 GMT
++            Not After : Jan  2 01:34:17 2019 GMT
+         Subject: C=JP, ST=Shimane, L=Matz-e city, O=Ruby Core Team, CN=Ruby Test CA/emailAddress=security@ruby-lang.org
+         Subject Public Key Info:
+             Public Key Algorithm: rsaEncryption
+-                Public-Key: (1024 bit)
+-                Modulus:
+-                    00:ce:be:2c:9f:47:ba:db:9c:9c:5b:f0:38:3b:f3:
+-                    74:20:37:76:23:9f:84:1c:81:90:b4:3e:00:20:34:
+-                    98:7e:81:69:50:a1:c3:65:96:ea:fa:00:da:8c:cc:
+-                    53:3f:ba:3c:d0:50:7a:5a:b4:6b:ac:d3:2e:18:ca:
+-                    2a:69:b3:6a:6f:38:c2:32:a8:06:b6:0a:30:a9:ee:
+-                    03:38:e9:05:a5:19:23:54:a8:3c:b9:08:ad:2b:72:
+-                    23:df:93:22:c4:46:a8:ea:f1:a6:e9:30:4a:3f:83:
+-                    39:e9:62:8e:8b:a3:5e:67:89:1d:7c:75:de:05:aa:
+-                    58:b1:b7:79:7c:10:80:6d:87
++            RSA Public Key: (1024 bit)
++                Modulus (1024 bit):
++                    00:db:75:d0:45:de:b1:df:bf:71:a0:0e:b0:a5:e6:
++                    bc:f4:1c:9d:e5:25:67:64:c5:7b:cb:f1:af:c6:be:
++                    9a:aa:ea:7e:0f:cc:05:af:ef:40:69:06:b2:c9:13:
++                    9d:7e:eb:a2:06:e2:ea:7d:07:c7:c7:99:c7:fb:d5:
++                    b8:eb:63:77:62:2b:18:12:c3:53:58:d0:f5:c7:40:
++                    0c:01:d1:26:82:34:16:09:e3:dc:65:f4:dc:bb:5d:
++                    a5:41:60:e7:a9:74:ba:d7:4c:b6:a3:9c:c5:8c:89:
++                    af:cb:e8:9f:05:fe:ea:fe:64:24:bf:e7:ed:e3:f6:
++                    d0:fc:d6:eb:fc:06:82:10:fb
+                 Exponent: 65537 (0x10001)
+         X509v3 extensions:
+             X509v3 Subject Key Identifier: 
+-                41:C9:49:37:B1:FA:61:E3:BA:D7:19:3D:D9:DA:8C:B9:82:C9:B4:6A
++                E8:7E:58:AC:13:7B:03:22:8D:9E:AF:32:0B:84:89:80:80:0C:1E:C2
+             X509v3 Authority Key Identifier: 
+-                keyid:41:C9:49:37:B1:FA:61:E3:BA:D7:19:3D:D9:DA:8C:B9:82:C9:B4:6A
++                keyid:E8:7E:58:AC:13:7B:03:22:8D:9E:AF:32:0B:84:89:80:80:0C:1E:C2
++                DirName:/C=JP/ST=Shimane/L=Matz-e city/O=Ruby Core Team/CN=Ruby Test CA/emailAddress=security@ruby-lang.org
++                serial:B9:90:A2:BF:62:69:17:9C
+ 
+             X509v3 Basic Constraints: 
+                 CA:TRUE
+     Signature Algorithm: sha1WithRSAEncryption
+-        86:00:33:b9:dd:ff:5f:83:59:5f:c3:29:3c:d7:11:db:10:b3:
+-        d7:d1:70:fb:0a:c6:74:85:c6:ea:e1:15:c4:92:f8:0e:11:cc:
+-        ff:a6:3c:31:c2:2c:66:d8:fe:63:93:9f:b0:97:e6:f5:bc:5c:
+-        80:68:96:5d:eb:77:b9:23:dd:68:a7:49:03:ff:22:48:55:f1:
+-        39:7c:20:21:ff:64:52:e1:f6:cf:3c:b3:4d:2c:5c:03:62:ea:
+-        c5:49:99:07:fa:8d:ff:7b:c2:75:0c:ca:24:b5:0b:f5:b7:57:
+-        3a:10:f0:8a:bb:9a:e8:92:4d:d5:6f:c2:a2:29:36:61:78:a4:
+-        dc:7b
++        8f:77:06:4e:31:72:12:ee:68:09:70:27:d4:31:85:ef:10:95:
++        f9:0f:2b:66:63:08:37:88:6e:b7:9b:40:3e:18:77:33:86:e8:
++        61:6a:b7:3c:cb:c7:a6:d6:d5:92:6a:1f:56:d0:9f:5c:32:56:
++        d3:37:52:fe:0e:20:c2:7a:0d:fe:2d:3c:81:da:b8:7f:4d:6a:
++        08:01:d9:be:7a:a2:15:be:a6:ce:49:64:90:8c:9a:ca:6e:2e:
++        84:48:1d:94:19:56:94:46:aa:25:9b:68:c2:80:60:bf:cb:2e:
++        35:03:ea:0a:65:5a:33:38:c6:cc:81:46:c0:bc:36:86:96:39:
++        10:7d
+ -----BEGIN CERTIFICATE-----
+-MIIC6DCCAlGgAwIBAgIJAJ/c95SYBUNMMA0GCSqGSIb3DQEBBQUAMIGMMQswCQYD
+-VQQGEwJKUDEQMA4GA1UECAwHU2hpbWFuZTEUMBIGA1UEBwwLTWF0ei1lIGNpdHkx
+-FzAVBgNVBAoMDlJ1YnkgQ29yZSBUZWFtMRUwEwYDVQQDDAxSdWJ5IFRlc3QgQ0Ex
+-JTAjBgkqhkiG9w0BCQEWFnNlY3VyaXR5QHJ1YnktbGFuZy5vcmcwHhcNMTAxMjIz
+-MTAyMTMzWhcNMTQwMTAxMTAyMTMzWjCBjDELMAkGA1UEBhMCSlAxEDAOBgNVBAgM
+-B1NoaW1hbmUxFDASBgNVBAcMC01hdHotZSBjaXR5MRcwFQYDVQQKDA5SdWJ5IENv
+-cmUgVGVhbTEVMBMGA1UEAwwMUnVieSBUZXN0IENBMSUwIwYJKoZIhvcNAQkBFhZz
++MIIDjTCCAvagAwIBAgIJALmQor9iaRecMA0GCSqGSIb3DQEBBQUAMIGMMQswCQYD
++VQQGEwJKUDEQMA4GA1UECBMHU2hpbWFuZTEUMBIGA1UEBxMLTWF0ei1lIGNpdHkx
++FzAVBgNVBAoTDlJ1YnkgQ29yZSBUZWFtMRUwEwYDVQQDEwxSdWJ5IFRlc3QgQ0Ex
++JTAjBgkqhkiG9w0BCQEWFnNlY3VyaXR5QHJ1YnktbGFuZy5vcmcwHhcNMTQwMTAz
++MDEzNDE3WhcNMTkwMTAyMDEzNDE3WjCBjDELMAkGA1UEBhMCSlAxEDAOBgNVBAgT
++B1NoaW1hbmUxFDASBgNVBAcTC01hdHotZSBjaXR5MRcwFQYDVQQKEw5SdWJ5IENv
++cmUgVGVhbTEVMBMGA1UEAxMMUnVieSBUZXN0IENBMSUwIwYJKoZIhvcNAQkBFhZz
+ ZWN1cml0eUBydWJ5LWxhbmcub3JnMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKB
+-gQDOviyfR7rbnJxb8Dg783QgN3Yjn4QcgZC0PgAgNJh+gWlQocNllur6ANqMzFM/
+-ujzQUHpatGus0y4Yyipps2pvOMIyqAa2CjCp7gM46QWlGSNUqDy5CK0rciPfkyLE
+-Rqjq8abpMEo/gznpYo6Lo15niR18dd4Fqlixt3l8EIBthwIDAQABo1AwTjAdBgNV
+-HQ4EFgQUQclJN7H6YeO61xk92dqMuYLJtGowHwYDVR0jBBgwFoAUQclJN7H6YeO6
+-1xk92dqMuYLJtGowDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOBgQCGADO5
+-3f9fg1lfwyk81xHbELPX0XD7CsZ0hcbq4RXEkvgOEcz/pjwxwixm2P5jk5+wl+b1
+-vFyAaJZd63e5I91op0kD/yJIVfE5fCAh/2RS4fbPPLNNLFwDYurFSZkH+o3/e8J1
+-DMoktQv1t1c6EPCKu5rokk3Vb8KiKTZheKTcew==
++gQDbddBF3rHfv3GgDrCl5rz0HJ3lJWdkxXvL8a/Gvpqq6n4PzAWv70BpBrLJE51+
++66IG4up9B8fHmcf71bjrY3diKxgSw1NY0PXHQAwB0SaCNBYJ49xl9Ny7XaVBYOep
++dLrXTLajnMWMia/L6J8F/ur+ZCS/5+3j9tD81uv8BoIQ+wIDAQABo4H0MIHxMB0G
++A1UdDgQWBBToflisE3sDIo2erzILhImAgAwewjCBwQYDVR0jBIG5MIG2gBToflis
++E3sDIo2erzILhImAgAwewqGBkqSBjzCBjDELMAkGA1UEBhMCSlAxEDAOBgNVBAgT
++B1NoaW1hbmUxFDASBgNVBAcTC01hdHotZSBjaXR5MRcwFQYDVQQKEw5SdWJ5IENv
++cmUgVGVhbTEVMBMGA1UEAxMMUnVieSBUZXN0IENBMSUwIwYJKoZIhvcNAQkBFhZz
++ZWN1cml0eUBydWJ5LWxhbmcub3JnggkAuZCiv2JpF5wwDAYDVR0TBAUwAwEB/zAN
++BgkqhkiG9w0BAQUFAAOBgQCPdwZOMXIS7mgJcCfUMYXvEJX5DytmYwg3iG63m0A+
++GHczhuhharc8y8em1tWSah9W0J9cMlbTN1L+DiDCeg3+LTyB2rh/TWoIAdm+eqIV
++vqbOSWSQjJrKbi6ESB2UGVaURqolm2jCgGC/yy41A+oKZVozOMbMgUbAvDaGljkQ
++fQ==
+ -----END CERTIFICATE-----
+diff --git a/test/net/imap/server.crt b/test/net/imap/server.crt
+index d848b26..fa4f994 100644
+--- a/test/net/imap/server.crt
++++ b/test/net/imap/server.crt
+@@ -1,17 +1,17 @@
+ Certificate:
+     Data:
+-        Version: 3 (0x2)
++        Version: 1 (0x0)
+         Serial Number: 0 (0x0)
+         Signature Algorithm: sha1WithRSAEncryption
+         Issuer: C=JP, ST=Shimane, L=Matz-e city, O=Ruby Core Team, CN=Ruby Test CA/emailAddress=security@ruby-lang.org
+         Validity
+-            Not Before: Dec 23 10:23:52 2010 GMT
+-            Not After : Jan  1 10:23:52 2014 GMT
++            Not Before: Jan  3 01:34:17 2014 GMT
++            Not After : Jan  2 01:34:17 2019 GMT
+         Subject: C=JP, ST=Shimane, O=Ruby Core Team, OU=Ruby Test, CN=localhost
+         Subject Public Key Info:
+             Public Key Algorithm: rsaEncryption
+-                Public-Key: (1024 bit)
+-                Modulus:
++            RSA Public Key: (1024 bit)
++                Modulus (1024 bit):
+                     00:db:75:d0:45:de:b1:df:bf:71:a0:0e:b0:a5:e6:
+                     bc:f4:1c:9d:e5:25:67:64:c5:7b:cb:f1:af:c6:be:
+                     9a:aa:ea:7e:0f:cc:05:af:ef:40:69:06:b2:c9:13:
+@@ -22,40 +22,27 @@ Certificate:
+                     af:cb:e8:9f:05:fe:ea:fe:64:24:bf:e7:ed:e3:f6:
+                     d0:fc:d6:eb:fc:06:82:10:fb
+                 Exponent: 65537 (0x10001)
+-        X509v3 extensions:
+-            X509v3 Basic Constraints: 
+-                CA:FALSE
+-            Netscape Comment: 
+-                OpenSSL Generated Certificate
+-            X509v3 Subject Key Identifier: 
+-                E8:7E:58:AC:13:7B:03:22:8D:9E:AF:32:0B:84:89:80:80:0C:1E:C2
+-            X509v3 Authority Key Identifier: 
+-                keyid:41:C9:49:37:B1:FA:61:E3:BA:D7:19:3D:D9:DA:8C:B9:82:C9:B4:6A
+-
+     Signature Algorithm: sha1WithRSAEncryption
+-        ae:ee:cd:fe:c9:af:48:0b:50:37:ac:6a:f6:68:90:9b:67:df:
+-        6f:2d:17:c9:3c:a5:da:ad:39:dc:2a:5b:07:88:26:38:19:30:
+-        d6:95:cf:10:69:c7:92:14:83:be:f1:b5:8e:6f:d9:91:51:c5:
+-        63:ae:1c:89:ac:27:bf:4f:2a:8f:4e:0c:57:42:0a:c9:8e:0c:
+-        f4:f3:02:f7:ea:44:b6:e4:47:05:af:4e:74:e4:87:87:d9:c8:
+-        76:ed:ab:32:7c:f0:31:34:10:14:bc:a6:37:cd:d7:dc:33:da:
+-        82:d3:d4:9b:e9:d5:cd:38:cc:fa:81:5f:4e:fd:5f:53:05:5d:
+-        76:f9
++        85:f5:d3:05:8b:8c:f4:43:1c:88:f2:8f:b2:f2:93:77:b7:3d:
++        95:c6:a0:34:bc:33:6a:d8:85:5f:3e:86:08:10:c5:5c:c1:76:
++        a3:53:3c:dc:38:98:23:97:e7:da:21:ac:e8:4d:3c:96:70:29:
++        ff:ff:1e:4a:9a:17:2b:db:04:62:b9:ef:ab:ea:a7:a5:e8:7c:
++        b1:d5:ed:30:a8:6c:78:de:51:7e:e3:8a:c2:a4:64:a8:63:a2:
++        bc:fd:43:9c:f3:55:7d:54:c9:6a:d8:53:1c:4b:6b:03:aa:b6:
++        19:e6:a4:4f:47:00:96:c5:42:59:85:4e:c3:4e:cd:41:82:53:
++        10:f8
+ -----BEGIN CERTIFICATE-----
+-MIIC3jCCAkegAwIBAgIBADANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSlAx
+-EDAOBgNVBAgMB1NoaW1hbmUxFDASBgNVBAcMC01hdHotZSBjaXR5MRcwFQYDVQQK
+-DA5SdWJ5IENvcmUgVGVhbTEVMBMGA1UEAwwMUnVieSBUZXN0IENBMSUwIwYJKoZI
+-hvcNAQkBFhZzZWN1cml0eUBydWJ5LWxhbmcub3JnMB4XDTEwMTIyMzEwMjM1MloX
+-DTE0MDEwMTEwMjM1MlowYDELMAkGA1UEBhMCSlAxEDAOBgNVBAgMB1NoaW1hbmUx
+-FzAVBgNVBAoMDlJ1YnkgQ29yZSBUZWFtMRIwEAYDVQQLDAlSdWJ5IFRlc3QxEjAQ
+-BgNVBAMMCWxvY2FsaG9zdDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA23XQ
+-Rd6x379xoA6wpea89Byd5SVnZMV7y/Gvxr6aqup+D8wFr+9AaQayyROdfuuiBuLq
+-fQfHx5nH+9W462N3YisYEsNTWND1x0AMAdEmgjQWCePcZfTcu12lQWDnqXS610y2
+-o5zFjImvy+ifBf7q/mQkv+ft4/bQ/Nbr/AaCEPsCAwEAAaN7MHkwCQYDVR0TBAIw
+-ADAsBglghkgBhvhCAQ0EHxYdT3BlblNTTCBHZW5lcmF0ZWQgQ2VydGlmaWNhdGUw
+-HQYDVR0OBBYEFOh+WKwTewMijZ6vMguEiYCADB7CMB8GA1UdIwQYMBaAFEHJSTex
+-+mHjutcZPdnajLmCybRqMA0GCSqGSIb3DQEBBQUAA4GBAK7uzf7Jr0gLUDesavZo
+-kJtn328tF8k8pdqtOdwqWweIJjgZMNaVzxBpx5IUg77xtY5v2ZFRxWOuHImsJ79P
+-Ko9ODFdCCsmODPTzAvfqRLbkRwWvTnTkh4fZyHbtqzJ88DE0EBS8pjfN19wz2oLT
+-1Jvp1c04zPqBX079X1MFXXb5
++MIICXDCCAcUCAQAwDQYJKoZIhvcNAQEFBQAwgYwxCzAJBgNVBAYTAkpQMRAwDgYD
++VQQIEwdTaGltYW5lMRQwEgYDVQQHEwtNYXR6LWUgY2l0eTEXMBUGA1UEChMOUnVi
++eSBDb3JlIFRlYW0xFTATBgNVBAMTDFJ1YnkgVGVzdCBDQTElMCMGCSqGSIb3DQEJ
++ARYWc2VjdXJpdHlAcnVieS1sYW5nLm9yZzAeFw0xNDAxMDMwMTM0MTdaFw0xOTAx
++MDIwMTM0MTdaMGAxCzAJBgNVBAYTAkpQMRAwDgYDVQQIEwdTaGltYW5lMRcwFQYD
++VQQKEw5SdWJ5IENvcmUgVGVhbTESMBAGA1UECxMJUnVieSBUZXN0MRIwEAYDVQQD
++Ewlsb2NhbGhvc3QwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBANt10EXesd+/
++caAOsKXmvPQcneUlZ2TFe8vxr8a+mqrqfg/MBa/vQGkGsskTnX7rogbi6n0Hx8eZ
++x/vVuOtjd2IrGBLDU1jQ9cdADAHRJoI0Fgnj3GX03LtdpUFg56l0utdMtqOcxYyJ
++r8vonwX+6v5kJL/n7eP20PzW6/wGghD7AgMBAAEwDQYJKoZIhvcNAQEFBQADgYEA
++hfXTBYuM9EMciPKPsvKTd7c9lcagNLwzatiFXz6GCBDFXMF2o1M83DiYI5fn2iGs
++6E08lnAp//8eSpoXK9sEYrnvq+qnpeh8sdXtMKhseN5RfuOKwqRkqGOivP1DnPNV
++fVTJathTHEtrA6q2GeakT0cAlsVCWYVOw07NQYJTEPg=
+ -----END CERTIFICATE-----
+diff --git a/test/ruby/test_alias.rb b/test/ruby/test_alias.rb
+index cef39d6..956fdb4 100644
+--- a/test/ruby/test_alias.rb
++++ b/test/ruby/test_alias.rb
+@@ -121,7 +121,7 @@ class TestAlias < Test::Unit::TestCase
+     assert_equal([:Base, :M], SuperInAliasedModuleMethod::Derived.new.bar)
+   end
+ 
+-  def test_alias
++  def test_alias_wb_miss
+     assert_normal_exit %q{
+       require 'stringio'
+       GC.verify_internal_consistency
+diff --git a/test/ruby/test_array.rb b/test/ruby/test_array.rb
+index b648c40..6ff304a 100644
+--- a/test/ruby/test_array.rb
++++ b/test/ruby/test_array.rb
+@@ -1524,6 +1524,11 @@ class TestArray < Test::Unit::TestCase
+     assert(a.none?(&:frozen?))
+     assert_equal(%w(a), b)
+     assert(b.none?(&:frozen?))
++
++    bug9340 = "[ruby-core:59457]"
++    ary = [bug9340, bug9340.dup, bug9340.dup]
++    assert_equal 1, ary.uniq.size
++    assert_same bug9340, ary.uniq[0]
+   end
+ 
+   def test_uniq_with_block
+diff --git a/test/ruby/test_backtrace.rb b/test/ruby/test_backtrace.rb
+index aded544..6ec13e4 100644
+--- a/test/ruby/test_backtrace.rb
++++ b/test/ruby/test_backtrace.rb
+@@ -19,17 +19,16 @@ class TestBacktrace < Test::Unit::TestCase
+   end
+ 
+   def test_exception_backtrace_locations
+-    bt = Fiber.new{
++    backtrace, backtrace_locations = Fiber.new{
+       begin
+         raise
+       rescue => e
+-        e.backtrace_locations
++        [e.backtrace, e.backtrace_locations]
+       end
+     }.resume
+-    assert_equal(1, bt.size)
+-    assert_match(/.+:\d+:.+/, bt[0].to_s)
++    assert_equal(backtrace, backtrace_locations.map{|e| e.to_s})
+ 
+-    bt = Fiber.new{
++    backtrace, backtrace_locations = Fiber.new{
+       begin
+         begin
+           helper_test_exception_backtrace_locations
+@@ -37,11 +36,34 @@ class TestBacktrace < Test::Unit::TestCase
+           raise
+         end
+       rescue => e
+-        e.backtrace_locations
++        [e.backtrace, e.backtrace_locations]
++      end
++    }.resume
++    assert_equal(backtrace, backtrace_locations.map{|e| e.to_s})
++  end
++
++  def call_helper_test_exception_backtrace_locations
++    helper_test_exception_backtrace_locations(:bad_argument)
++  end
++
++  def test_argument_error_backtrace_locations
++    backtrace, backtrace_locations = Fiber.new{
++      begin
++        helper_test_exception_backtrace_locations(1)
++      rescue ArgumentError => e
++        [e.backtrace, e.backtrace_locations]
++      end
++    }.resume
++    assert_equal(backtrace, backtrace_locations.map{|e| e.to_s})
++
++    backtrace, backtrace_locations = Fiber.new{
++      begin
++        call_helper_test_exception_backtrace_locations
++      rescue ArgumentError => e
++        [e.backtrace, e.backtrace_locations]
+       end
+     }.resume
+-    assert_equal(2, bt.size)
+-    assert_match(/helper_test_exception_backtrace_locations/, bt[0].to_s)
++    assert_equal(backtrace, backtrace_locations.map{|e| e.to_s})
+   end
+ 
+   def test_caller_lev
+diff --git a/test/ruby/test_hash.rb b/test/ruby/test_hash.rb
+index 169157b..c872b11 100644
+--- a/test/ruby/test_hash.rb
++++ b/test/ruby/test_hash.rb
+@@ -558,12 +558,23 @@ class TestHash < Test::Unit::TestCase
+     assert_equal(h3, h.reject {|k,v| v })
+     assert_equal(base, h)
+ 
+-    return unless RUBY_VERSION > "2.1.0"
++    unless RUBY_VERSION >= "2.2.0"
++      # [ruby-core:59154] [Bug #9223]
++      if @cls == Hash
++        assert_empty(EnvUtil.verbose_warning {h.reject {false}})
++        bug9275 = '[ruby-core:59254] [Bug #9275]'
++        c = Class.new(Hash)
++        assert_empty(EnvUtil.verbose_warning {c.new.reject {false}}, bug9275)
++      else
++        assert_match(/extra states/, EnvUtil.verbose_warning {h.reject {false}})
++      end
++      return
++    end
+ 
+     h.instance_variable_set(:@foo, :foo)
+     h.default = 42
+     h.taint
+-    h = h.reject {false}
++    h = EnvUtil.suppress_warning {h.reject {false}}
+     assert_instance_of(Hash, h)
+     assert_not_predicate(h, :tainted?)
+     assert_nil(h.default)
+@@ -1217,8 +1228,32 @@ class TestHash < Test::Unit::TestCase
+     assert_no_memory_leak([], prepare, code, bug9187)
+   end
+ 
++  def test_wrapper_of_special_const
++    bug9381 = '[ruby-core:59638] [Bug #9381]'
++
++    wrapper = Class.new do
++      def initialize(obj)
++        @obj = obj
++      end
++
++      def hash
++        @obj.hash
++      end
++
++      def eql?(other)
++        @obj.eql?(other)
++      end
++    end
++
++    hash = {5 => bug9381}
++    assert_equal(bug9381, hash[wrapper.new(5)])
++  end
++
+   class TestSubHash < TestHash
+     class SubHash < Hash
++      def reject(*)
++        super
++      end
+     end
+ 
+     def setup
+diff --git a/test/ruby/test_pack.rb b/test/ruby/test_pack.rb
+index 621a06b..3f0931b 100644
+--- a/test/ruby/test_pack.rb
++++ b/test/ruby/test_pack.rb
+@@ -181,6 +181,7 @@ class TestPack < Test::Unit::TestCase
+     assert_equal a[0], a.pack("p").unpack("p")[0]
+     assert_equal a, a.pack("p").freeze.unpack("p*")
+     assert_raise(ArgumentError) { (a.pack("p") + "").unpack("p*") }
++    assert_raise(ArgumentError) { (a.pack("p") << "d").unpack("p*") }
+   end
+ 
+   def test_format_string_modified
+diff --git a/test/ruby/test_struct.rb b/test/ruby/test_struct.rb
+index 8aa99c5..e23b5b0 100644
+--- a/test/ruby/test_struct.rb
++++ b/test/ruby/test_struct.rb
+@@ -298,6 +298,12 @@ module TestStruct
+     assert_same(x, o.b!)
+   end
+ 
++  def test_setter_method_returns_value
++    klass = @Struct.new(:a)
++    x = klass.new
++    assert_equal "[Bug #9353]", x.send(:a=, "[Bug #9353]")
++  end
++
+   class TopStruct < Test::Unit::TestCase
+     include TestStruct
+ 
+diff --git a/test/ruby/test_super.rb b/test/ruby/test_super.rb
+index 846f409..82d6e19 100644
+--- a/test/ruby/test_super.rb
++++ b/test/ruby/test_super.rb
+@@ -407,4 +407,50 @@ class TestSuper < Test::Unit::TestCase
+     assert_equal([false, false], y.foo(false, false))
+     assert_equal([1, 2, 3, false, 5], y.foo(1, 2, 3, false, 5))
+   end
++
++  def test_missing_super_in_method_module
++    bug9315 = '[ruby-core:59358] [Bug #9315]'
++    a = Module.new do
++      def foo
++        super
++      end
++    end
++    b = Class.new do
++      include a
++    end
++    assert_raise(NoMethodError, bug9315) do
++      b.new.method(:foo).call
++    end
++  end
++
++  def test_module_super_in_method_module
++    bug9315 = '[ruby-core:59589] [Bug #9315]'
++    a = Module.new do
++      def foo
++        super
++      end
++    end
++    c = Class.new do
++      def foo
++        :ok
++      end
++    end
++    o = c.new.extend(a)
++    assert_nothing_raised(NoMethodError, bug9315) do
++      assert_equal(:ok, o.method(:foo).call, bug9315)
++    end
++  end
++
++  def test_missing_super_in_module_unbound_method
++    bug9377 = '[ruby-core:59619] [Bug #9377]'
++
++    a = Module.new do
++      def foo; super end
++    end
++
++    m = a.instance_method(:foo).bind(Object.new)
++    assert_raise(NoMethodError, bug9377) do
++      m.call
++    end
++  end
+ end
+diff --git a/test/rubygems/test_gem.rb b/test/rubygems/test_gem.rb
+index 759c2fe..e337420 100644
+--- a/test/rubygems/test_gem.rb
++++ b/test/rubygems/test_gem.rb
+@@ -199,30 +199,21 @@ class TestGem < Gem::TestCase
+   end
+ 
+   def test_self_default_exec_format
+-    orig_RUBY_INSTALL_NAME = Gem::ConfigMap[:ruby_install_name]
+-    Gem::ConfigMap[:ruby_install_name] = 'ruby'
+-
+-    assert_equal '%s', Gem.default_exec_format
+-  ensure
+-    Gem::ConfigMap[:ruby_install_name] = orig_RUBY_INSTALL_NAME
++    ruby_install_name 'ruby' do
++      assert_equal '%s', Gem.default_exec_format
++    end
+   end
+ 
+   def test_self_default_exec_format_18
+-    orig_RUBY_INSTALL_NAME = Gem::ConfigMap[:ruby_install_name]
+-    Gem::ConfigMap[:ruby_install_name] = 'ruby18'
+-
+-    assert_equal '%s18', Gem.default_exec_format
+-  ensure
+-    Gem::ConfigMap[:ruby_install_name] = orig_RUBY_INSTALL_NAME
++    ruby_install_name 'ruby18' do
++      assert_equal '%s18', Gem.default_exec_format
++    end
+   end
+ 
+   def test_self_default_exec_format_jruby
+-    orig_RUBY_INSTALL_NAME = Gem::ConfigMap[:ruby_install_name]
+-    Gem::ConfigMap[:ruby_install_name] = 'jruby'
+-
+-    assert_equal 'j%s', Gem.default_exec_format
+-  ensure
+-    Gem::ConfigMap[:ruby_install_name] = orig_RUBY_INSTALL_NAME
++    ruby_install_name 'jruby' do
++      assert_equal 'j%s', Gem.default_exec_format
++    end
+   end
+ 
+   def test_self_default_sources
+@@ -230,6 +221,7 @@ class TestGem < Gem::TestCase
+   end
+ 
+   def test_self_detect_gemdeps
++    skip 'Insecure operation - chdir' if RUBY_VERSION <= "1.8.7"
+     rubygems_gemdeps, ENV['RUBYGEMS_GEMDEPS'] = ENV['RUBYGEMS_GEMDEPS'], '-'
+ 
+     FileUtils.mkdir_p 'detect/a/b'
+@@ -339,21 +331,15 @@ class TestGem < Gem::TestCase
+   end
+ 
+   def test_self_extension_dir_shared
+-    enable_shared, RbConfig::CONFIG['ENABLE_SHARED'] =
+-      RbConfig::CONFIG['ENABLE_SHARED'], 'yes'
+-
+-    assert_equal Gem.ruby_api_version, Gem.extension_api_version
+-  ensure
+-    RbConfig::CONFIG['ENABLE_SHARED'] = enable_shared
++    enable_shared 'yes' do
++      assert_equal Gem.ruby_api_version, Gem.extension_api_version
++    end
+   end
+ 
+   def test_self_extension_dir_static
+-    enable_shared, RbConfig::CONFIG['ENABLE_SHARED'] =
+-      RbConfig::CONFIG['ENABLE_SHARED'], 'no'
+-
+-    assert_equal "#{Gem.ruby_api_version}-static", Gem.extension_api_version
+-  ensure
+-    RbConfig::CONFIG['ENABLE_SHARED'] = enable_shared
++    enable_shared 'no' do
++      assert_equal "#{Gem.ruby_api_version}-static", Gem.extension_api_version
++    end
+   end
+ 
+   def test_self_find_files
+@@ -565,24 +551,43 @@ class TestGem < Gem::TestCase
+   end
+ 
+   def test_self_prefix_libdir
+-    orig_libdir = Gem::ConfigMap[:libdir]
+-    Gem::ConfigMap[:libdir] = @@project_dir
++    orig_libdir = RbConfig::CONFIG['libdir']
++    RbConfig::CONFIG['libdir'] = @@project_dir
+ 
+     assert_nil Gem.prefix
+   ensure
+-    Gem::ConfigMap[:libdir] = orig_libdir
++    RbConfig::CONFIG['libdir'] = orig_libdir
+   end
+ 
+   def test_self_prefix_sitelibdir
+-    orig_sitelibdir = Gem::ConfigMap[:sitelibdir]
+-    Gem::ConfigMap[:sitelibdir] = @@project_dir
++    orig_sitelibdir = RbConfig::CONFIG['sitelibdir']
++    RbConfig::CONFIG['sitelibdir'] = @@project_dir
+ 
+     assert_nil Gem.prefix
+   ensure
+-    Gem::ConfigMap[:sitelibdir] = orig_sitelibdir
++    RbConfig::CONFIG['sitelibdir'] = orig_sitelibdir
++  end
++
++  def test_self_read_binary
++    open 'test', 'w' do |io|
++      io.write "\xCF\x80"
++    end
++
++    assert_equal ["\xCF", "\x80"], Gem.read_binary('test').chars.to_a
++
++    skip 'chmod not supported' if Gem.win_platform?
++
++    begin
++      File.chmod 0444, 'test'
++
++      assert_equal ["\xCF", "\x80"], Gem.read_binary('test').chars.to_a
++    ensure
++      File.chmod 0644, 'test'
++    end
+   end
+ 
+   def test_self_refresh
++    skip 'Insecure operation - mkdir' if RUBY_VERSION <= "1.8.7"
+     util_make_gems
+ 
+     a1_spec = @a1.spec_file
+@@ -602,6 +607,7 @@ class TestGem < Gem::TestCase
+   end
+ 
+   def test_self_refresh_keeps_loaded_specs_activated
++    skip 'Insecure operation - mkdir' if RUBY_VERSION <= "1.8.7"
+     util_make_gems
+ 
+     a1_spec = @a1.spec_file
+@@ -624,46 +630,44 @@ class TestGem < Gem::TestCase
+ 
+   def test_self_ruby_escaping_spaces_in_path
+     orig_ruby = Gem.ruby
+-    orig_bindir = Gem::ConfigMap[:bindir]
+-    orig_ruby_install_name = Gem::ConfigMap[:ruby_install_name]
+-    orig_exe_ext = Gem::ConfigMap[:EXEEXT]
++    orig_bindir = RbConfig::CONFIG['bindir']
++    orig_ruby_install_name = RbConfig::CONFIG['ruby_install_name']
++    orig_exe_ext = RbConfig::CONFIG['EXEEXT']
+ 
+-    Gem::ConfigMap[:bindir] = "C:/Ruby 1.8/bin"
+-    Gem::ConfigMap[:ruby_install_name] = "ruby"
+-    Gem::ConfigMap[:EXEEXT] = ".exe"
++    RbConfig::CONFIG['bindir'] = "C:/Ruby 1.8/bin"
++    RbConfig::CONFIG['ruby_install_name'] = "ruby"
++    RbConfig::CONFIG['EXEEXT'] = ".exe"
+     Gem.instance_variable_set("@ruby", nil)
+ 
+     assert_equal "\"C:/Ruby 1.8/bin/ruby.exe\"", Gem.ruby
+   ensure
+     Gem.instance_variable_set("@ruby", orig_ruby)
+-    Gem::ConfigMap[:bindir] = orig_bindir
+-    Gem::ConfigMap[:ruby_install_name] = orig_ruby_install_name
+-    Gem::ConfigMap[:EXEEXT] = orig_exe_ext
++    RbConfig::CONFIG['bindir'] = orig_bindir
++    RbConfig::CONFIG['ruby_install_name'] = orig_ruby_install_name
++    RbConfig::CONFIG['EXEEXT'] = orig_exe_ext
+   end
+ 
+   def test_self_ruby_path_without_spaces
+     orig_ruby = Gem.ruby
+-    orig_bindir = Gem::ConfigMap[:bindir]
+-    orig_ruby_install_name = Gem::ConfigMap[:ruby_install_name]
+-    orig_exe_ext = Gem::ConfigMap[:EXEEXT]
++    orig_bindir = RbConfig::CONFIG['bindir']
++    orig_ruby_install_name = RbConfig::CONFIG['ruby_install_name']
++    orig_exe_ext = RbConfig::CONFIG['EXEEXT']
+ 
+-    Gem::ConfigMap[:bindir] = "C:/Ruby18/bin"
+-    Gem::ConfigMap[:ruby_install_name] = "ruby"
+-    Gem::ConfigMap[:EXEEXT] = ".exe"
++    RbConfig::CONFIG['bindir'] = "C:/Ruby18/bin"
++    RbConfig::CONFIG['ruby_install_name'] = "ruby"
++    RbConfig::CONFIG['EXEEXT'] = ".exe"
+     Gem.instance_variable_set("@ruby", nil)
+ 
+     assert_equal "C:/Ruby18/bin/ruby.exe", Gem.ruby
+   ensure
+     Gem.instance_variable_set("@ruby", orig_ruby)
+-    Gem::ConfigMap[:bindir] = orig_bindir
+-    Gem::ConfigMap[:ruby_install_name] = orig_ruby_install_name
+-    Gem::ConfigMap[:EXEEXT] = orig_exe_ext
++    RbConfig::CONFIG['bindir'] = orig_bindir
++    RbConfig::CONFIG['ruby_install_name'] = orig_ruby_install_name
++    RbConfig::CONFIG['EXEEXT'] = orig_exe_ext
+   end
+ 
+   def test_self_ruby_api_version
+-    orig_MAJOR, Gem::ConfigMap[:MAJOR] = Gem::ConfigMap[:MAJOR], '1'
+-    orig_MINOR, Gem::ConfigMap[:MINOR] = Gem::ConfigMap[:MINOR], '2'
+-    orig_TEENY, Gem::ConfigMap[:TEENY] = Gem::ConfigMap[:TEENY], '3'
++    orig_ruby_version, RbConfig::CONFIG['ruby_version'] = RbConfig::CONFIG['ruby_version'], '1.2.3'
+ 
+     Gem.instance_variable_set :@ruby_api_version, nil
+ 
+@@ -671,9 +675,7 @@ class TestGem < Gem::TestCase
+   ensure
+     Gem.instance_variable_set :@ruby_api_version, nil
+ 
+-    Gem::ConfigMap[:MAJOR] = orig_MAJOR
+-    Gem::ConfigMap[:MINOR] = orig_MINOR
+-    Gem::ConfigMap[:TEENY] = orig_TEENY
++    RbConfig::CONFIG['ruby_version'] = orig_ruby_version
+   end
+ 
+   def test_self_ruby_version_1_8_5
+@@ -825,7 +827,7 @@ class TestGem < Gem::TestCase
+ 
+   def test_self_user_dir
+     parts = [@userhome, '.gem', Gem.ruby_engine]
+-    parts << Gem::ConfigMap[:ruby_version] unless Gem::ConfigMap[:ruby_version].empty?
++    parts << RbConfig::CONFIG['ruby_version'] unless RbConfig::CONFIG['ruby_version'].empty?
+ 
+     assert_equal File.join(parts), Gem.user_dir
+   end
+@@ -857,6 +859,7 @@ class TestGem < Gem::TestCase
+   end
+ 
+   def test_self_needs_picks_up_unresolved_deps
++    skip 'loading from unsafe file' if RUBY_VERSION <= "1.8.7"
+     save_loaded_features do
+       util_clear_gems
+       a = util_spec "a", "1"
+@@ -949,6 +952,7 @@ class TestGem < Gem::TestCase
+   end
+ 
+   def test_load_plugins
++    skip 'Insecure operation - chdir' if RUBY_VERSION <= "1.8.7"
+     plugin_path = File.join "lib", "rubygems_plugin.rb"
+ 
+     Dir.chdir @tempdir do
+@@ -1102,6 +1106,7 @@ class TestGem < Gem::TestCase
+   end
+ 
+   def test_auto_activation_of_detected_gemdeps_file
++    skip 'Insecure operation - chdir' if RUBY_VERSION <= "1.8.7"
+     util_clear_gems
+ 
+     a = new_spec "a", "1", nil, "lib/a.rb"
+@@ -1264,6 +1269,7 @@ class TestGem < Gem::TestCase
+   end
+ 
+   def test_use_gemdeps_automatic
++    skip 'Insecure operation - chdir' if RUBY_VERSION <= "1.8.7"
+     rubygems_gemdeps, ENV['RUBYGEMS_GEMDEPS'] = ENV['RUBYGEMS_GEMDEPS'], '-'
+ 
+     spec = util_spec 'a', 1
+@@ -1300,6 +1306,7 @@ class TestGem < Gem::TestCase
+   end
+ 
+   def test_use_gemdeps_specific
++    skip 'Insecure operation - read' if RUBY_VERSION <= "1.8.7"
+     rubygems_gemdeps, ENV['RUBYGEMS_GEMDEPS'] = ENV['RUBYGEMS_GEMDEPS'], 'x'
+ 
+     spec = util_spec 'a', 1
+@@ -1317,6 +1324,19 @@ class TestGem < Gem::TestCase
+     ENV['RUBYGEMS_GEMDEPS'] = rubygems_gemdeps
+   end
+ 
++  def ruby_install_name name
++    orig_RUBY_INSTALL_NAME = RbConfig::CONFIG['ruby_install_name']
++    RbConfig::CONFIG['ruby_install_name'] = name
++
++    yield
++  ensure
++    if orig_RUBY_INSTALL_NAME then
++      RbConfig::CONFIG['ruby_install_name'] = orig_RUBY_INSTALL_NAME
++    else
++      RbConfig::CONFIG.delete 'ruby_install_name'
++    end
++  end
++
+   def with_plugin(path)
+     test_plugin_path = File.expand_path("test/rubygems/plugin/#{path}",
+                                         @@project_dir)
+diff --git a/test/rubygems/test_gem_commands_contents_command.rb b/test/rubygems/test_gem_commands_contents_command.rb
+index d87e84f..7f5cf22 100644
+--- a/test/rubygems/test_gem_commands_contents_command.rb
++++ b/test/rubygems/test_gem_commands_contents_command.rb
+@@ -169,9 +169,9 @@ lib/foo.rb
+     end
+ 
+     expected = [
+-      File.join(Gem::ConfigMap[:bindir], 'default_command'),
+-      File.join(Gem::ConfigMap[:rubylibdir], 'default/gem.rb'),
+-      File.join(Gem::ConfigMap[:archdir], 'default_gem.so')
++      File.join(RbConfig::CONFIG['bindir'], 'default_command'),
++      File.join(RbConfig::CONFIG['rubylibdir'], 'default/gem.rb'),
++      File.join(RbConfig::CONFIG['archdir'], 'default_gem.so')
+     ].sort.join "\n"
+ 
+     assert_equal expected, @ui.output.chomp
+diff --git a/test/rubygems/test_gem_commands_environment_command.rb b/test/rubygems/test_gem_commands_environment_command.rb
+index 253c459..bb7589f 100644
+--- a/test/rubygems/test_gem_commands_environment_command.rb
++++ b/test/rubygems/test_gem_commands_environment_command.rb
+@@ -26,7 +26,7 @@ class TestGemCommandsEnvironmentCommand < Gem::TestCase
+     assert_match %r|INSTALLATION DIRECTORY: #{Regexp.escape @gemhome}|,
+                  @ui.output
+     assert_match %r|RUBYGEMS PREFIX: |, @ui.output
+-    assert_match %r|RUBY EXECUTABLE:.*#{Gem::ConfigMap[:ruby_install_name]}|,
++    assert_match %r|RUBY EXECUTABLE:.*#{RbConfig::CONFIG['ruby_install_name']}|,
+                  @ui.output
+     assert_match %r|EXECUTABLE DIRECTORY:|, @ui.output
+     assert_match %r|RUBYGEMS PLATFORMS:|, @ui.output
+diff --git a/test/rubygems/test_gem_commands_install_command.rb b/test/rubygems/test_gem_commands_install_command.rb
+index 00bbf7b..6315cb5 100644
+--- a/test/rubygems/test_gem_commands_install_command.rb
++++ b/test/rubygems/test_gem_commands_install_command.rb
+@@ -316,6 +316,7 @@ ERROR:  Possible alternatives: non_existent_with_hint
+   end
+ 
+   def test_execute_rdoc
++    skip if RUBY_VERSION <= "1.8.7"
+     specs = spec_fetcher do |fetcher|
+       fetcher.gem 'a', 2
+     end
+@@ -559,6 +560,20 @@ ERROR:  Possible alternatives: non_existent_with_hint
+     assert_equal %w[a-2], @cmd.installed_specs.map { |spec| spec.full_name }
+   end
+ 
++  def test_install_gem_ignore_dependencies_specific_file
++    spec = quick_spec 'a', 2
++
++    util_build_gem spec
++
++    FileUtils.mv spec.cache_file, @tempdir
++
++    @cmd.options[:ignore_dependencies] = true
++
++    @cmd.install_gem File.join(@tempdir, spec.file_name), nil
++
++    assert_equal %w[a-2], @cmd.installed_specs.map { |s| s.full_name }
++  end
++
+   def test_parses_requirement_from_gemname
+     spec_fetcher do |fetcher|
+       fetcher.gem 'a', 2
+diff --git a/test/rubygems/test_gem_commands_update_command.rb b/test/rubygems/test_gem_commands_update_command.rb
+index 7537c1c..d259383 100644
+--- a/test/rubygems/test_gem_commands_update_command.rb
++++ b/test/rubygems/test_gem_commands_update_command.rb
+@@ -217,6 +217,7 @@ class TestGemCommandsUpdateCommand < Gem::TestCase
+   end
+ 
+   def test_execute_rdoc
++    skip if RUBY_VERSION <= "1.8.7"
+     spec_fetcher do |fetcher|
+       fetcher.gem 'a', 2
+ 
+@@ -239,7 +240,6 @@ class TestGemCommandsUpdateCommand < Gem::TestCase
+ 
+     a2 = @specs['a-2']
+ 
+-    assert_path_exists File.join(a2.doc_dir, 'ri')
+     assert_path_exists File.join(a2.doc_dir, 'rdoc')
+   end
+ 
+diff --git a/test/rubygems/test_gem_dependency_installer.rb b/test/rubygems/test_gem_dependency_installer.rb
+index 0a82fa6..352ebbb 100644
+--- a/test/rubygems/test_gem_dependency_installer.rb
++++ b/test/rubygems/test_gem_dependency_installer.rb
+@@ -551,7 +551,7 @@ class TestGemDependencyInstaller < Gem::TestCase
+ 
+     env = "/\\S+/env" unless Gem.win_platform?
+ 
+-    assert_match %r|\A#!#{env} #{Gem::ConfigMap[:ruby_install_name]}\n|,
++    assert_match %r|\A#!#{env} #{RbConfig::CONFIG['ruby_install_name']}\n|,
+                  File.read(File.join(@gemhome, 'bin', 'a_bin'))
+   end
+ 
+diff --git a/test/rubygems/test_gem_ext_ext_conf_builder.rb b/test/rubygems/test_gem_ext_ext_conf_builder.rb
+index aa9008c..367c933 100644
+--- a/test/rubygems/test_gem_ext_ext_conf_builder.rb
++++ b/test/rubygems/test_gem_ext_ext_conf_builder.rb
+@@ -42,47 +42,46 @@ class TestGemExtExtConfBuilder < Gem::TestCase
+   end
+ 
+   def test_class_build_rbconfig_make_prog
+-    configure_args = RbConfig::CONFIG['configure_args']
++    configure_args do
+ 
+-    File.open File.join(@ext, 'extconf.rb'), 'w' do |extconf|
+-      extconf.puts "require 'mkmf'\ncreate_makefile 'foo'"
+-    end
++      File.open File.join(@ext, 'extconf.rb'), 'w' do |extconf|
++        extconf.puts "require 'mkmf'\ncreate_makefile 'foo'"
++      end
+ 
+-    output = []
++      output = []
+ 
+-    Dir.chdir @ext do
+-      Gem::Ext::ExtConfBuilder.build 'extconf.rb', nil, @dest_path, output
+-    end
++      Dir.chdir @ext do
++        Gem::Ext::ExtConfBuilder.build 'extconf.rb', nil, @dest_path, output
++      end
+ 
+-    assert_equal "creating Makefile\n", output[1]
+-    assert_contains_make_command 'clean', output[2]
+-    assert_contains_make_command '', output[4]
+-    assert_contains_make_command 'install', output[6]
+-  ensure
+-    RbConfig::CONFIG['configure_args'] = configure_args
++      assert_equal "creating Makefile\n", output[1]
++      assert_contains_make_command 'clean', output[2]
++      assert_contains_make_command '', output[4]
++      assert_contains_make_command 'install', output[6]
++    end
+   end
+ 
+   def test_class_build_env_make
+-    configure_args, env_make = RbConfig::CONFIG['configure_args'], ENV.delete('make')
+-    RbConfig::CONFIG['configure_args'] = ''
++    env_make = ENV.delete 'make'
+     ENV['make'] = 'anothermake'
+ 
+-    File.open File.join(@ext, 'extconf.rb'), 'w' do |extconf|
+-      extconf.puts "require 'mkmf'\ncreate_makefile 'foo'"
+-    end
++    configure_args '' do
++      File.open File.join(@ext, 'extconf.rb'), 'w' do |extconf|
++        extconf.puts "require 'mkmf'\ncreate_makefile 'foo'"
++      end
+ 
+-    output = []
++      output = []
+ 
+-    assert_raises Gem::InstallError do
+-      Dir.chdir @ext do
+-        Gem::Ext::ExtConfBuilder.build 'extconf.rb', nil, @dest_path, output
++      assert_raises Gem::InstallError do
++        Dir.chdir @ext do
++          Gem::Ext::ExtConfBuilder.build 'extconf.rb', nil, @dest_path, output
++        end
+       end
+-    end
+ 
+-    assert_equal "creating Makefile\n",   output[1]
+-    assert_contains_make_command 'clean', output[2]
++      assert_equal "creating Makefile\n",   output[1]
++      assert_contains_make_command 'clean', output[2]
++    end
+   ensure
+-    RbConfig::CONFIG['configure_args'] = configure_args
+     ENV['make'] = env_make
+   end
+ 
+@@ -108,6 +107,7 @@ class TestGemExtExtConfBuilder < Gem::TestCase
+     assert_equal 'extconf failed, exit code 1', error.message
+ 
+     assert_equal("#{Gem.ruby} extconf.rb", output[0])
++    assert_path_exists File.join @dest_path, 'mkmf.log'
+   end
+ 
+   def test_class_build_unconventional
+@@ -188,5 +188,19 @@ end
+     assert_equal 'Makefile not found', error.message
+   end
+ 
++  def configure_args args = nil
++    configure_args = RbConfig::CONFIG['configure_args']
++    RbConfig::CONFIG['configure_args'] = args if args
++
++    yield
++
++  ensure
++    if configure_args then
++      RbConfig::CONFIG['configure_args'] = configure_args
++    else
++      RbConfig::CONFIG.delete 'configure_args'
++    end
++  end
++
+ end
+ 
+diff --git a/test/rubygems/test_gem_installer.rb b/test/rubygems/test_gem_installer.rb
+index 615a9b5..eff62ab 100644
+--- a/test/rubygems/test_gem_installer.rb
++++ b/test/rubygems/test_gem_installer.rb
+@@ -41,7 +41,7 @@ version = \">= 0\"
+ if ARGV.first
+   str = ARGV.first
+   str = str.dup.force_encoding("BINARY") if str.respond_to? :force_encoding
+-  if str =~ /\\A_(.*)_\\z/
++  if str =~ /\\A_(.*)_\\z/ and Gem::Version.correct?($1) then
+     version = $1
+     ARGV.shift
+   end
+@@ -84,8 +84,8 @@ load Gem.bin_path('a', 'executable', version)
+       orig_RUBY_FRAMEWORK_VERSION = RUBY_FRAMEWORK_VERSION
+       Object.send :remove_const, :RUBY_FRAMEWORK_VERSION
+     end
+-    orig_bindir = Gem::ConfigMap[:bindir]
+-    Gem::ConfigMap[:bindir] = Gem.bindir
++    orig_bindir = RbConfig::CONFIG['bindir']
++    RbConfig::CONFIG['bindir'] = Gem.bindir
+ 
+     util_conflict_executable false
+ 
+@@ -102,7 +102,11 @@ load Gem.bin_path('a', 'executable', version)
+   ensure
+     Object.const_set :RUBY_FRAMEWORK_VERSION, orig_RUBY_FRAMEWORK_VERSION if
+       orig_RUBY_FRAMEWORK_VERSION
+-    Gem::ConfigMap[:bindir] = orig_bindir
++    if orig_bindir then
++      RbConfig::CONFIG['bindir'] = orig_bindir
++    else
++      RbConfig::CONFIG.delete 'bindir'
++    end
+   end
+ 
+   def test_check_executable_overwrite_format_executable
+@@ -1192,7 +1196,7 @@ gem 'other', version
+ 
+     env_shebang = "/usr/bin/env" unless Gem.win_platform?
+ 
+-    assert_equal("#!#{env_shebang} #{Gem::ConfigMap[:ruby_install_name]}",
++    assert_equal("#!#{env_shebang} #{RbConfig::CONFIG['ruby_install_name']}",
+                  shebang)
+   end
+ 
+diff --git a/test/rubygems/test_gem_package_tar_header.rb b/test/rubygems/test_gem_package_tar_header.rb
+index 5d85543..8f1f0c4 100644
+--- a/test/rubygems/test_gem_package_tar_header.rb
++++ b/test/rubygems/test_gem_package_tar_header.rb
+@@ -72,6 +72,20 @@ class TestGemPackageTarHeader < Gem::Package::TarTestCase
+     end
+   end
+ 
++  def test_initialize_typeflag
++    header = {
++      :mode     => '',
++      :name     => '',
++      :prefix   => '',
++      :size     => '',
++      :typeflag => '',
++    }
++
++    tar_header = Gem::Package::TarHeader.new header
++
++    assert_equal '0', tar_header.typeflag
++  end
++
+   def test_empty_eh
+     refute_empty @tar_header
+ 
+diff --git a/test/rubygems/test_gem_platform.rb b/test/rubygems/test_gem_platform.rb
+index 5966710..17577dc 100644
+--- a/test/rubygems/test_gem_platform.rb
++++ b/test/rubygems/test_gem_platform.rb
+@@ -116,7 +116,11 @@ class TestGemPlatform < Gem::TestCase
+ 
+     assert_equal expected, platform.to_a, 'i386-mswin32 VC6'
+   ensure
+-    RbConfig::CONFIG['RUBY_SO_NAME'] = orig_RUBY_SO_NAME
++    if orig_RUBY_SO_NAME then
++      RbConfig::CONFIG['RUBY_SO_NAME'] = orig_RUBY_SO_NAME
++    else
++      RbConfig::CONFIG.delete 'RUBY_SO_NAME'
++    end
+   end
+ 
+   def test_initialize_platform
+diff --git a/test/rubygems/test_gem_remote_fetcher.rb b/test/rubygems/test_gem_remote_fetcher.rb
+index 7e6d9c7..79f3a58 100644
+--- a/test/rubygems/test_gem_remote_fetcher.rb
++++ b/test/rubygems/test_gem_remote_fetcher.rb
+@@ -208,15 +208,15 @@ gems:
+     fetcher.instance_variable_set :@test_data, data
+ 
+     unless blow then
+-      def fetcher.fetch_path arg
++      def fetcher.fetch_path arg, *rest
+         @test_arg = arg
+         @test_data
+       end
+     else
+-      def fetcher.fetch_path arg
++      def fetcher.fetch_path arg, *rest
+         # OMG I'm such an ass
+         class << self; remove_method :fetch_path; end
+-        def self.fetch_path arg
++        def self.fetch_path arg, *rest
+           @test_arg = arg
+           @test_data
+         end
+diff --git a/test/rubygems/test_gem_request.rb b/test/rubygems/test_gem_request.rb
+index 04ff507..bcbbcf1 100644
+--- a/test/rubygems/test_gem_request.rb
++++ b/test/rubygems/test_gem_request.rb
+@@ -1,9 +1,16 @@
+ require 'rubygems/test_case'
+ require 'rubygems/request'
+ require 'ostruct'
++require 'base64'
+ 
+ class TestGemRequest < Gem::TestCase
+ 
++  CA_CERT_FILE     = cert_path 'ca'
++  CHILD_CERT       = load_cert 'child'
++  PUBLIC_CERT      = load_cert 'public'
++  PUBLIC_CERT_FILE = cert_path 'public'
++  SSL_CERT         = load_cert 'ssl'
++
+   def setup
+     @proxies = %w[http_proxy HTTP_PROXY http_proxy_user HTTP_PROXY_USER http_proxy_pass HTTP_PROXY_PASS no_proxy NO_PROXY]
+     @old_proxies = @proxies.map {|k| ENV[k] }
+@@ -62,6 +69,44 @@ class TestGemRequest < Gem::TestCase
+     assert_equal URI(@proxy_uri), proxy
+   end
+ 
++  def test_configure_connection_for_https
++    connection = Net::HTTP.new 'localhost', 443
++
++    request = Gem::Request.new URI('https://example'), nil, nil, nil
++
++    def request.add_rubygems_trusted_certs store
++      store.add_cert TestGemRequest::PUBLIC_CERT
++    end
++
++    request.configure_connection_for_https connection
++
++    cert_store = connection.cert_store
++
++    assert cert_store.verify CHILD_CERT
++  end
++
++  def test_configure_connection_for_https_ssl_ca_cert
++    ssl_ca_cert, Gem.configuration.ssl_ca_cert =
++      Gem.configuration.ssl_ca_cert, CA_CERT_FILE
++
++    connection = Net::HTTP.new 'localhost', 443
++
++    request = Gem::Request.new URI('https://example'), nil, nil, nil
++
++    def request.add_rubygems_trusted_certs store
++      store.add_cert TestGemRequest::PUBLIC_CERT
++    end
++
++    request.configure_connection_for_https connection
++
++    cert_store = connection.cert_store
++
++    assert cert_store.verify CHILD_CERT
++    assert cert_store.verify SSL_CERT
++  ensure
++    Gem.configuration.ssl_ca_cert = ssl_ca_cert
++  end
++
+   def test_get_proxy_from_env_fallback
+     ENV['http_proxy'] = @proxy_uri
+ 
+@@ -124,6 +169,30 @@ class TestGemRequest < Gem::TestCase
+     assert_equal :junk, response.body
+   end
+ 
++  def test_fetch_basic_auth
++    uri = URI.parse "https://user:pass@example.rubygems/specs.#{Gem.marshal_version}"
++    @request = Gem::Request.new(uri, Net::HTTP::Get, nil, nil)
++    conn = util_stub_connection_for :body => :junk, :code => 200
++
++    @request.fetch
++
++    auth_header = conn.payload['Authorization']
++
++    assert_equal "Basic #{Base64.encode64('user:pass')}".strip, auth_header
++  end
++
++  def test_fetch_basic_auth_encoded
++    uri = URI.parse "https://user:%7BDEScede%7Dpass@example.rubygems/specs.#{Gem.marshal_version}"
++    @request = Gem::Request.new(uri, Net::HTTP::Get, nil, nil)
++    conn = util_stub_connection_for :body => :junk, :code => 200
++
++    @request.fetch
++
++    auth_header = conn.payload['Authorization']
++
++    assert_equal "Basic #{Base64.encode64('user:{DEScede}pass')}".strip, auth_header
++  end
++
+   def test_fetch_head
+     uri = URI.parse "#{@gem_repo}/specs.#{Gem.marshal_version}"
+     @request = Gem::Request.new(uri, Net::HTTP::Get, nil, nil)
+diff --git a/test/rubygems/test_gem_request_set.rb b/test/rubygems/test_gem_request_set.rb
+index 8275795..a5fcdcc 100644
+--- a/test/rubygems/test_gem_request_set.rb
++++ b/test/rubygems/test_gem_request_set.rb
+@@ -59,6 +59,8 @@ class TestGemRequestSet < Gem::TestCase
+     assert_includes installed, 'a-2'
+     assert_path_exists File.join @gemhome, 'gems', 'a-2'
+     assert_path_exists 'gem.deps.rb.lock'
++
++    assert rs.remote
+   end
+ 
+   def test_install_from_gemdeps_install_dir
+@@ -89,6 +91,25 @@ class TestGemRequestSet < Gem::TestCase
+     refute_path_exists File.join Gem.dir, 'gems', 'a-2'
+   end
+ 
++  def test_install_from_gemdeps_local
++    spec_fetcher do |fetcher|
++      fetcher.gem 'a', 2
++    end
++
++    rs = Gem::RequestSet.new
++
++    open 'gem.deps.rb', 'w' do |io|
++      io.puts 'gem "a"'
++      io.flush
++
++      assert_raises Gem::UnsatisfiableDependencyError do
++        rs.install_from_gemdeps :gemdeps => io.path, :domain => :local
++      end
++    end
++
++    refute rs.remote
++  end
++
+   def test_install_from_gemdeps_lockfile
+     spec_fetcher do |fetcher|
+       fetcher.gem 'a', 1
+diff --git a/test/rubygems/test_gem_request_set_lockfile.rb b/test/rubygems/test_gem_request_set_lockfile.rb
+index 9e0cab4..0be69bf 100644
+--- a/test/rubygems/test_gem_request_set_lockfile.rb
++++ b/test/rubygems/test_gem_request_set_lockfile.rb
+@@ -218,6 +218,7 @@ GEM
+       c (~> 4)
+       d
+       e (~> 5.0, >= 5.0.1)
++    b (3-x86_64-linux)
+ 
+ PLATFORMS
+   #{Gem::Platform::RUBY}
+@@ -238,7 +239,14 @@ DEPENDENCIES
+ 
+     assert lockfile_set, 'could not find a LockSet'
+ 
+-    assert_equal %w[a-2], lockfile_set.specs.map { |tuple| tuple.full_name }
++    assert_equal %w[a-2 b-3], lockfile_set.specs.map { |tuple| tuple.full_name }
++
++    expected = [
++      Gem::Platform::RUBY,
++      Gem::Platform.new('x86_64-linux'),
++    ]
++
++    assert_equal expected, lockfile_set.specs.map { |tuple| tuple.platform }
+ 
+     spec = lockfile_set.specs.first
+ 
+diff --git a/test/rubygems/test_gem_resolver.rb b/test/rubygems/test_gem_resolver.rb
+index 7d3311c..c97e9e7 100644
+--- a/test/rubygems/test_gem_resolver.rb
++++ b/test/rubygems/test_gem_resolver.rb
+@@ -33,6 +33,14 @@ class TestGemResolver < Gem::TestCase
+     assert_same Gem::Resolver, Gem::DependencyResolver
+   end
+ 
++  def test_self_compose_sets_best_set
++    best_set = @DR::BestSet.new
++
++    composed = @DR.compose_sets best_set
++
++    assert_equal best_set, composed
++  end
++
+   def test_self_compose_sets_multiple
+     index_set  = @DR::IndexSet.new
+     vendor_set = @DR::VendorSet.new
+diff --git a/test/rubygems/test_gem_resolver_api_set.rb b/test/rubygems/test_gem_resolver_api_set.rb
+index 288f496..245f6c1 100644
+--- a/test/rubygems/test_gem_resolver_api_set.rb
++++ b/test/rubygems/test_gem_resolver_api_set.rb
+@@ -17,6 +17,14 @@ class TestGemResolverAPISet < Gem::TestCase
+     assert_equal Gem::Source.new(URI('https://rubygems.org')),    set.source
+   end
+ 
++  def test_initialize_deeper_uri
++    set = @DR::APISet.new 'https://rubygemsserver.com/mygems/api/v1/dependencies'
++
++    assert_equal URI('https://rubygemsserver.com/mygems/api/v1/dependencies'), set.dep_uri
++    assert_equal URI('https://rubygemsserver.com/mygems/'),                    set.uri
++    assert_equal Gem::Source.new(URI('https://rubygemsserver.com/mygems/')),    set.source
++  end
++
+   def test_initialize_uri
+     set = @DR::APISet.new @dep_uri
+ 
+@@ -74,6 +82,15 @@ class TestGemResolverAPISet < Gem::TestCase
+     assert_equal expected, set.find_all(a_dep)
+   end
+ 
++  def test_find_all_local
++    set = @DR::APISet.new @dep_uri
++    set.remote = false
++
++    a_dep = @DR::DependencyRequest.new dep('a'), nil
++
++    assert_empty set.find_all(a_dep)
++  end
++
+   def test_find_all_missing
+     spec_fetcher
+ 
+@@ -163,5 +180,29 @@ class TestGemResolverAPISet < Gem::TestCase
+     set.prefetch [a_dep, b_dep]
+   end
+ 
++  def test_prefetch_local
++    spec_fetcher
++
++    data = [
++      { :name         => 'a',
++        :number       => '1',
++        :platform     => 'ruby',
++        :dependencies => [], },
++    ]
++
++    @fetcher.data["#{@dep_uri}?gems=a,b"] = Marshal.dump data
++    @fetcher.data["#{@dep_uri}?gems=b"]   = Marshal.dump []
++
++    set = @DR::APISet.new @dep_uri
++    set.remote = false
++
++    a_dep = @DR::DependencyRequest.new dep('a'), nil
++    b_dep = @DR::DependencyRequest.new dep('b'), nil
++
++    set.prefetch [a_dep, b_dep]
++
++    assert_empty set.instance_variable_get :@data
++  end
++
+ end
+ 
+diff --git a/test/rubygems/test_gem_resolver_best_set.rb b/test/rubygems/test_gem_resolver_best_set.rb
+index 5bcff4a..2d16f8b 100644
+--- a/test/rubygems/test_gem_resolver_best_set.rb
++++ b/test/rubygems/test_gem_resolver_best_set.rb
+@@ -8,6 +8,12 @@ class TestGemResolverBestSet < Gem::TestCase
+     @DR = Gem::Resolver
+   end
+ 
++  def test_initialize
++    set = @DR::BestSet.new
++
++    assert_empty set.sets
++  end
++
+   def test_find_all_index
+     spec_fetcher do |fetcher|
+       fetcher.spec 'a', 1
+@@ -26,5 +32,49 @@ class TestGemResolverBestSet < Gem::TestCase
+     assert_equal %w[a-1], found.map { |s| s.full_name }
+   end
+ 
++  def test_find_all_local
++    spec_fetcher do |fetcher|
++      fetcher.spec 'a', 1
++      fetcher.spec 'a', 2
++      fetcher.spec 'b', 1
++    end
++
++    set = @DR::BestSet.new
++    set.remote = false
++
++    dependency = dep 'a', '~> 1'
++
++    req = @DR::DependencyRequest.new dependency, nil
++
++    found = set.find_all req
++
++    assert_empty found
++  end
++
++  def test_prefetch
++    spec_fetcher do |fetcher|
++      fetcher.spec 'a', 1
++    end
++
++    set = @DR::BestSet.new
++
++    set.prefetch []
++
++    refute_empty set.sets
++  end
++
++  def test_prefetch_local
++    spec_fetcher do |fetcher|
++      fetcher.spec 'a', 1
++    end
++
++    set = @DR::BestSet.new
++    set.remote = false
++
++    set.prefetch []
++
++    assert_empty set.sets
++  end
++
+ end
+ 
+diff --git a/test/rubygems/test_gem_resolver_git_set.rb b/test/rubygems/test_gem_resolver_git_set.rb
+index 4643624..f82b942 100644
+--- a/test/rubygems/test_gem_resolver_git_set.rb
++++ b/test/rubygems/test_gem_resolver_git_set.rb
+@@ -70,6 +70,21 @@ class TestGemResolverGitSet < Gem::TestCase
+     assert_equal [@set.specs['a']], found
+   end
+ 
++  def test_find_all_local
++    name, _, repository, = git_gem
++
++    @set.add_git_gem name, repository, 'master', false
++    @set.remote = false
++
++    dependency = dep 'a', '~> 1.0'
++    req = Gem::Resolver::DependencyRequest.new dependency, nil
++    @reqs.add req
++
++    @set.prefetch @reqs
++
++    assert_empty @set.find_all dependency
++  end
++
+   def test_root_dir
+     assert_equal Gem.dir, @set.root_dir
+ 
+diff --git a/test/rubygems/test_gem_resolver_index_set.rb b/test/rubygems/test_gem_resolver_index_set.rb
+index 137e9b5..b0adc51 100644
+--- a/test/rubygems/test_gem_resolver_index_set.rb
++++ b/test/rubygems/test_gem_resolver_index_set.rb
+@@ -24,5 +24,40 @@ class TestGemResolverIndexSet < Gem::TestCase
+     refute_same Gem::SpecFetcher.fetcher, fetcher
+   end
+ 
++  def test_find_all
++    spec_fetcher do |fetcher|
++      fetcher.spec 'a', 1
++      fetcher.spec 'a', 2
++      fetcher.spec 'b', 1
++    end
++
++    set = @DR::BestSet.new
++
++    dependency = dep 'a', '~> 1'
++
++    req = @DR::DependencyRequest.new dependency, nil
++
++    found = set.find_all req
++
++    assert_equal %w[a-1], found.map { |s| s.full_name }
++  end
++
++  def test_find_all_local
++    spec_fetcher do |fetcher|
++      fetcher.spec 'a', 1
++      fetcher.spec 'a', 2
++      fetcher.spec 'b', 1
++    end
++
++    set = @DR::BestSet.new
++    set.remote = false
++
++    dependency = dep 'a', '~> 1'
++
++    req = @DR::DependencyRequest.new dependency, nil
++
++    assert_empty set.find_all req
++  end
++
+ end
+ 
+diff --git a/test/rubygems/test_gem_resolver_installer_set.rb b/test/rubygems/test_gem_resolver_installer_set.rb
+index af4db64..258f9bc 100644
+--- a/test/rubygems/test_gem_resolver_installer_set.rb
++++ b/test/rubygems/test_gem_resolver_installer_set.rb
+@@ -2,6 +2,34 @@ require 'rubygems/test_case'
+ 
+ class TestGemResolverInstallerSet < Gem::TestCase
+ 
++  def test_consider_local_eh
++    set = Gem::Resolver::InstallerSet.new :remote
++
++    refute set.consider_local?
++
++    set = Gem::Resolver::InstallerSet.new :both
++
++    assert set.consider_local?
++
++    set = Gem::Resolver::InstallerSet.new :local
++
++    assert set.consider_local?
++  end
++
++  def test_consider_remote_eh
++    set = Gem::Resolver::InstallerSet.new :remote
++
++    assert set.consider_remote?
++
++    set = Gem::Resolver::InstallerSet.new :both
++
++    assert set.consider_remote?
++
++    set = Gem::Resolver::InstallerSet.new :local
++
++    refute set.consider_remote?
++  end
++
+   def test_load_spec
+     specs = spec_fetcher do |fetcher|
+       fetcher.spec 'a', 2
+@@ -18,5 +46,47 @@ class TestGemResolverInstallerSet < Gem::TestCase
+     assert_equal specs["a-2-#{Gem::Platform.local}"].full_name, spec.full_name
+   end
+ 
++  def test_remote_equals_both
++    set = Gem::Resolver::InstallerSet.new :both
++    set.remote = true
++
++    assert set.consider_local?
++    assert set.consider_remote?
++
++    set = Gem::Resolver::InstallerSet.new :both
++    set.remote = false
++
++    assert set.consider_local?
++    refute set.consider_remote?
++  end
++
++  def test_remote_equals_local
++    set = Gem::Resolver::InstallerSet.new :local
++    set.remote = true
++
++    assert set.consider_local?
++    assert set.consider_remote?
++
++    set = Gem::Resolver::InstallerSet.new :local
++    set.remote = false
++
++    assert set.consider_local?
++    refute set.consider_remote?
++  end
++
++  def test_remote_equals_remote
++    set = Gem::Resolver::InstallerSet.new :remote
++    set.remote = true
++
++    refute set.consider_local?
++    assert set.consider_remote?
++
++    set = Gem::Resolver::InstallerSet.new :remote
++    set.remote = false
++
++    refute set.consider_local?
++    refute set.consider_remote?
++  end
++
+ end
+ 
+diff --git a/test/rubygems/test_gem_source_git.rb b/test/rubygems/test_gem_source_git.rb
+index 026492e..58bff84 100644
+--- a/test/rubygems/test_gem_source_git.rb
++++ b/test/rubygems/test_gem_source_git.rb
+@@ -27,6 +27,26 @@ class TestGemSourceGit < Gem::TestCase
+     assert_path_exists File.join @source.install_dir, 'a.gemspec'
+   end
+ 
++  def test_checkout_local
++    @source.remote = false
++
++    @source.checkout
++
++    install_dir = File.join Gem.dir, 'bundler', 'gems', "a-#{@head[0..11]}"
++
++    refute_path_exists File.join install_dir, 'a.gemspec'
++  end
++
++  def test_checkout_local_cached
++    @source.cache
++
++    @source.remote = false
++
++    @source.checkout
++
++    assert_path_exists File.join @source.install_dir, 'a.gemspec'
++  end
++
+   def test_checkout_submodules
+     source = Gem::Source::Git.new @name, @repository, 'master', true
+ 
+@@ -54,6 +74,14 @@ class TestGemSourceGit < Gem::TestCase
+     end
+   end
+ 
++  def test_cache_local
++    @source.remote = false
++
++    @source.cache
++
++    refute_path_exists @source.repo_cache_dir
++  end
++
+   def test_dir_shortref
+     @source.cache
+ 
+@@ -99,6 +127,12 @@ class TestGemSourceGit < Gem::TestCase
+     assert_equal expected, @source.install_dir
+   end
+ 
++  def test_install_dir_local
++    @source.remote = false
++
++    assert_nil @source.install_dir
++  end
++
+   def test_repo_cache_dir
+     expected =
+       File.join Gem.dir, 'cache', 'bundler', 'git', "a-#{@hash}"
+@@ -211,6 +245,15 @@ class TestGemSourceGit < Gem::TestCase
+     assert_equal extension_dir, b_spec.extension_dir
+   end
+ 
++  def test_specs_local
++    source = Gem::Source::Git.new @name, @repository, 'master', true
++    source.remote = false
++
++    capture_io do
++      assert_empty source.specs
++    end
++  end
++
+   def test_uri_hash
+     assert_equal @hash, @source.uri_hash
+ 
+diff --git a/test/rubygems/test_gem_specification.rb b/test/rubygems/test_gem_specification.rb
+index 7aa9d5a..1afb5ba 100644
+--- a/test/rubygems/test_gem_specification.rb
++++ b/test/rubygems/test_gem_specification.rb
+@@ -999,8 +999,8 @@ dependencies: []
+     assert_equal 'summary', spec.summary
+     assert_same spec.summary, new_spec.summary
+ 
+-    assert_equal %w[lib/file.rb test/file.rb bin/exec README.txt
+-                    ext/extconf.rb].sort,
++    assert_equal %w[README.txt bin/exec ext/extconf.rb lib/file.rb
++                    test/file.rb].sort,
+                  spec.files
+     refute_same spec.files, new_spec.files, 'files'
+ 
+@@ -1109,7 +1109,31 @@ dependencies: []
+     @a2.executable = 'app'
+ 
+     assert_equal nil, @a2.bindir
+-    assert_equal %w[lib/code.rb app].sort, @a2.files
++    assert_equal %w[app lib/code.rb].sort, @a2.files
++  end
++
++  def test_extensions_equals_nil
++    @a2.instance_variable_set(:@extensions, nil)
++    assert_equal nil, @a2.instance_variable_get(:@extensions)
++    assert_equal %w[lib/code.rb], @a2.files
++  end
++
++  def test_test_files_equals_nil
++    @a2.instance_variable_set(:@test_files, nil)
++    assert_equal nil, @a2.instance_variable_get(:@test_files)
++    assert_equal %w[lib/code.rb], @a2.files
++  end
++
++  def test_executables_equals_nil
++    @a2.instance_variable_set(:@executables, nil)
++    assert_equal nil, @a2.instance_variable_get(:@executables)
++    assert_equal %w[lib/code.rb], @a2.files
++  end
++
++  def test_extra_rdoc_files_equals_nil
++    @a2.instance_variable_set(:@extra_rdoc_files, nil)
++    assert_equal nil, @a2.instance_variable_get(:@extra_rdoc_files)
++    assert_equal %w[lib/code.rb], @a2.files
+   end
+ 
+   def test_build_extensions
+@@ -1437,7 +1461,7 @@ dependencies: []
+   def test_executable_equals
+     @a2.executable = 'app'
+     assert_equal 'app', @a2.executable
+-    assert_equal %w[lib/code.rb bin/app].sort, @a2.files
++    assert_equal %w[bin/app lib/code.rb].sort, @a2.files
+   end
+ 
+   def test_extensions
+@@ -1765,26 +1789,39 @@ dependencies: []
+   end
+ 
+   def test_require_paths
+-    enable_shared, RbConfig::CONFIG['ENABLE_SHARED'] =
+-      RbConfig::CONFIG['ENABLE_SHARED'], 'no'
++    enable_shared 'no' do
++      ext_spec
+ 
+-    ext_spec
+-
+-    @ext.require_path = 'lib'
++      @ext.require_path = 'lib'
+ 
+-    ext_install_dir = Pathname(@ext.extension_dir)
+-    full_gem_path = Pathname(@ext.full_gem_path)
+-    relative_install_dir = ext_install_dir.relative_path_from full_gem_path
++      ext_install_dir = Pathname(@ext.extension_dir)
++      full_gem_path = Pathname(@ext.full_gem_path)
++      relative_install_dir = ext_install_dir.relative_path_from full_gem_path
+ 
+-    assert_equal [relative_install_dir.to_s, 'lib'], @ext.require_paths
+-  ensure
+-    RbConfig::CONFIG['ENABLE_SHARED'] = enable_shared
++      assert_equal [relative_install_dir.to_s, 'lib'], @ext.require_paths
++    end
+   end
+ 
+   def test_source
+     assert_kind_of Gem::Source::Installed, @a1.source
+   end
+ 
++  def test_source_paths
++    ext_spec
++
++    @ext.require_paths = %w[lib ext foo]
++    @ext.extensions << 'bar/baz'
++
++    expected = %w[
++      lib
++      ext
++      foo
++      bar
++    ]
++
++    assert_equal expected, @ext.source_paths
++  end
++
+   def test_full_require_paths
+     ext_spec
+ 
+@@ -2435,7 +2472,7 @@ duplicate dependency on b (>= 1.2.3), (~> 1.2) use:
+       assert_equal '["lib2"] are not files', e.message
+     end
+ 
+-    assert_equal %w[lib/code.rb test/suite.rb bin/exec ext/a/extconf.rb lib2].sort,
++    assert_equal %w[bin/exec ext/a/extconf.rb lib/code.rb lib2 test/suite.rb].sort,
+                  @a1.files
+   end
+ 
+@@ -2911,9 +2948,9 @@ end
+ 
+   def with_syck
+     begin
++      verbose, $VERBOSE = $VERBOSE, nil
+       require "yaml"
+       old_engine = YAML::ENGINE.yamler
+-      verbose, $VERBOSE = $VERBOSE, nil
+       YAML::ENGINE.yamler = 'syck'
+       load 'rubygems/syck_hack.rb'
+     rescue NameError
+diff --git a/test/rubygems/test_gem_uninstaller.rb b/test/rubygems/test_gem_uninstaller.rb
+index 1eea30f..11fdaf6 100644
+--- a/test/rubygems/test_gem_uninstaller.rb
++++ b/test/rubygems/test_gem_uninstaller.rb
+@@ -131,6 +131,23 @@ class TestGemUninstaller < Gem::InstallerTestCase
+     Gem::Installer.exec_format = nil
+   end
+ 
++  def test_remove_not_in_home
++    uninstaller = Gem::Uninstaller.new nil, :install_dir => "#{@gemhome}2"
++
++    e = assert_raises Gem::GemNotInHomeException do
++      use_ui ui do
++        uninstaller.remove @spec
++      end
++    end
++
++    expected =
++      "Gem '#{@spec.full_name}' is not installed in directory #{@gemhome}2"
++
++    assert_equal expected, e.message
++
++    assert_path_exists @spec.gem_dir
++  end
++
+   def test_path_ok_eh
+     uninstaller = Gem::Uninstaller.new nil
+ 
+diff --git a/test/rubygems/test_gem_version.rb b/test/rubygems/test_gem_version.rb
+index e0499fe..5a65b5c 100644
+--- a/test/rubygems/test_gem_version.rb
++++ b/test/rubygems/test_gem_version.rb
+@@ -3,6 +3,9 @@ require "rubygems/version"
+ 
+ class TestGemVersion < Gem::TestCase
+ 
++  class V < ::Gem::Version
++  end
++
+   def test_bump
+     assert_bumped_version_equal "5.3", "5.2.4"
+   end
+@@ -37,6 +40,13 @@ class TestGemVersion < Gem::TestCase
+     assert_equal v('1.1'), Gem::Version.create(ver)
+   end
+ 
++  def test_class_new_subclass
++    v1 = Gem::Version.new '1'
++    v2 = V.new '1'
++
++    refute_same v1, v2
++  end
++
+   def test_eql_eh
+     assert_version_eql "1.2",    "1.2"
+     refute_version_eql "1.2",    "1.2.0"
+diff --git a/test/test_delegate.rb b/test/test_delegate.rb
+index ca65ef3..6270cc6 100644
+--- a/test/test_delegate.rb
++++ b/test/test_delegate.rb
+@@ -180,4 +180,61 @@ class TestDelegateClass < Test::Unit::TestCase
+     x = assert_nothing_raised(ArgumentError, bug9155) {break Bug9155.new(1)}
+     assert_equal(1, x.to_i, bug9155)
+   end
++
++  class Bug9403
++    Name = '[ruby-core:59718] [Bug #9403]'
++    SD = SimpleDelegator.new(new)
++    class << SD
++      def method_name
++        __method__
++      end
++      def callee_name
++        __callee__
++      end
++      alias aliased_name callee_name
++      def dir_name
++        __dir__
++      end
++    end
++    dc = DelegateClass(self)
++    dc.class_eval do
++      def method_name
++        __method__
++      end
++      def callee_name
++        __callee__
++      end
++      alias aliased_name callee_name
++      def dir_name
++        __dir__
++      end
++    end
++    DC = dc.new(new)
++  end
++
++  def test_method_in_simple_delegator
++    assert_equal(:method_name, Bug9403::SD.method_name, Bug9403::Name)
++  end
++
++  def test_callee_in_simple_delegator
++    assert_equal(:callee_name, Bug9403::SD.callee_name, Bug9403::Name)
++    assert_equal(:aliased_name, Bug9403::SD.aliased_name, Bug9403::Name)
++  end
++
++  def test_dir_in_simple_delegator
++    assert_equal(__dir__, Bug9403::SD.dir_name, Bug9403::Name)
++  end
++
++  def test_method_in_delegator_class
++    assert_equal(:method_name, Bug9403::DC.method_name, Bug9403::Name)
++  end
++
++  def test_callee_in_delegator_class
++    assert_equal(:callee_name, Bug9403::DC.callee_name, Bug9403::Name)
++    assert_equal(:aliased_name, Bug9403::DC.aliased_name, Bug9403::Name)
++  end
++
++  def test_dir_in_delegator_class
++    assert_equal(__dir__, Bug9403::DC.dir_name, Bug9403::Name)
++  end
+ end
+diff --git a/test/test_timeout.rb b/test/test_timeout.rb
+index 9d51ca5..e849cc5 100644
+--- a/test/test_timeout.rb
++++ b/test/test_timeout.rb
+@@ -57,4 +57,33 @@ class TestTimeout < Test::Unit::TestCase
+     end
+     assert_raise_with_message(exc, /execution expired/) {raise e if e}
+   end
++
++  def test_custom_exception
++    bug9354 = '[ruby-core:59511] [Bug #9354]'
++    err = Class.new(StandardError) do
++      def initialize(msg) super end
++    end
++    assert_nothing_raised(ArgumentError, bug9354) do
++      assert_equal(:ok, timeout(100, err) {:ok})
++    end
++  end
++
++  def test_exit_exception
++    assert_raise_with_message(Timeout::ExitException, "boon") do
++      Timeout.timeout(10, Timeout::ExitException) do
++        raise Timeout::ExitException, "boon"
++      end
++    end
++  end
++
++  def test_enumerator_next
++    bug9380 = '[ruby-dev:47872] [Bug #9380]: timeout in Enumerator#next'
++    e = (o=Object.new).to_enum
++    def o.each
++      sleep
++    end
++    assert_raise_with_message(Timeout::Error, 'execution expired', bug9380) do
++      Timeout.timeout(0.01) {e.next}
++    end
++  end
+ end
+diff --git a/test/test_weakref.rb b/test/test_weakref.rb
+index 85820b1..f12e943 100644
+--- a/test/test_weakref.rb
++++ b/test/test_weakref.rb
+@@ -19,9 +19,14 @@ class TestWeakRef < Test::Unit::TestCase
+   end
+ 
+   def test_recycled
+-    weak = make_weakref
+-    ObjectSpace.garbage_collect
+-    ObjectSpace.garbage_collect
++    weaks = []
++    weak = nil
++    100.times do
++      weaks << make_weakref
++      ObjectSpace.garbage_collect
++      ObjectSpace.garbage_collect
++      break if weak = weaks.find {|w| !w.weakref_alive?}
++    end
+     assert_raise(WeakRef::RefError) {weak.to_s}
+     assert_not_predicate(weak, :weakref_alive?)
+   end
+diff --git a/test/thread/test_queue.rb b/test/thread/test_queue.rb
+index 563b91e..2126500 100644
+--- a/test/thread/test_queue.rb
++++ b/test/thread/test_queue.rb
+@@ -55,6 +55,13 @@ class TestQueue < Test::Unit::TestCase
+     assert_equal(1, q.max)
+     assert_raise(ArgumentError) { q.max = -1 }
+     assert_equal(1, q.max)
++
++    before = q.max
++    q.max.times { q << 1 }
++    t1 = Thread.new { q << 1 }
++    sleep 0.01 until t1.stop?
++    q.max = q.max + 1
++    assert_equal before + 1, q.max
+   end
+ 
+   def test_queue_pop_interrupt
+@@ -134,6 +141,29 @@ class TestQueue < Test::Unit::TestCase
+     assert_same q, retval
+   end
+ 
++  def test_sized_queue_throttle
++    q = SizedQueue.new(1)
++    i = 0
++    consumer = Thread.new do
++      while q.pop
++        i += 1
++        Thread.pass
++      end
++    end
++    nprod = 4
++    npush = 100
++
++    producer = nprod.times.map do
++      Thread.new do
++        npush.times { q.push(true) }
++      end
++    end
++    producer.each(&:join)
++    q.push(nil)
++    consumer.join
++    assert_equal(nprod * npush, i)
++  end
++
+   def test_queue_thread_raise
+     q = Queue.new
+     th1 = Thread.new do
+diff --git a/version.h b/version.h
+index be88078..a3c4820 100644
+--- a/version.h
++++ b/version.h
+@@ -1,10 +1,10 @@
+ #define RUBY_VERSION "2.1.0"
+-#define RUBY_RELEASE_DATE "2013-12-25"
+-#define RUBY_PATCHLEVEL 0
++#define RUBY_RELEASE_DATE "2014-02-06"
++#define RUBY_PATCHLEVEL 27
+ 
+-#define RUBY_RELEASE_YEAR 2013
+-#define RUBY_RELEASE_MONTH 12
+-#define RUBY_RELEASE_DAY 25
++#define RUBY_RELEASE_YEAR 2014
++#define RUBY_RELEASE_MONTH 2
++#define RUBY_RELEASE_DAY 6
+ 
+ #include "ruby/version.h"
+ 
+diff --git a/vm_insnhelper.c b/vm_insnhelper.c
+index 99b0c75..edf4e46 100644
+--- a/vm_insnhelper.c
++++ b/vm_insnhelper.c
+@@ -126,20 +126,22 @@ NORETURN(static void argument_error(const rb_iseq_t *iseq, int miss_argc, int mi
+ static void
+ argument_error(const rb_iseq_t *iseq, int miss_argc, int min_argc, int max_argc)
+ {
++    rb_thread_t *th = GET_THREAD();
+     VALUE exc = rb_arg_error_new(miss_argc, min_argc, max_argc);
+-    VALUE bt = rb_make_backtrace();
+-    VALUE err_line = 0;
++    VALUE at;
+ 
+     if (iseq) {
+-	int line_no = FIX2INT(rb_iseq_first_lineno(iseq->self));
+-
+-	err_line = rb_sprintf("%s:%d:in `%s'",
+-			      RSTRING_PTR(iseq->location.path),
+-			      line_no, RSTRING_PTR(iseq->location.label));
+-	rb_funcall(bt, rb_intern("unshift"), 1, err_line);
++	vm_push_frame(th, iseq, VM_FRAME_MAGIC_METHOD, Qnil /* self */, Qnil /* klass */, Qnil /* specval*/,
++		      iseq->iseq_encoded, th->cfp->sp, 0 /* local_size */, 0 /* me */, 0 /* stack_max */);
++	at = rb_vm_backtrace_object();
++	vm_pop_frame(th);
++    }
++    else {
++	at = rb_vm_backtrace_object();
+     }
+ 
+-    rb_funcall(exc, rb_intern("set_backtrace"), 1, bt);
++    rb_iv_set(exc, "bt_locations", at);
++    rb_funcall(exc, rb_intern("set_backtrace"), 1, at);
+     rb_exc_raise(exc);
+ }
+ 
+@@ -2002,7 +2004,8 @@ vm_search_super_method(rb_thread_t *th, rb_control_frame_t *reg_cfp, rb_call_inf
+ 	current_defined_class = RCLASS_REFINED_CLASS(current_defined_class);
+     }
+ 
+-    if (!FL_TEST(current_defined_class, RMODULE_INCLUDED_INTO_REFINEMENT) &&
++    if (BUILTIN_TYPE(current_defined_class) != T_MODULE &&
++	!FL_TEST(current_defined_class, RMODULE_INCLUDED_INTO_REFINEMENT) &&
+ 	!rb_obj_is_kind_of(ci->recv, current_defined_class)) {
+ 	VALUE m = RB_TYPE_P(current_defined_class, T_ICLASS) ?
+ 	    RBASIC(current_defined_class)->klass : current_defined_class;
+@@ -2022,6 +2025,12 @@ vm_search_super_method(rb_thread_t *th, rb_control_frame_t *reg_cfp, rb_call_inf
+ 		 " by define_method() is not supported."
+ 		 " Specify all arguments explicitly.");
+     }
++    if (!ci->klass) {
++	/* bound instance method of module */
++	ci->aux.missing_reason = NOEX_SUPER;
++	CI_SET_FASTPATH(ci, vm_call_method_missing, 1);
++	return;
++    }
+ 
+     /* TODO: use inline cache */
+     ci->me = rb_method_entry(ci->klass, ci->mid, &ci->defined_class);
+diff --git a/win32/Makefile.sub b/win32/Makefile.sub
+index 305f37d..a04e802 100644
+--- a/win32/Makefile.sub
++++ b/win32/Makefile.sub
+@@ -1034,14 +1034,17 @@ $(RCFILES): $(RBCONFIG) $(srcdir)/revision.h $(srcdir)/win32/resource.rb
+ 			-so_name=$(RUBY_SO_NAME) \
+ 			. $(icondirs) $(win_srcdir)
+ 
+-$(arch)-fake.rb: $(MKFILES)
++$(arch)-fake.rb: $(MKFILES) $(srcdir)/version.h
+ 	@echo Creating <<$@
+ class Object
++  remove_const :CROSS_COMPILING if defined?(CROSS_COMPILING)
+   CROSS_COMPILING = RUBY_PLATFORM
+   remove_const :RUBY_PLATFORM
+   remove_const :RUBY_VERSION
++  remove_const :RUBY_DESCRIPTION if defined?(RUBY_DESCRIPTION)
+   RUBY_PLATFORM = "$(arch)"
+-  RUBY_VERSION = "$(MAJOR).$(MINOR).$(TEENY)"
++  RUBY_VERSION = $(RUBY_PROGRAM_VERSION)
++  RUBY_DESCRIPTION = "ruby #{RUBY_VERSION} (" + $(RUBY_PROGRAM_RELEASE_DATE) + ") [#{RUBY_PLATFORM}]"
+ end
+ class File
+   remove_const :ALT_SEPARATOR
+diff --git a/win32/setup.mak b/win32/setup.mak
+index 458212b..b6358e5 100644
+--- a/win32/setup.mak
++++ b/win32/setup.mak
+@@ -117,6 +117,8 @@ int main(void) {return (EnumProcesses(NULL,0,NULL) ? 0 : 1);}
+ MAJOR = RUBY_API_VERSION_MAJOR
+ MINOR = RUBY_API_VERSION_MINOR
+ TEENY = RUBY_API_VERSION_TEENY
++RUBY_PROGRAM_VERSION = RUBY_VERSION
++RUBY_PROGRAM_RELEASE_DATE = RUBY_RELEASE_DATE
+ MSC_VER = _MSC_VER
+ <<
+ 
+diff --git a/win32/win32.c b/win32/win32.c
+index 9cbd07f..2c888ae 100644
+--- a/win32/win32.c
++++ b/win32/win32.c
+@@ -6965,7 +6965,7 @@ rb_w32_fd_is_text(int fd)
+     return _osfile(fd) & FTEXT;
+ }
+ 
+-#if RUBY_MSVCRT_VERSION < 80 && !defined(__MINGW64__)
++#if RUBY_MSVCRT_VERSION < 80 && !defined(HAVE__GMTIME64_S)
+ /* License: Ruby's */
+ static int
+ unixtime_to_systemtime(const time_t t, SYSTEMTIME *st)
+@@ -7027,7 +7027,11 @@ systemtime_to_localtime(TIME_ZONE_INFORMATION *tz, SYSTEMTIME *gst, SYSTEMTIME *
+ }
+ #endif
+ 
+-#ifdef __MINGW64__
++#ifdef HAVE__GMTIME64_S
++# ifndef HAVE__LOCALTIME64_S
++/* assume same as _gmtime64_s() */
++#  define HAVE__LOCALTIME64_S 1
++# endif
+ # ifndef MINGW_HAS_SECURE_API
+    _CRTIMP errno_t __cdecl _gmtime64_s(struct tm* tm, const __time64_t *time);
+    _CRTIMP errno_t __cdecl _localtime64_s(struct tm* tm, const __time64_t *time);
+@@ -7046,7 +7050,7 @@ gmtime_r(const time_t *tp, struct tm *rp)
+ 	errno = e;
+ 	return NULL;
+     }
+-#if RUBY_MSVCRT_VERSION >= 80 || defined(__MINGW64__)
++#if RUBY_MSVCRT_VERSION >= 80 || defined(HAVE__GMTIME64_S)
+     e = gmtime_s(rp, tp);
+     if (e != 0) goto error;
+ #else
+@@ -7070,7 +7074,7 @@ localtime_r(const time_t *tp, struct tm *rp)
+ 	errno = e;
+ 	return NULL;
+     }
+-#if RUBY_MSVCRT_VERSION >= 80 || defined(__MINGW64__)
++#if RUBY_MSVCRT_VERSION >= 80 || defined(HAVE__LOCALTIME64_S)
+     e = localtime_s(rp, tp);
+     if (e) goto error;
+ #else
