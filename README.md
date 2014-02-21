@@ -55,6 +55,7 @@ Reinstall the rubies you want to patch with float_warnings accordingly:
 
     rvm install 1.9.3 --patch float_warnings -n float_warnings
     rvm install 2.0.0 --patch float_warnings -n float_warnings
+    rvm install 2.1.0 --patch float_warnings -n float_warnings
 
 ## Notes
 
@@ -147,3 +148,4 @@ All patches are provided without any warranty. Use at your own risk!
 * load performance patch: https://github.com/ruby/ruby/commit/9ce69e7cef1272c86a93eeb9a1888fe6d2a94704#load.c
 * optimized hashes: https://gist.github.com/4136373
 * array as queue: https://gist.github.com/4136373
+* float_warnings patch: http://slid.es/wolfgangteuber/saving-money-with-ruby/fullscreen
