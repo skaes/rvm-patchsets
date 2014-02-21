@@ -1,0 +1,83 @@
+diff --git a/process.c b/process.c
+index 11655bd..37c9f68 100644
+--- a/process.c
++++ b/process.c
+@@ -4917,29 +4917,23 @@ rb_daemon(int nochdir, int noclose)
+     before_fork();
+     err = daemon(nochdir, noclose);
+     after_fork();
++    rb_thread_atfork();
+ #else
+     int n;
+ 
+-    switch (rb_fork(0, 0, 0, Qnil)) {
+-      case -1:
+-	rb_sys_fail("daemon");
+-      case 0:
+-	break;
+-      default:
+-	_exit(EXIT_SUCCESS);
++#define fork_daemon() \
++    switch (rb_fork(0, 0, 0, Qnil)) {                \
++      case -1: return -1; \
++      case 0:  rb_thread_atfork(); break; \
++      default: _exit(EXIT_SUCCESS); \
+     }
+ 
+-    proc_setsid();
++    fork_daemon();
++
++    if (setsid() < 0) return -1;
+ 
+     /* must not be process-leader */
+-    switch (rb_fork(0, 0, 0, Qnil)) {
+-      case -1:
+-	return -1;
+-      case 0:
+-	break;
+-      default:
+-	_exit(EXIT_SUCCESS);
+-    }
++    fork_daemon();
+ 
+     if (!nochdir)
+ 	err = chdir("/");
+diff --git a/test/ruby/test_process.rb b/test/ruby/test_process.rb
+index d1e2e19..0d6a3eb 100644
+--- a/test/ruby/test_process.rb
++++ b/test/ruby/test_process.rb
+@@ -1308,6 +1308,15 @@ class TestProcess < Test::Unit::TestCase
+       assert_equal("ok?\n", data)
+     end
+ 
++    def test_daemon_pid
++      cpid, dpid = IO.popen("-", "r+") do |f|
++        break f.pid, Integer(f.read) if f
++        Process.daemon(false, true)
++        puts $$
++      end
++      assert_not_equal(cpid, dpid)
++    end
++
+     if File.directory?("/proc/self/task")
+       def test_daemon_no_threads
+         pid, data = IO.popen("-", "r+") do |f|
+@@ -1319,6 +1328,18 @@ class TestProcess < Test::Unit::TestCase
+         assert_equal(2, data.size, bug4920)
+         assert_not_include(data.map(&:to_i), pid)
+       end
++    else # darwin
++      def test_daemon_no_threads
++        data = Timeout.timeout(3) do
++          IO.popen("-") do |f|
++            break f.readlines.map(&:chomp) if f
++            th = Thread.start {sleep 3}
++            Process.daemon(true, true)
++            puts Thread.list.size, th.status.inspect
++          end
++        end
++        assert_equal(["1", "false"], data)
++      end
+     end
+   end
+ 

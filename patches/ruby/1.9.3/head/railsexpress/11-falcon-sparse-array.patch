@@ -852,7 +852,7 @@ index 9229896..2fecd57 100644
  
  #endif /* METHOD_H */
 diff --git a/object.c b/object.c
-index 0a0b260..034df1b 100644
+index 1ab28a3..dcdc437 100644
 --- a/object.c
 +++ b/object.c
 @@ -236,17 +236,8 @@ init_copy(VALUE dest, VALUE obj)
