@@ -1,0 +1,140 @@
+diff --git a/gc.c b/gc.c
+index 93b2557..3eab6fb 100644
+--- a/gc.c
++++ b/gc.c
+@@ -1054,6 +1054,7 @@ ruby_xfree(void *x)
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_enable(void)
+ {
+@@ -1076,6 +1077,7 @@ rb_gc_enable(void)
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_disable(void)
+ {
+@@ -1098,6 +1100,7 @@ rb_gc_disable(void)
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_enable_stats()
+ {
+@@ -1119,6 +1122,7 @@ rb_gc_enable_stats()
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_disable_stats()
+ {
+@@ -1138,6 +1142,7 @@ rb_gc_disable_stats()
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_stats_enabled()
+ {
+@@ -1157,6 +1162,7 @@ rb_gc_stats_enabled()
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_clear_stats()
+ {
+@@ -1180,6 +1186,7 @@ rb_gc_clear_stats()
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_allocated_size()
+ {
+@@ -1224,6 +1231,7 @@ rb_gc_num_allocations()
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_enable_trace()
+ {
+@@ -1245,6 +1253,7 @@ rb_gc_enable_trace()
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_disable_trace()
+ {
+@@ -1264,6 +1273,7 @@ rb_gc_disable_trace()
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_trace_enabled()
+ {
+@@ -1292,6 +1302,7 @@ const char* GC_LOGFILE_IVAR = "@gc_logfile_name";
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_log_file(int argc, VALUE *argv, VALUE self)
+ {
+@@ -1383,6 +1394,7 @@ rb_gc_after_fork()
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_log(self, original_str)
+      VALUE self, original_str;
+@@ -1409,6 +1421,7 @@ rb_gc_log(self, original_str)
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_dump()
+ {
+@@ -1439,6 +1452,7 @@ static const char* obj_type(VALUE tp);
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_dump_file_and_line_info(int argc, VALUE *argv)
+ {
+@@ -1534,6 +1548,7 @@ rb_gc_heap_slots()
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_collections()
+ {
+@@ -1552,6 +1567,7 @@ rb_gc_collections()
+  *
+  */
+ 
++RUBY_FUNC_EXPORTED
+ VALUE
+ rb_gc_time()
+ {
+@@ -4252,6 +4268,7 @@ VALUE os_allocated_objects(VALUE self)
+ #endif
+ }
+ 
++RUBY_FUNC_EXPORTED
+ unsigned LONG_LONG rb_os_allocated_objects()
+ {
+     rb_objspace_t *objspace = &rb_objspace;
