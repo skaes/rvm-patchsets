@@ -15,4 +15,3 @@ railsexpress/14-show-full-backtrace-on-stack-overflow.patch
 railsexpress/15-configurable-fiber-stack-sizes.patch
 railsexpress/16-backport-psych-20.patch
 railsexpress/17-fix-missing-c-return-event.patch
-railsexpress/18-fix-process-daemon-call.patch
