@@ -35,6 +35,7 @@ Reinstall the rubies you want to patch with railsexpress:
     rvm reinstall 1.9.3 --patch railsexpress
     rvm reinstall 2.0.0 --patch railsexpress
     rvm reinstall 2.1.0 --patch railsexpress
+    rvm reinstall 2.1.1 --patch railsexpress
 
 Alternatively, you can pass the ruby version to reinstall to the install script:
 
@@ -46,10 +47,11 @@ the patches:
     rvm install 1.9.3 --patch railsexpress -n railsexpress
     rvm install 2.0.0 --patch railsexpress -n railsexpress
     rvm install 2.1.0 --patch railsexpress -n railsexpress
+    rvm install 2.1.1 --patch railsexpress -n railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
-    rvm use 2.1.0-railsexpress
+    rvm use 2.1.1-railsexpress
 
 Reinstall the rubies you want to patch with float_warnings accordingly:
 
@@ -62,16 +64,19 @@ Reinstall the rubies you want to patch with float_warnings accordingly:
 The patches are for specific versions of ruby. They might work with later versions, but
 there's no guarantee. The following versions are currently supported:
 
-    1.9.3-p392  # current rvm default for MRI-ruby 1.9.3
-    1.9.3-p484  # current rvm default for MRI-ruby 1.9.3
-    2.0.0-p353  # current rvm default for MRI-ruby 2.0.0
-    2.1.0-p0    # current rvm default for MRI-ruby 2.1.0
+    1.9.3-p392  # outdated, please use 1.9.3-p545
+    1.9.3-p484  # outdated, please use 1.9.3-p545
+    1.9.3-p545  # current rvm default for MRI-ruby 1.9.3
+    2.0.0-p353  # outdated, please use 2.0.0-p451
+    2.0.0-p451  # current rvm default for MRI-ruby 2.0.0
+    2.1.0       # starting with 2.1.0, patchlevels are no longer used upstream
+    2.1.1
 
 In order to make some patch level N the default for rvm, add the line(s)
 
     ruby_1.9.3_patch_level=N
     ruby_2.0.0_patch_level=N
-    ruby_2.1.0_patch_level=N
+    # invalid for 2.1.x
 
 to $rvm_path/user/db.
 
@@ -79,7 +84,7 @@ To enable heap dump support, pass the --enable-gcdebug option to the rvm install
 
     rvm install 1.9.3 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.0.0 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    # not yet available for 2.1.0
+    # not yet available for 2.1.x
 
 If rvm cannot configure your ruby, update your rvm install.
 
