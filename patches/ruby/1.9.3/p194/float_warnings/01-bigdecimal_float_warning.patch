@@ -11,14 +11,14 @@ index 1dc2f15..a8c9b8a 100644
  	    rb_raise(rb_eArgError, "precision too large.");
  	}
 diff --git a/ext/bigdecimal/lib/bigdecimal/util.rb b/ext/bigdecimal/lib/bigdecimal/util.rb
-index b4b02b1..7c1843c 100644
+index b4b02b1..f757665 100644
 --- a/ext/bigdecimal/lib/bigdecimal/util.rb
 +++ b/ext/bigdecimal/lib/bigdecimal/util.rb
 @@ -28,7 +28,11 @@ class Float < Numeric
    #     # => #<BigDecimal:1dc69e0,'0.5E0',9(18)>
    #
    def to_d(precision=nil)
-+    warn("#{caller[0].gsub(/:in `.*'$/, '')}: warning: initializing BigDecimal with Float.")
++    warn("#{caller[0].gsub(/:in `.*'$/, '')}: warning: calling .to_d on an instance of Float.")
 +    old_verbose, $VERBOSE = $VERBOSE, nil
      BigDecimal(self, precision || Float::DIG+1)
 +  ensure
