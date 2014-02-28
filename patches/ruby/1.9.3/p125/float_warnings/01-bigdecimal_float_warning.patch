@@ -1,12 +1,29 @@
 diff --git a/ext/bigdecimal/bigdecimal.c b/ext/bigdecimal/bigdecimal.c
-index f57ea90..1b737b8 100644
+index f57ea90..a2c8826 100644
 --- a/ext/bigdecimal/bigdecimal.c
 +++ b/ext/bigdecimal/bigdecimal.c
 @@ -2278,6 +2278,7 @@ BigDecimal_new(int argc, VALUE *argv, VALUE self)
-        return ToValue(GetVpValue(iniValue, 1));
-
+ 	return ToValue(GetVpValue(iniValue, 1));
+ 
        case T_FLOAT:
-+        rb_warn("initializing BigDecimal with Float.");
-        if (mf > DBL_DIG+1) {
-            rb_raise(rb_eArgError, "precision too large.");
-        }
++	rb_warn("initializing BigDecimal with Float.");
+ 	if (mf > DBL_DIG+1) {
+ 	    rb_raise(rb_eArgError, "precision too large.");
+ 	}
+diff --git a/ext/bigdecimal/lib/bigdecimal/util.rb b/ext/bigdecimal/lib/bigdecimal/util.rb
+index b4b02b1..3e7ad80 100644
+--- a/ext/bigdecimal/lib/bigdecimal/util.rb
++++ b/ext/bigdecimal/lib/bigdecimal/util.rb
+@@ -28,7 +28,11 @@ class Float < Numeric
+   #     # => #<BigDecimal:1dc69e0,'0.5E0',9(18)>
+   #
+   def to_d(precision=nil)
+-    BigDecimal(self, precision || Float::DIG+1)
++    warn("#{caller[0].gsub(/:in `.*'$/, '')}: warning: initializing BigDecimal with Float.")
++    old_verbose, $VERBOSE = $VERBOSE, nil
++    BigDecimal(self, precision || Float::DIG)
++  ensure
++    $VERBOSE = old_verbose
+   end
+ end
+ 
