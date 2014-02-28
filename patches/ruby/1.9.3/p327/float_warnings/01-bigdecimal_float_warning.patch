@@ -1,12 +1,12 @@
 diff --git a/ext/bigdecimal/bigdecimal.c b/ext/bigdecimal/bigdecimal.c
-index b344153..5f7c786 100644
+index b344153..dd1d56e 100644
 --- a/ext/bigdecimal/bigdecimal.c
 +++ b/ext/bigdecimal/bigdecimal.c
 @@ -2292,6 +2292,7 @@ BigDecimal_new(int argc, VALUE *argv, VALUE self)
  	return ToValue(GetVpValue(iniValue, 1));
  
        case T_FLOAT:
-+	rb_warn("initializing BigDecimal with Float.");
++	rb_warn("initializing BigDecimal with an instance of Float.");
  	if (mf > DBL_DIG+1) {
  	    rb_raise(rb_eArgError, "precision too large.");
  	}
