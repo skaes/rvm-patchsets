@@ -1,8 +1,8 @@
 diff --git a/configure.in b/configure.in
-index 17ed3ed..96b8f19 100644
+index ea14b94..702d17d 100644
 --- a/configure.in
 +++ b/configure.in
-@@ -1897,6 +1897,7 @@ AC_CHECK_FUNCS(gettimeofday)		# for making ac_cv_func_gettimeofday
+@@ -1885,6 +1885,7 @@ AC_CHECK_FUNCS(gettimeofday)		# for making ac_cv_func_gettimeofday
  AC_CHECK_FUNCS(gmtime_r)
  AC_CHECK_FUNCS(initgroups)
  AC_CHECK_FUNCS(ioctl)
