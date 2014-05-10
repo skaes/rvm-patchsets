@@ -22,7 +22,7 @@ index 0c8b7fc..f993596 100644
    {$(VPATH)}timev.h $(ENCODING_H_INCLUDES)
  string.$(OBJEXT): {$(VPATH)}string.c $(RUBY_H_INCLUDES) {$(VPATH)}re.h \
 diff --git a/gc.c b/gc.c
-index 06d7014..59517af 100644
+index b9ad92b..e7da770 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -22,6 +22,7 @@
@@ -33,7 +33,7 @@ index 06d7014..59517af 100644
  #include "constant.h"
  #include "ruby_atomic.h"
  #include "probes.h"
-@@ -409,6 +410,23 @@ typedef struct rb_heap_struct {
+@@ -414,6 +415,23 @@ typedef struct rb_heap_struct {
      size_t total_slots;      /* total slot count (page_length * HEAP_OBJ_LIMIT) */
  } rb_heap_t;
  
@@ -57,7 +57,7 @@ index 06d7014..59517af 100644
  typedef struct rb_objspace {
      struct {
  	size_t limit;
-@@ -422,6 +440,10 @@ typedef struct rb_objspace {
+@@ -427,6 +445,10 @@ typedef struct rb_objspace {
      rb_heap_t eden_heap;
      rb_heap_t tomb_heap; /* heap for zombies and ghosts */
  
@@ -68,7 +68,7 @@ index 06d7014..59517af 100644
      struct {
  	struct heap_page **sorted;
  	size_t used;
-@@ -599,7 +621,12 @@ struct heap_page {
+@@ -604,7 +626,12 @@ struct heap_page {
  #define ruby_initial_gc_stress	gc_params.gc_stress
  VALUE *ruby_initial_gc_stress_ptr = &ruby_initial_gc_stress;
  #else
@@ -82,7 +82,7 @@ index 06d7014..59517af 100644
  VALUE *ruby_initial_gc_stress_ptr = &rb_objspace.gc_stress;
  #endif
  
-@@ -878,6 +905,10 @@ rb_objspace_alloc(void)
+@@ -883,6 +910,10 @@ rb_objspace_alloc(void)
  
      malloc_limit = gc_params.malloc_limit_min;
  
@@ -93,7 +93,7 @@ index 06d7014..59517af 100644
      return objspace;
  }
  #endif
-@@ -919,6 +950,13 @@ rb_objspace_free(rb_objspace_t *objspace)
+@@ -924,6 +955,13 @@ rb_objspace_free(rb_objspace_t *objspace)
  	objspace->eden_heap.pages = NULL;
      }
      free_stack_chunks(&objspace->mark_stack);
@@ -107,7 +107,7 @@ index 06d7014..59517af 100644
      free(objspace);
  }
  #endif
-@@ -6417,6 +6455,28 @@ ruby_mimfree(void *ptr)
+@@ -6424,6 +6462,28 @@ ruby_mimfree(void *ptr)
      free(mem);
  }
  
