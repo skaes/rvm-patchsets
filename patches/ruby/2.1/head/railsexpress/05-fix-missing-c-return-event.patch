@@ -48,12 +48,20 @@ index 40916a5..a82c1ec 100644
  /* vm_dump.c */
  void rb_vm_bugreport(void);
 diff --git a/test/ruby/test_settracefunc.rb b/test/ruby/test_settracefunc.rb
-index b106ea5..947178e 100644
+index 1fca312..add2eee 100644
 --- a/test/ruby/test_settracefunc.rb
 +++ b/test/ruby/test_settracefunc.rb
-@@ -1066,4 +1066,88 @@ class TestSetTraceFunc < Test::Unit::TestCase
+@@ -1066,6 +1066,7 @@ class TestSetTraceFunc < Test::Unit::TestCase
        :b_return
      ], events)
+   end
++
+   class C9759
+     define_method(:foo){
+       raise
+@@ -1100,4 +1101,90 @@ class TestSetTraceFunc < Test::Unit::TestCase
+     end
+ 
    end
 +
 +  def test_const_missing
@@ -87,6 +95,7 @@ index b106ea5..947178e 100644
 +    def foo; 1; end;
 +    alias bar foo
 +  end
++
 +  def test_aliased_ruby_method
 +    events = []
 +    aliased = AliasedRubyMethod.new
@@ -100,6 +109,7 @@ index b106ea5..947178e 100644
 +      [:return, :foo]
 +    ], events, "should use original method name for tracing ruby methods")
 +  end
++
 +  class AliasedCMethod < Hash
 +    alias original_size size
 +    def size; original_size; end
@@ -154,7 +164,7 @@ index 424730d..21c3f66 100644
  
      UNREACHABLE;
 diff --git a/vm.c b/vm.c
-index 947b181..da99203 100644
+index 8e40b9f..462565e 100644
 --- a/vm.c
 +++ b/vm.c
 @@ -277,6 +277,24 @@ vm_get_ruby_level_caller_cfp(rb_thread_t *th, rb_control_frame_t *cfp)
@@ -183,7 +193,7 @@ index 947b181..da99203 100644
  
  void
 diff --git a/vm_eval.c b/vm_eval.c
-index c7d6f73..52964fd 100644
+index 7382b19..87d99d0 100644
 --- a/vm_eval.c
 +++ b/vm_eval.c
 @@ -686,7 +686,7 @@ raise_method_missing(rb_thread_t *th, int argc, const VALUE *argv, VALUE obj,
