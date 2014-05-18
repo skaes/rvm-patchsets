@@ -1,8 +1,8 @@
 diff --git a/eval.c b/eval.c
-index fb3307c..356226e 100644
+index 213e78c..c37136f 100644
 --- a/eval.c
 +++ b/eval.c
-@@ -1161,7 +1161,7 @@ static VALUE trace_func = 0;
+@@ -1171,7 +1171,7 @@ static VALUE trace_func = 0;
  static int tracing = 0;
  static void call_trace_func _((rb_event_t,NODE*,VALUE,ID,VALUE));
  

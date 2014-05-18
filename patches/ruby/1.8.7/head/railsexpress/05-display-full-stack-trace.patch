@@ -1,8 +1,8 @@
 diff --git a/eval.c b/eval.c
-index 6ff2560..fb3307c 100644
+index f49044a..213e78c 100644
 --- a/eval.c
 +++ b/eval.c
-@@ -1325,8 +1325,8 @@ error_print()
+@@ -1335,8 +1335,8 @@ error_print()
          int truncate = eclass == rb_eSysStackError;
  
  #define TRACE_MAX (TRACE_HEAD+TRACE_TAIL+5)

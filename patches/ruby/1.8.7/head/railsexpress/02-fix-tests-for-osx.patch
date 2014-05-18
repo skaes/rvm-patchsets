@@ -96,7 +96,7 @@ index d6717c5..0aefd1b 100644
    DRb.thread.join
  end
 diff --git a/test/drb/ut_safe1.rb b/test/drb/ut_safe1.rb
-index 4df8e1e..ee097f6 100644
+index 4df8e1e..5e7fe82 100644
 --- a/test/drb/ut_safe1.rb
 +++ b/test/drb/ut_safe1.rb
 @@ -8,7 +8,7 @@ if __FILE__ == $0
@@ -104,7 +104,7 @@ index 4df8e1e..ee097f6 100644
    end
  
 -  DRb.start_service('druby://localhost:0', [1, 2, 'III', 4, "five", 6], 
-+  DRb.start_service('druby://127.0.0.1:0', [1, 2, 'III', 4, "five", 6], 
++  DRb.start_service('druby://127.0.0.1:0', [1, 2, 'III', 4, "five", 6],
                      {:safe_level => 1})
    es = DRb::ExtServ.new(ARGV.shift, ARGV.shift)
    DRb.thread.join

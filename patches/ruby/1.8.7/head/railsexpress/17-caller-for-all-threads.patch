@@ -1,8 +1,8 @@
 diff --git a/eval.c b/eval.c
-index 356226e..a0fdc55 100644
+index c37136f..55fe096 100644
 --- a/eval.c
 +++ b/eval.c
-@@ -8199,6 +8199,17 @@ rb_f_method_name()
+@@ -8209,6 +8209,17 @@ rb_f_method_name()
      }
  }
  
@@ -20,7 +20,7 @@ index 356226e..a0fdc55 100644
  void
  Init_eval()
  {
-@@ -8244,6 +8255,7 @@ Init_eval()
+@@ -8254,6 +8265,7 @@ Init_eval()
      rb_define_global_function("fail", rb_f_raise, -1);
  
      rb_define_global_function("caller", rb_f_caller, -1);
@@ -28,7 +28,7 @@ index 356226e..a0fdc55 100644
  
      rb_define_global_function("exit", rb_f_exit, -1);
      rb_define_global_function("abort", rb_f_abort, -1);
-@@ -10599,6 +10611,7 @@ static int   th_sig, th_safe;
+@@ -10609,6 +10621,7 @@ static int   th_sig, th_safe;
  #define RESTORE_RAISE		5
  #define RESTORE_SIGNAL		6
  #define RESTORE_EXIT		7
@@ -36,23 +36,23 @@ index 356226e..a0fdc55 100644
  
  extern VALUE *rb_gc_stack_start;
  #ifdef __ia64
-@@ -10705,6 +10718,15 @@ rb_thread_switch(n)
+@@ -10715,6 +10728,15 @@ rb_thread_switch(n)
  	}
  	rb_exc_raise(th_raise_exception);
  	break;
 +      case RESTORE_BACKTRACE:
-+        rb_hash_aset(backtrace_for_each_thread, curr_thread->thread, 
++        rb_hash_aset(backtrace_for_each_thread, curr_thread->thread,
 +                     backtrace(backtrace_level_for_each_thread));
 +        if (curr_thread != main_thread) {
 +            switch_thread_context_to_collect_backtrace(curr_thread->next);
-+        } else { 
++        } else {
 +	        /* Circled back to main thread, cycle is complete. */
 +        }
 +        break;
        case RESTORE_NORMAL:
        default:
  	break;
-@@ -13875,3 +13897,74 @@ rb_throw(tag, val)
+@@ -13897,3 +13919,74 @@ rb_throw(tag, val)
      argv[1] = val;
      rb_f_throw(2, argv);
  }
@@ -72,19 +72,19 @@ index 356226e..a0fdc55 100644
 +/*
 + *  call-seq:
 + *     caller_for_all_threads(start=1)    => array
-+ *  
-+ *  Returns the current execution stack for all threads 
++ *
++ *  Returns the current execution stack for all threads
 + *  ---a hash whose keys are thread instances and values
 + *  the thread caller backtrace.
 + *
-+ *  Backtraces are array of hashes indicating location on the 
++ *  Backtraces are array of hashes indicating location on the
 + *  stack. Hash keys include ``<em>:line</em>'' or ``<em>:file</em>''
-+ *  and ``<em>:method'</em>''. 
++ *  and ``<em>:method'</em>''.
 + *
 + *  The optional _start_ parameter
 + *  determines the number of initial stack entries to omit from the
 + *  result.
-+ *     
++ *
 + *     def a(skip)
 + *       caller_for_all_threads(skip)
 + *     end
@@ -123,22 +123,22 @@ index 356226e..a0fdc55 100644
 +	result = backtrace_for_each_thread;
 +	backtrace_for_each_thread = Qnil;
 +	backtrace_for_each_thread = 0;
-+		
++
 +	rb_thread_critical = critical;
 +    return result;
 +}
 diff --git a/test/callerforallthreads/test_caller_for_each_thread.rb b/test/callerforallthreads/test_caller_for_each_thread.rb
 new file mode 100644
-index 0000000..6aebaed
+index 0000000..abffd8e
 --- /dev/null
 +++ b/test/callerforallthreads/test_caller_for_each_thread.rb
-@@ -0,0 +1,95 @@
+@@ -0,0 +1,94 @@
 +# -*- ruby-indent-level: 4 -*-
 +require 'thread'
 +require 'test/unit'
 +
 +class AClassWithNestedmethods
-+  
++
 +  def an_ultra_nested_method(skip)
 +    caller_for_all_threads skip
 +  end
@@ -150,11 +150,11 @@ index 0000000..6aebaed
 +  def a_method(skip=0)
 +    a_nested_method skip
 +  end
-+  
++
 +end
 +
 +class CallerForEachThreadTest < Test::Unit::TestCase
-+  
++
 +  def testCollectMeaningfulBacktraceForASingleThread
 +    backtraces = AClassWithNestedmethods.new.a_method
 +    backtrace = backtraces[Thread.current]
@@ -162,7 +162,7 @@ index 0000000..6aebaed
 +    assert_equal __FILE__ + ":8:in `an_ultra_nested_method'", backtrace[0]
 +    assert_equal __FILE__ + ":12:in `a_nested_method'", backtrace[1]
 +    assert_equal __FILE__ + ":16:in `a_method'", backtrace[2]
-+    assert_equal __FILE__ + ":24:in `testCollectMeaningfulBacktraceForASingleThread'", 
++    assert_equal __FILE__ + ":24:in `testCollectMeaningfulBacktraceForASingleThread'",
 +                 backtrace[3]
 +  end
 +
@@ -171,7 +171,7 @@ index 0000000..6aebaed
 +    backtrace = backtraces[Thread.current]
 +    assert_not_nil backtrace
 +    assert_equal __FILE__ + ":16:in `a_method'", backtrace[0]
-+    assert_equal __FILE__ + ":35:in `testCanSkipFirstStackEntries'", 
++    assert_equal __FILE__ + ":35:in `testCanSkipFirstStackEntries'",
 +                 backtrace[1]
 +  end
 +
@@ -191,20 +191,20 @@ index 0000000..6aebaed
 +    end
 +
 +    backtraces = AClassWithNestedmethods.new.a_method
-+    
++
 +    backtrace = backtraces[Thread.current]
 +    assert_not_nil backtrace
 +    assert_match __FILE__ + ":8:in `an_ultra_nested_method'", backtrace[0]
 +    assert_match __FILE__ + ":12:in `a_nested_method'", backtrace[1]
 +    assert_equal __FILE__ + ":16:in `a_method'", backtrace[2]
-+    assert_equal __FILE__ + ":58:in `testCollectMeaningfulBacktraceForMultipleThreads'", 
++    assert_equal __FILE__ + ":58:in `testCollectMeaningfulBacktraceForMultipleThreads'",
 +                 backtrace[3]
-+                 
++
 +    backtrace = backtraces[first_thread]
 +    assert_not_nil backtrace
-+    assert_equal __FILE__ + ":47:in `testCollectMeaningfulBacktraceForMultipleThreads'", 
++    assert_equal __FILE__ + ":47:in `testCollectMeaningfulBacktraceForMultipleThreads'",
 +                 backtrace[0]
-+    assert_equal __FILE__ + ":45:in `loop'", 
++    assert_equal __FILE__ + ":45:in `loop'",
 +                 backtrace[1]
 +    assert_equal __FILE__ + ":45:in `testCollectMeaningfulBacktraceForMultipleThreads'",
 +                 backtrace[2]
@@ -215,7 +215,7 @@ index 0000000..6aebaed
 +
 +    backtrace = backtraces[second_thread]
 +    assert_not_nil backtrace
-+    assert_equal __FILE__ + ":53:in `testCollectMeaningfulBacktraceForMultipleThreads'", 
++    assert_equal __FILE__ + ":53:in `testCollectMeaningfulBacktraceForMultipleThreads'",
 +                 backtrace[0]
 +    assert_equal __FILE__ + ":52:in `loop'", backtrace[1]
 +    assert_equal __FILE__ + ":52:in `testCollectMeaningfulBacktraceForMultipleThreads'",
@@ -225,6 +225,5 @@ index 0000000..6aebaed
 +    assert_equal __FILE__ + ":51:in `testCollectMeaningfulBacktraceForMultipleThreads'",
 +                 backtrace[5]
 +  end
-+  
-+end
 +
++end
