@@ -1,5 +1,5 @@
 diff --git a/eval.c b/eval.c
-index 4ba414b..e6c3e5f 100644
+index 326b526..56f60c4 100644
 --- a/eval.c
 +++ b/eval.c
 @@ -933,7 +933,18 @@ rb_frame_caller(void)
@@ -115,7 +115,7 @@ index c6a23cc..5c4a902 100644
 +
  end
 diff --git a/vm_eval.c b/vm_eval.c
-index 7644aff..c040ca7 100644
+index b584213..83879a7 100644
 --- a/vm_eval.c
 +++ b/vm_eval.c
 @@ -684,7 +684,7 @@ raise_method_missing(rb_thread_t *th, int argc, const VALUE *argv, VALUE obj,
