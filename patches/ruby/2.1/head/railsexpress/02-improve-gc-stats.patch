@@ -1,5 +1,5 @@
 diff --git a/gc.c b/gc.c
-index 7812d92..b9ad92b 100644
+index 76b8eb9..15558a2 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -450,6 +450,8 @@ typedef struct rb_objspace {
@@ -373,7 +373,7 @@ index 7812d92..b9ad92b 100644
  
      gc_constants = rb_hash_new();
 diff --git a/include/ruby/intern.h b/include/ruby/intern.h
-index 6200e77..eb19662 100644
+index 46af270..4bbf0e8 100644
 --- a/include/ruby/intern.h
 +++ b/include/ruby/intern.h
 @@ -481,6 +481,9 @@ void rb_gc_finalize_deferred(void);

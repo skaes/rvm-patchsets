@@ -22,7 +22,7 @@ index 0c8b7fc..f993596 100644
    {$(VPATH)}timev.h $(ENCODING_H_INCLUDES)
  string.$(OBJEXT): {$(VPATH)}string.c $(RUBY_H_INCLUDES) {$(VPATH)}re.h \
 diff --git a/gc.c b/gc.c
-index b9ad92b..e7da770 100644
+index 15558a2..c30bd0d 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -22,6 +22,7 @@
@@ -316,7 +316,7 @@ index 0000000..e2ec99a
 +}
 +#endif
 diff --git a/st.c b/st.c
-index a5995fb..756f258 100644
+index 6f5e8be..37d0ebe 100644
 --- a/st.c
 +++ b/st.c
 @@ -7,6 +7,7 @@

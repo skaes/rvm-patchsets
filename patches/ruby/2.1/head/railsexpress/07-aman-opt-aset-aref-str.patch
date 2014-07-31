@@ -1,8 +1,8 @@
 diff --git a/compile.c b/compile.c
-index e96a982..a8dd669 100644
+index a76c93b..641b41b 100644
 --- a/compile.c
 +++ b/compile.c
-@@ -4330,6 +4330,23 @@ iseq_compile_each(rb_iseq_t *iseq, LINK_ANCHOR *ret, NODE * node, int poped)
+@@ -4331,6 +4331,23 @@ iseq_compile_each(rb_iseq_t *iseq, LINK_ANCHOR *ret, NODE * node, int poped)
  	    }
  	    break;
  	}
@@ -26,7 +26,7 @@ index e96a982..a8dd669 100644
        case NODE_FCALL:
        case NODE_VCALL:{		/* VCALL: variable or call */
  	/*
-@@ -5300,6 +5317,25 @@ iseq_compile_each(rb_iseq_t *iseq, LINK_ANCHOR *ret, NODE * node, int poped)
+@@ -5301,6 +5318,25 @@ iseq_compile_each(rb_iseq_t *iseq, LINK_ANCHOR *ret, NODE * node, int poped)
  	VALUE flag = 0;
  	VALUE argc;
  
@@ -118,7 +118,7 @@ index ad4bba6..616838d 100644
    @j 最適化された recv.length()。
   */
 diff --git a/test/ruby/test_hash.rb b/test/ruby/test_hash.rb
-index 0bbdf13..cbe55cc 100644
+index 59000ad..d811598 100644
 --- a/test/ruby/test_hash.rb
 +++ b/test/ruby/test_hash.rb
 @@ -215,6 +215,13 @@ class TestHash < Test::Unit::TestCase
