@@ -61,6 +61,7 @@ Install the rubies you want to patch with float_warnings accordingly:
     rvm install 2.0.0 --patch float_warnings -n float_warnings
     rvm install 2.1.0 --patch float_warnings -n float_warnings
     rvm install 2.1.1 --patch float_warnings -n float_warnings
+    rvm install 2.1.2 --patch float_warnings -n float_warnings
 
 ## Notes
 
