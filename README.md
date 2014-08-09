@@ -36,6 +36,7 @@ Reinstall the rubies you want to patch with railsexpress:
     rvm reinstall 2.0.0 --patch railsexpress
     rvm reinstall 2.1.0 --patch railsexpress
     rvm reinstall 2.1.1 --patch railsexpress
+    rvm reinstall 2.1.2 --patch railsexpress
 
 Alternatively, you can pass the ruby version to reinstall to the install script:
 
@@ -48,6 +49,7 @@ the patches:
     rvm install 2.0.0 --patch railsexpress -n railsexpress
     rvm install 2.1.0 --patch railsexpress -n railsexpress
     rvm install 2.1.1 --patch railsexpress -n railsexpress
+    rvm install 2.1.2 --patch railsexpress -n railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
@@ -65,13 +67,16 @@ Install the rubies you want to patch with float_warnings accordingly:
 The patches are for specific versions of ruby. They might work with later versions, but
 there's no guarantee. The following versions are currently supported:
 
-    1.9.3-p392  # outdated, please use 1.9.3-p545
-    1.9.3-p484  # outdated, please use 1.9.3-p545
-    1.9.3-p545  # current rvm default for MRI-ruby 1.9.3
-    2.0.0-p353  # outdated, please use 2.0.0-p451
-    2.0.0-p451  # current rvm default for MRI-ruby 2.0.0
+    1.9.3-p392  # outdated, please use 1.9.3-p547
+    1.9.3-p484  # outdated, please use 1.9.3-p547
+    1.9.3-p545  # outdated, please use 1.9.3-p547
+    1.9.3-p547  # current rvm default for MRI-ruby 1.9.3
+    2.0.0-p353  # outdated, please use 2.0.0-p481
+    2.0.0-p451  # outdated, please use 2.0.0-p481
+    2.0.0-p481  # current rvm default for MRI-ruby 2.0.0
     2.1.0       # starting with 2.1.0, patchlevels are no longer used upstream
     2.1.1
+    2.1.2
 
 In order to make some patch level N the default for rvm, add the line(s)
 
@@ -98,7 +103,7 @@ libraries are:
 
 For up to date rvm installs, use the rvm autolib(s) feature.
 
-### Installing on Mountain Lion
+### Installing on OS X
 
 If you want to install versions earlier than 1.9.3, you must install gcc-4.2.
 
@@ -106,6 +111,8 @@ With MacPorts, this is as easy as
 
     sudo port install apple-gcc42
     sudo ln -s /opt/local/bin/gcc-apple-4.2 /usr/bin/gcc-4.2
+
+For 2.x, clang works fine.
 
 Additionally, when compiling ruby, you might need to set
 
@@ -125,9 +132,9 @@ You can then use it with the command
 
     rvm use 2.0.0-head-railsexpress
 
-On 2.1.0, you can install head similarly:
+On 2.1, you can install head similarly:
 
-    rvm install 2.1.0-head --patch railsexpress -n railsexpress
+    rvm install 2.1-head --patch railsexpress -n railsexpress
 
 ### Patch Improvements
 

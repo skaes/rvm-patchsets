@@ -139,7 +139,7 @@ index e50efd2..a660737 100644
  /*
   *  call-seq:
 diff --git a/internal.h b/internal.h
-index a82c1ec..9b144e3 100644
+index a82c1ec..1e88dd6 100644
 --- a/internal.h
 +++ b/internal.h
 @@ -261,6 +261,58 @@ typedef unsigned long rb_serial_t;
@@ -193,9 +193,9 @@ index a82c1ec..9b144e3 100644
 +    size_t insertions;
 +#endif
 +    union {
-+	struct rb_meth_cache_entry *entries;
-+	struct rb_meth_cache_entry en[MCACHE_INLINED];
-+    };
++	struct rb_meth_cache_entry *ntries;
++	struct rb_meth_cache_entry n[MCACHE_INLINED];
++    } e;
 +};
 +
  struct rb_classext_struct {
@@ -212,9 +212,9 @@ index a82c1ec..9b144e3 100644
 +rb_method_cache_clear(VALUE klass)
 +{
 +    struct rb_classext_struct *ext = RCLASS(klass)->ptr;
-+    if (ext->cache.capa > MCACHE_INLINED && ext->cache.entries) {
-+	xfree(ext->cache.entries);
-+	ext->cache.entries = NULL;
++    if (ext->cache.capa > MCACHE_INLINED && ext->cache.e.ntries) {
++	xfree(ext->cache.e.ntries);
++	ext->cache.e.ntries = NULL;
 +#if METHOD_CACHE_STATS
 +	rb_meth_cache.alloced--;
 +	rb_meth_cache.sum_capa -= ext->cache.capa;
@@ -262,7 +262,7 @@ index da99203..f73bdca 100644
      /* FrozenCore (hidden) */
      fcore = rb_class_new(rb_cBasicObject);
 diff --git a/vm_method.c b/vm_method.c
-index ecded4a..3fc6dc6 100644
+index ecded4a..4594807 100644
 --- a/vm_method.c
 +++ b/vm_method.c
 @@ -2,15 +2,6 @@
@@ -315,7 +315,7 @@ index ecded4a..3fc6dc6 100644
 +#endif
 +    if (cache->capa == MCACHE_INLINED) {
 +	if (cache->size < MCACHE_INLINED) {
-+	    ent = cache->en;
++	    ent = cache->e.n;
 +	    pos = cache->size;
 +	    goto found;
 +	}
@@ -326,7 +326,7 @@ index ecded4a..3fc6dc6 100644
 +    mask = cache->capa - 1;
 +    pos = HASH(id) & mask;
 +
-+    ent = cache->entries;
++    ent = cache->e.ntries;
 +    if (ent[pos].mid == 0) {
 +	goto found;
 +    }
@@ -378,17 +378,17 @@ index ecded4a..3fc6dc6 100644
 +#endif
 +    if (cache->capa == MCACHE_INLINED) {
 +	tmp.capa = MCACHE_MIN_SIZE;
-+	entries = cache->en;
++	entries = cache->e.n;
 +    }
 +    else {
 +	tmp.capa = cache->capa * 2;
-+	entries = cache->entries;
++	entries = cache->e.ntries;
 +#if METHOD_CACHE_STATS
 +	rb_meth_cache.sum_capa -= cache->capa;
 +#endif
 +    }
 +redo:
-+    tmp.entries = xcalloc(tmp.capa, sizeof(cache_entry_t));
++    tmp.e.ntries = xcalloc(tmp.capa, sizeof(cache_entry_t));
 +    for(i = 0; i < cache->capa; i++) {
 +	if (entries[i].mid && (entries[i].me & ~1)) {
 +	    cache_entry_t *ent = &entries[i];
@@ -397,7 +397,7 @@ index ecded4a..3fc6dc6 100644
 +    }
 +    /* deal with lots of cached method_missing */
 +    if (tmp.size < tmp.capa / MCACHE_SHRINK_TRIGGER && tmp.capa > MCACHE_MIN_SHRINK) {
-+	    xfree(tmp.entries);
++	    xfree(tmp.e.ntries);
 +#if METHOD_CACHE_STATS
 +	    rb_meth_cache.sum_used -= tmp.size;
 +	    if (tmp.size > 0) {
@@ -419,7 +419,7 @@ index ecded4a..3fc6dc6 100644
 +    }
 +#endif
 +    if (cache->capa > MCACHE_INLINED) {
-+	xfree(cache->entries);
++	xfree(cache->e.ntries);
 +    }
 +    *cache = tmp;
 +}
@@ -443,9 +443,9 @@ index ecded4a..3fc6dc6 100644
 +#endif
 +	cache->is_copy = 0;
 +#if MCACHE_RESET_FREES_COPY
-+	if (cache->capa > MCACHE_INLINED && cache->entries != NULL) {
-+	    xfree(cache->entries);
-+	    cache->entries = NULL;
++	if (cache->capa > MCACHE_INLINED && cache->e.ntries != NULL) {
++	    xfree(cache->e.ntries);
++	    cache->e.ntries = NULL;
 +#if METHOD_CACHE_STATS
 +	    rb_meth_cache.copy_reset++;
 +	    rb_meth_cache.sum_capa -= cache->capa;
@@ -460,10 +460,10 @@ index ecded4a..3fc6dc6 100644
 +    cache->size = 0;
 +    if (cache->capa == 0 || cache->capa == MCACHE_INLINED) {
 +	cache->capa = MCACHE_INLINED;
-+	MEMZERO(cache->en, cache_entry_t, MCACHE_INLINED);
++	MEMZERO(cache->e.n, cache_entry_t, MCACHE_INLINED);
 +    }
-+    else if (cache->entries != NULL) {
-+	MEMZERO(cache->entries, cache_entry_t, cache->capa);
++    else if (cache->e.ntries != NULL) {
++	MEMZERO(cache->e.ntries, cache_entry_t, cache->capa);
 +    }
 +}
 +
@@ -471,15 +471,15 @@ index ecded4a..3fc6dc6 100644
 +rb_mcache_find(struct rb_meth_cache *cache, ID id)
 +{
 +    if (cache->capa == MCACHE_INLINED) {
-+	if (cache->en[0].mid == id) return &cache->en[0];
++	if (cache->e.n[0].mid == id) return &cache->e.n[0];
 +#if MCACHE_INLINED > 1
-+	if (cache->en[1].mid == id) return &cache->en[1];
++	if (cache->e.n[1].mid == id) return &cache->e.n[1];
 +#endif
 +#if MCACHE_INLINED > 2
-+	if (cache->en[2].mid == id) return &cache->en[2];
++	if (cache->e.n[2].mid == id) return &cache->e.n[2];
 +#endif
 +#if MCACHE_INLINED > 3
-+	if (cache->en[3].mid == id) return &cache->en[3];
++	if (cache->e.n[3].mid == id) return &cache->e.n[3];
 +#endif
 +#if MCACHE_INLINED > 4
 +#error "Are you serious about such huge MCACHE_INLINED?"
@@ -487,7 +487,7 @@ index ecded4a..3fc6dc6 100644
 +	return NULL;
 +    }
 +    else {
-+	cache_entry_t *ent = cache->entries;
++	cache_entry_t *ent = cache->e.ntries;
 +	int mask = cache->capa - 1;
 +	int pos = HASH(id) & mask;
 +	int dlt;
@@ -508,8 +508,8 @@ index ecded4a..3fc6dc6 100644
 +    struct rb_meth_cache *from_cache = &RCLASS_EXT(from)->cache, *to_cache = &RCLASS_EXT(to)->cache;
 +    if (!from_cache->size) return;
 +
-+    if (to_cache->capa > MCACHE_INLINED && to_cache->entries) {
-+	xfree(to_cache->entries);
++    if (to_cache->capa > MCACHE_INLINED && to_cache->e.ntries) {
++	xfree(to_cache->e.ntries);
 +#if METHOD_CACHE_STATS
 +	rb_meth_cache.alloced--;
 +	rb_meth_cache.sum_capa -= to_cache->capa;
@@ -532,15 +532,15 @@ index ecded4a..3fc6dc6 100644
 +    to_cache->class_serial = RCLASS_SERIAL(to);
 +    to_cache->is_copy = 1;
 +    if (from_cache->capa > MCACHE_INLINED) {
-+	to_cache->entries = xcalloc(to_cache->capa, sizeof(cache_entry_t));
-+	MEMCPY(to_cache->entries, from_cache->entries, cache_entry_t, from_cache->capa);
++	to_cache->e.ntries = xcalloc(to_cache->capa, sizeof(cache_entry_t));
++	MEMCPY(to_cache->e.ntries, from_cache->e.ntries, cache_entry_t, from_cache->capa);
 +#if METHOD_CACHE_STATS
 +	rb_meth_cache.alloced++;
 +	rb_meth_cache.sum_capa += to_cache->capa;
 +	rb_meth_cache.copy_alloced++;
 +#endif
 +    } else {
-+	MEMCPY(to_cache->en, from_cache->en, cache_entry_t, MCACHE_INLINED);
++	MEMCPY(to_cache->e.n, from_cache->e.n, cache_entry_t, MCACHE_INLINED);
 +    }
 +#if METHOD_CACHE_STATS
 +    to_cache->undefs = from_cache->undefs;

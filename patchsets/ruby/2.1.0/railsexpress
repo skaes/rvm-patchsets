@@ -9,3 +9,4 @@ railsexpress/08-funny-falcon-stc-density.patch
 railsexpress/09-funny-falcon-stc-pool-allocation.patch
 railsexpress/10-aman-opt-aset-aref-str.patch
 railsexpress/11-funny-falcon-method-cache.patch
+railsexpress/12-backport-r44370.patch
