@@ -37,6 +37,7 @@ Reinstall the rubies you want to patch:
     rvm reinstall 2.1.0 --patch railsexpress
     rvm reinstall 2.1.1 --patch railsexpress
     rvm reinstall 2.1.2 --patch railsexpress
+    rvm reinstall 2.1.3 --patch railsexpress
 
 Alternatively, you can pass the ruby version to reinstall to the install script:
 
@@ -50,6 +51,7 @@ the patches:
     rvm install 2.1.0 --patch railsexpress -n railsexpress
     rvm install 2.1.1 --patch railsexpress -n railsexpress
     rvm install 2.1.2 --patch railsexpress -n railsexpress
+    rvm install 2.1.3 --patch railsexpress -n railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
@@ -70,6 +72,7 @@ there's no guarantee. The following versions are currently supported:
     2.1.0       # starting with 2.1.0, patchlevels are no longer used upstream
     2.1.1
     2.1.2
+    2.1.3
 
 In order to make some patch level N the default for rvm, add the line(s)
 
