@@ -53,7 +53,7 @@ index a76c93b..641b41b 100644
  	INIT_ANCHOR(args);
  	argc = setup_args(iseq, args, node->nd_args, &flag);
 diff --git a/hash.c b/hash.c
-index 9a5814a..50f199f 100644
+index 376f33f..58f04a9 100644
 --- a/hash.c
 +++ b/hash.c
 @@ -2436,7 +2436,7 @@ static VALUE rb_hash_compare_by_id_p(VALUE hash);
