@@ -51,10 +51,6 @@ the patches:
     rvm install 2.1.1 --patch railsexpress -n railsexpress
     rvm install 2.1.2 --patch railsexpress -n railsexpress
 
-This will then require you to specify the ruby version for rvm like so:
-
-    rvm use 2.1.1-railsexpress
-
 Install the rubies you want to patch with float_warnings accordingly:
 
     rvm install 1.9.3 --patch float_warnings -n float_warnings
@@ -62,6 +58,12 @@ Install the rubies you want to patch with float_warnings accordingly:
     rvm install 2.1.0 --patch float_warnings -n float_warnings
     rvm install 2.1.1 --patch float_warnings -n float_warnings
     rvm install 2.1.2 --patch float_warnings -n float_warnings
+    rvm install 2.1.3 --patch float_warnings -n float_warnings
+
+This will then require you to specify the ruby version for rvm like so:
+
+    rvm use 2.1.1-railsexpress
+    rvm use 2.1.3-float_warnings
 
 ## Notes
 
