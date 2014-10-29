@@ -34,24 +34,18 @@ Reinstall the rubies you want to patch:
 
     rvm reinstall 1.9.3 --patch railsexpress
     rvm reinstall 2.0.0 --patch railsexpress
-    rvm reinstall 2.1.0 --patch railsexpress
-    rvm reinstall 2.1.1 --patch railsexpress
-    rvm reinstall 2.1.2 --patch railsexpress
-    rvm reinstall 2.1.3 --patch railsexpress
+    rvm reinstall 2.1.4 --patch railsexpress
 
 Alternatively, you can pass the ruby version to reinstall to the install script:
 
-    ./install.sh 1.9.3 2.0.0 2.1.0
+    ./install.sh 1.9.3 2.0.0 2.1.4
 
 IF you don't want to mess up your vanilla rubies, pass a -n flag to rvm when installing
 the patches:
 
     rvm install 1.9.3 --patch railsexpress -n railsexpress
     rvm install 2.0.0 --patch railsexpress -n railsexpress
-    rvm install 2.1.0 --patch railsexpress -n railsexpress
-    rvm install 2.1.1 --patch railsexpress -n railsexpress
-    rvm install 2.1.2 --patch railsexpress -n railsexpress
-    rvm install 2.1.3 --patch railsexpress -n railsexpress
+    rvm install 2.1.4 --patch railsexpress -n railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
@@ -70,9 +64,10 @@ there's no guarantee. The following versions are currently supported:
     2.0.0-p451  # outdated, please use 2.0.0-p481
     2.0.0-p481  # current rvm default for MRI-ruby 2.0.0
     2.1.0       # starting with 2.1.0, patchlevels are no longer used upstream
-    2.1.1
-    2.1.2
-    2.1.3
+    2.1.1       # outdated, please use 2.1.4
+    2.1.2       # outdated, please use 2.1.4
+    2.1.3       # outdated, please use 2.1.4
+    2.1.4       # current rvm default for 2.1 branch
 
 In order to make some patch level N the default for rvm, add the line(s)
 
