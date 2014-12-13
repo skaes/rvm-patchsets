@@ -64,10 +64,11 @@ there's no guarantee. The following versions are currently supported:
     2.0.0-p451  # outdated, please use 2.0.0-p481
     2.0.0-p481  # current rvm default for MRI-ruby 2.0.0
     2.1.0       # starting with 2.1.0, patchlevels are no longer used upstream
-    2.1.1       # outdated, please use 2.1.4
-    2.1.2       # outdated, please use 2.1.4
-    2.1.3       # outdated, please use 2.1.4
-    2.1.4       # current rvm default for 2.1 branch
+    2.1.1       # outdated, please use 2.1.5
+    2.1.2       # outdated, please use 2.1.5
+    2.1.3       # outdated, please use 2.1.5
+    2.1.4       # outdated, please use 2.1.5
+    2.1.5       # current rvm default for 2.1 branch
 
 In order to make some patch level N the default for rvm, add the line(s)
 
@@ -92,11 +93,11 @@ libraries are:
 
     rvm reinstall 1.9.3 --patch railsexpress -C --with-opt-dir=/opt/local
 
-For up to date rvm installs, use the rvm autolib(s) feature.
+For up to date rvm installs, use the rvm autolib(s) feature instead.
 
 ### Installing on OS X
 
-If you want to install versions earlier than 1.9.3, you must install gcc-4.2.
+If you want to install versions earlier than 2.0.0, you must install gcc-4.2.
 
 With MacPorts, this is as easy as
 
