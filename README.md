@@ -34,18 +34,18 @@ Reinstall the rubies you want to patch:
 
     rvm reinstall 1.9.3 --patch railsexpress
     rvm reinstall 2.0.0 --patch railsexpress
-    rvm reinstall 2.1.4 --patch railsexpress
+    rvm reinstall 2.1.5 --patch railsexpress
 
 Alternatively, you can pass the ruby version to reinstall to the install script:
 
-    ./install.sh 1.9.3 2.0.0 2.1.4
+    ./install.sh 1.9.3 2.0.0 2.1.5
 
 IF you don't want to mess up your vanilla rubies, pass a -n flag to rvm when installing
 the patches:
 
     rvm install 1.9.3 --patch railsexpress -n railsexpress
     rvm install 2.0.0 --patch railsexpress -n railsexpress
-    rvm install 2.1.4 --patch railsexpress -n railsexpress
+    rvm install 2.1.5 --patch railsexpress -n railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
