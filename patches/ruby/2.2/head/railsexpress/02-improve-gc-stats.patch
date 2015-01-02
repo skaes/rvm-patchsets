@@ -1,5 +1,5 @@
 diff --git a/gc.c b/gc.c
-index 5f67bde..45581b7 100644
+index 5f67bde..757d8f4 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -477,6 +477,8 @@ typedef struct rb_objspace {
@@ -315,12 +315,13 @@ index 5f67bde..45581b7 100644
      }
  }
  
-@@ -8180,9 +8392,12 @@ gc_prof_set_malloc_info(rb_objspace_t *objspace)
+@@ -8180,9 +8392,13 @@ gc_prof_set_malloc_info(rb_objspace_t *objspace)
  static inline void
  gc_prof_set_heap_info(rb_objspace_t *objspace)
  {
-+    objspace->profile.live_after_last_sweep =
-+        objspace->profile.total_allocated_objects_at_gc_start - objspace->profile.total_freed_objects;
++    if (objspace->profile.total_allocated_objects_at_gc_start > objspace->profile.total_freed_objects)
++        objspace->profile.live_after_last_sweep =
++            objspace->profile.total_allocated_objects_at_gc_start - objspace->profile.total_freed_objects;
 +
      if (gc_prof_enabled(objspace)) {
  	gc_profile_record *record = gc_prof_record(objspace);
@@ -329,7 +330,7 @@ index 5f67bde..45581b7 100644
  	size_t total = objspace->profile.heap_used_at_gc_start * HEAP_OBJ_LIMIT;
  
  #if GC_PROFILE_MORE_DETAIL
-@@ -8823,11 +9038,19 @@ Init_GC(void)
+@@ -8823,11 +9039,19 @@ Init_GC(void)
      rb_define_singleton_method(rb_mGC, "start", gc_start_internal, -1);
      rb_define_singleton_method(rb_mGC, "enable", rb_gc_enable, 0);
      rb_define_singleton_method(rb_mGC, "disable", rb_gc_disable, 0);
