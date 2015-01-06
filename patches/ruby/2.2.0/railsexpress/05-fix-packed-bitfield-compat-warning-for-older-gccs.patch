@@ -1,0 +1,14 @@
+diff --git a/configure.in b/configure.in
+index 375ef55..a69ded7 100644
+--- a/configure.in
++++ b/configure.in
+@@ -788,6 +788,9 @@ rb_cv_warnflags="$warnflags"
+ if test "$GCC:${warnflags+set}:no" = yes::no; then
+     if test $gcc_major -ge 4; then
+ 	extra_warning=-Werror=extra-tokens
++        if test $gcc_major -gt 4 -o $gcc_minor -ge 4; then
++            extra_warning="$extra_warning -Wno-packed-bitfield-compat"
++        fi
+     else
+ 	extra_warning=
+     fi
