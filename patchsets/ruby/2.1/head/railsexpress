@@ -6,3 +6,4 @@ railsexpress/05-funny-falcon-stc-density.patch
 railsexpress/06-funny-falcon-stc-pool-allocation.patch
 railsexpress/07-aman-opt-aset-aref-str.patch
 railsexpress/08-funny-falcon-method-cache.patch
+railsexpress/09-heap-dump-support.patch
