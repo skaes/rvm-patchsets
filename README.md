@@ -62,9 +62,10 @@ there's no guarantee. The following versions are currently supported:
     1.9.3-p484  # outdated, please use 1.9.3-p547
     1.9.3-p545  # outdated, please use 1.9.3-p547
     1.9.3-p547  # current rvm default for MRI-ruby 1.9.3
-    2.0.0-p353  # outdated, please use 2.0.0-p481
-    2.0.0-p451  # outdated, please use 2.0.0-p481
-    2.0.0-p481  # current rvm default for MRI-ruby 2.0.0
+    2.0.0-p353  # outdated, please use 2.0.0-p645
+    2.0.0-p451  # outdated, please use 2.0.0-p645
+    2.0.0-p481  # outdated, please use 2.0.0-p645
+    2.0.0-p645  # current rvm default for MRI-ruby 2.0.0
     2.1.0       # starting with 2.1.0, patchlevels are no longer used upstream
     2.1.1       # outdated, please use 2.1.6
     2.1.2       # outdated, please use 2.1.6
