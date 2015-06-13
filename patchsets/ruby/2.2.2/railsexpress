@@ -1,4 +1,3 @@
 railsexpress/01-zero-broken-tests.patch
 railsexpress/02-improve-gc-stats.patch
 railsexpress/03-display-more-detailed-stack-trace.patch
-railsexpress/04-backport-20ef4699e510f89ad4e9ccbeafa2d3d725ed2d3c.patch
