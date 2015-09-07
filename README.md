@@ -14,7 +14,7 @@ them directly after installing/updating rvm.
 
 To use the a recent version of the patchsets, just update rvm:
 
-    rvm get head # OR
+    rvm get master # OR
     rvm get stable
 
 If rvm isn't update to date yet, or you can easily install them from this repository:
@@ -30,24 +30,28 @@ switching to bash fixes these (see https://github.com/skaes/rvm-patchsets/issues
 
 ### Step 2
 
-Reinstall the rubies you want to patch:
+If you want to simply replace your normal rubies with patched versions, reinstall them
+with the following commands:
 
     rvm reinstall 1.9.3 --patch railsexpress
     rvm reinstall 2.0.0 --patch railsexpress
     rvm reinstall 2.1.7 --patch railsexpress
     rvm reinstall 2.2.3 --patch railsexpress
 
-Alternatively, you can pass the ruby version to reinstall to the install script:
-
-    ./install.sh 2.1.5
-
-IF you don't want to mess up your vanilla rubies, pass a -n flag to rvm when installing
+If you don't want to mess up your vanilla rubies, pass a `-n` flag to rvm when installing
 the patches:
 
     rvm install 1.9.3 --patch railsexpress -n railsexpress
     rvm install 2.0.0 --patch railsexpress -n railsexpress
     rvm install 2.1.7 --patch railsexpress -n railsexpress
     rvm install 2.2.3 --patch railsexpress -n railsexpress
+
+or use rvm's name parsing magic:
+
+    rvm install 1.9.3-railsexpress --patch railsexpress
+    rvm install 2.0.0-railsexpress --patch railsexpress
+    rvm install 2.1.7-railsexpress --patch railsexpress
+    rvm install 2.2.3-railsexpress --patch railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
