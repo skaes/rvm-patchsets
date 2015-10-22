@@ -14,7 +14,7 @@ them directly after installing/updating rvm.
 
 To use the a recent version of the patchsets, just update rvm:
 
-    rvm get head # OR
+    rvm get master # OR
     rvm get stable
 
 If rvm isn't update to date yet, or you can easily install them from this repository:
@@ -30,33 +30,50 @@ switching to bash fixes these (see https://github.com/skaes/rvm-patchsets/issues
 
 ### Step 2
 
-Reinstall the rubies you want to patch with railsexpress:
+If you want to simply replace your normal rubies with patched versions (railsexpress),
+reinstall them with the following commands:
 
     rvm reinstall 1.9.3 --patch railsexpress
     rvm reinstall 2.0.0 --patch railsexpress
-    rvm reinstall 2.1.4 --patch railsexpress
+    rvm reinstall 2.1.7 --patch railsexpress
+    rvm reinstall 2.2.3 --patch railsexpress
 
 Alternatively, you can pass the ruby version to reinstall to the install script:
 
     ./install.sh 1.9.3 2.0.0 2.1.4
 
-If you don't want to mess up your vanilla rubies, pass a -n flag to rvm when installing
-the patches:
+If you don't want to mess up your vanilla rubies, pass a `-n` flag to rvm when installing
+the railsexpress patches:
 
     rvm install 1.9.3 --patch railsexpress -n railsexpress
     rvm install 2.0.0 --patch railsexpress -n railsexpress
-    rvm install 2.1.4 --patch railsexpress -n railsexpress
+    rvm install 2.1.7 --patch railsexpress -n railsexpress
+    rvm install 2.2.3 --patch railsexpress -n railsexpress
 
 Install the rubies you want to patch with float_warnings accordingly:
 
     rvm install 1.9.3 --patch float_warnings -n float_warnings
     rvm install 2.0.0 --patch float_warnings -n float_warnings
-    rvm install 2.1.5 --patch float_warnings -n float_warnings
+    rvm install 2.1.7 --patch float_warnings -n float_warnings
+    rvm install 2.2.3 --patch float_warnings -n float_warnings
+
+or use rvm's name parsing magic:
+
+    rvm install 1.9.3-railsexpress --patch railsexpress
+    rvm install 2.0.0-railsexpress --patch railsexpress
+    rvm install 2.1.7-railsexpress --patch railsexpress
+    rvm install 2.2.3-railsexpress --patch railsexpress
+
+... same for float_warnings:
+    rvm install 1.9.3-float_warnings --patch float_warnings
+    rvm install 2.0.0-float_warnings --patch float_warnings
+    rvm install 2.1.7-float_warnings --patch float_warnings
+    rvm install 2.2.3-float_warnings --patch float_warnings
 
 This will then require you to specify the ruby version for rvm like so:
 
-    rvm use 2.1.1-railsexpress
-    rvm use 2.1.5-float_warnings
+    rvm use 2.2.3-railsexpress
+    rvm usr 2.2.3-float_warnings
 
 ## Notes
 
@@ -67,20 +84,29 @@ there's no guarantee. The following versions are currently supported:
     1.9.3-p484  # outdated, please use 1.9.3-p547
     1.9.3-p545  # outdated, please use 1.9.3-p547
     1.9.3-p547  # current rvm default for MRI-ruby 1.9.3
-    2.0.0-p353  # outdated, please use 2.0.0-p481
-    2.0.0-p451  # outdated, please use 2.0.0-p481
-    2.0.0-p481  # current rvm default for MRI-ruby 2.0.0
+    2.0.0-p353  # outdated, please use 2.0.0-p647
+    2.0.0-p451  # outdated, please use 2.0.0-p647
+    2.0.0-p481  # outdated, please use 2.0.0-p647
+    2.0.0-p645  # outdated, please use 2.0.0-p647
+    2.0.0-p647  # current rvm default for MRI-ruby 2.0.0
     2.1.0       # starting with 2.1.0, patchlevels are no longer used upstream
-    2.1.1       # outdated, please use 2.1.4
-    2.1.2       # outdated, please use 2.1.4
-    2.1.3       # outdated, please use 2.1.4
-    2.1.4       # current rvm default for 2.1 branch
+    2.1.1       # outdated, please use 2.1.7
+    2.1.2       # outdated, please use 2.1.7
+    2.1.3       # outdated, please use 2.1.7
+    2.1.4       # outdated, please use 2.1.7
+    2.1.5       # outdated, please use 2.1.7
+    2.1.6       # outdated, please use 2.1.7
+    2.1.7       # current rvm default for 2.1 branch
+    2.2.0       # outdated, please use 2.2.3
+    2.2.1       # outdated, please use 2.2.3
+    2.2.2       # outdated, please use 2.2.3
+    2.2.3       # current rvm default for 2.2 branch
 
 In order to make some patch level N the default for rvm, add the line(s)
 
     ruby_1.9.3_patch_level=N
     ruby_2.0.0_patch_level=N
-    # invalid for 2.1.x
+    # invalid after version 2.1.0
 
 to $rvm_path/user/db.
 
@@ -88,7 +114,8 @@ To enable heap dump support, pass the --enable-gcdebug option to the rvm install
 
     rvm install 1.9.3 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.0.0 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    # not yet available for 2.1.x
+    rvm install 2.1.7 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 2.2.3 --patch railsexpress -n gcdebug -C --enable-gcdebug
 
 If rvm cannot configure your ruby, update your rvm install.
 
@@ -99,11 +126,11 @@ libraries are:
 
     rvm reinstall 1.9.3 --patch railsexpress -C --with-opt-dir=/opt/local
 
-For up to date rvm installs, use the rvm autolib(s) feature.
+For up to date rvm installs, use the rvm autolib(s) feature instead.
 
 ### Installing on OS X
 
-If you want to install versions earlier than 1.9.3, you must install gcc-4.2.
+If you want to install versions earlier than 2.0.0, you must install gcc-4.2.
 
 With MacPorts, this is as easy as
 
@@ -130,9 +157,9 @@ You can then use it with the command
 
     rvm use 2.0.0-head-railsexpress
 
-On 2.1, you can install head similarly:
+On 2.1 and 2.2, you can install head similarly:
 
-    rvm install 2.1-head --patch railsexpress -n railsexpress
+    rvm install 2.2-head --patch railsexpress -n railsexpress
 
 ### Patch Improvements
 

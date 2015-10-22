@@ -1,0 +1,28 @@
+diff --git a/parse.y b/parse.y
+index 1e29197..208a308 100644
+--- a/parse.y
++++ b/parse.y
+@@ -3542,6 +3542,7 @@ lambda		:   {
+ 		    {
+ 			lpar_beg = $<num>2;
+ 			cmdarg_stack = $<val>5;
++			CMDARG_LEXPOP();
+ 		    /*%%%*/
+ 			$$ = NEW_LAMBDA($3, $6);
+ 			nd_set_line($$, $<num>4);
+diff --git a/test/ruby/test_syntax.rb b/test/ruby/test_syntax.rb
+index dbb1816..596ce6d 100644
+--- a/test/ruby/test_syntax.rb
++++ b/test/ruby/test_syntax.rb
+@@ -405,6 +405,11 @@ WARN
+     assert_valid_syntax('p ->() do a() do end end', bug11107)
+   end
+ 
++  def test_do_block_after_lambda
++    bug11380 = '[ruby-core:70067] [Bug #11380]'
++    assert_valid_syntax('p -> { :hello }, a: 1 do end', bug11380)
++  end
++
+   def test_reserved_method_no_args
+     bug6403 = '[ruby-dev:45626]'
+     assert_valid_syntax("def self; :foo; end", __FILE__, bug6403)

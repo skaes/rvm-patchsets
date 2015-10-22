@@ -1,8 +1,8 @@
 diff --git a/ext/bigdecimal/bigdecimal.c b/ext/bigdecimal/bigdecimal.c
-index 7c1e6bd..7dfe53a 100644
+index 79dffa4..e7afd87 100644
 --- a/ext/bigdecimal/bigdecimal.c
 +++ b/ext/bigdecimal/bigdecimal.c
-@@ -2509,6 +2509,7 @@ BigDecimal_new(int argc, VALUE *argv)
+@@ -2540,6 +2540,7 @@ BigDecimal_new(int argc, VALUE *argv)
  	return GetVpValue(iniValue, 1);
  
        case T_FLOAT:

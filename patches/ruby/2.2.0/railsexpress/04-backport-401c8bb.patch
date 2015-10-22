@@ -1,0 +1,57 @@
+diff --git a/test/-ext-/symbol/test_inadvertent_creation.rb b/test/-ext-/symbol/test_inadvertent_creation.rb
+index abcb5d9..b180d08 100644
+--- a/test/-ext-/symbol/test_inadvertent_creation.rb
++++ b/test/-ext-/symbol/test_inadvertent_creation.rb
+@@ -202,7 +202,13 @@ module Test_Symbol
+       Thread.current.thread_variable_set(:test, nil)
+       name = noninterned_name
+       assert_nil(Thread.current.thread_variable_get(name))
+-      assert_not_interned(name)
++      assert_not_pinneddown(name)
++    end
++
++    def test_thread_variable_set
++      name = noninterned_name
++      Thread.current.thread_variable_set(name, 42)
++      assert_not_pinneddown(name)
+     end
+ 
+     def test_thread_variable?
+diff --git a/test/ruby/test_thread.rb b/test/ruby/test_thread.rb
+index fba4737..87d5f0f 100644
+--- a/test/ruby/test_thread.rb
++++ b/test/ruby/test_thread.rb
+@@ -432,6 +432,16 @@ class TestThread < Test::Unit::TestCase
+     end
+   end
+ 
++  def test_thread_local_dynamic_symbol
++    bug10667 = '[ruby-core:67185] [Bug #10667]'
++    t = Thread.new {}.join
++    key_str = "foo#{rand}"
++    key_sym = key_str.to_sym
++    t.thread_variable_set(key_str, "bar")
++    assert_equal("bar", t.thread_variable_get(key_str), "#{bug10667}: string key")
++    assert_equal("bar", t.thread_variable_get(key_sym), "#{bug10667}: symbol key")
++  end
++
+   def test_select_wait
+     assert_nil(IO.select(nil, nil, nil, 0.001))
+     t = Thread.new do
+diff --git a/thread.c b/thread.c
+index 9ceb441..5d8ac7e 100644
+--- a/thread.c
++++ b/thread.c
+@@ -2936,11 +2936,9 @@ static VALUE
+ rb_thread_variable_get(VALUE thread, VALUE key)
+ {
+     VALUE locals;
+-    ID id = rb_check_id(&key);
+ 
+-    if (!id) return Qnil;
+     locals = rb_ivar_get(thread, id_locals);
+-    return rb_hash_aref(locals, ID2SYM(id));
++    return rb_hash_aref(locals, rb_to_symbol(key));
+ }
+ 
+ /*
