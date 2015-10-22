@@ -1,0 +1,2465 @@
+diff --git a/ChangeLog b/ChangeLog
+index 909c092..ae878d3 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,254 @@
++Fri Jun 12 01:39:49 2015  Eric Wong  <e@80x24.org>
++
++	* ext/socket/ancdata.c: use RB_GC_GUARD instead of volatile
++	  [ruby-core:69419] [Feature #11198]
++
++Fri Jun 12 01:16:13 2015  Eric Wong  <e@80x24.org>
++
++	* ext/openssl/ossl_asn1.c (ossl_asn1_traverse, ossl_asn1_decode,
++	  ossl_asn1_decode_all): use RB_GC_GUARD instead of volatile
++	  [ruby-core:69371] [Bug #11185]
++
++Fri Jun 12 01:14:00 2015  NARUSE, Yui  <naruse@ruby-lang.org>
++
++	* win32/win32.c (setup_overlapped): seek to the file end only when
++	  writing (mode:a), not reading (mode:a+, read).
++
++Fri Jun 12 01:11:52 2015  Aaron Patterson <tenderlove@ruby-lang.org>
++
++	* load.c (loaded_feature_path): stop returning false negatives for
++	  filenames which are trailing substrings of file extensions.  For
++	  example, 'b', which a trailing substring of ".rb" should not return
++	  false. [Bug #11155][ruby-core:69206]
++
++	* test/ruby/test_autoload.rb: test for fix
++
++Sun May 24 03:56:27 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* marshal.c (r_symreal): register symbol names as strings first so
++	  that r_symlink always returns valid names.
++	  [ruby-core:68587] [Bug #10991]
++
++	* marshal.c (r_ivar, r_object0): now need to intern symbol names.
++
++	* marshal.c (r_object0): compare with symbol names.
++
++Sun May 24 03:53:07 2015  Eric Wong  <e@80x24.org>
++
++	* ext/socket/ancdata.c (bsock_recvmsg_internal): GC guard
++	  [Bug #11123]
++
++Sun May 24 03:44:42 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* range.c (linear_object_p, range_include): test if covered for
++	  linear objects.  [ruby-core:69052] [Bug #11113]
++
++Sun May 24 03:41:45 2015  Shugo Maeda  <shugo@ruby-lang.org>
++
++	* lib/net/imap.rb (body_ext_mpart): should work even if body-fld-dsp
++	  is omitted.  [ruby-core:69093] [Bug #11128]
++
++Sun May 24 03:37:14 2015  SHIBATA Hiroshi  <hsbt@ruby-lang.org>
++
++	* string.c: added documentation for character sequence \' with String#sub
++	  [Bug #11132][ruby-core:69121][fix GH-900][ci skip] Patch by @shishir127
++
++Sun May 24 03:32:53 2015  SHIBATA Hiroshi  <hsbt@ruby-lang.org>
++
++	* rational.c: Added documentation for rational literal.
++	  [Bug #11075][fix GH-885][ci skip] Patch by @shishir127
++
++Sun May 24 03:06:20 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* ext/socket/ipsocket.c (init_inetsock_internal): preserve errno
++	  before other library calls and use rb_syserr_fail.
++	  [ruby-core:68531] [Bug #10975]
++
++Sun May 24 03:01:17 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* ext/-test-/printf/printf.c (uint_to_str): renamed to get rid of
++	  conflict on cygwin.  [ruby-core:68877] [Bug #11065]
++
++Sun May 24 02:44:53 2015  Koichi Sasada  <ko1@atdot.net>
++
++	* vm.c (vm_exec): check other events when RETURN is thrown.
++	  [Bug #10724]
++
++	* test/ruby/test_settracefunc.rb: add a test.
++
++Sun May 24 02:21:47 2015  Masahiro Tomita  <tommy@tmtm.org>
++
++	* ext/socket/raddrinfo.c (addrinfo_mload): fix memory leak of
++	  addrinfo.  [ruby-dev:48923] [Bug #11051]
++
++Sun May 24 02:17:05 2015  Kenta Murata  <mrkn@cookpad.com>
++
++	* bigdecimal: conform to ruby's license.  [ruby-core:68466] [Bug #10952]
++
++Sun May 24 02:06:34 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* ext/-test-/file/fs.c (get_fsname): try magic number only if
++	  f_type is included.  [ruby-dev:48913] [Bug #11000]
++
++Sun May 24 02:06:34 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* ext/-test-/file/fs.c (get_fsname): return filesystem name by
++	  statfs/statvfs.  [ruby-core:68624] [Bug #10998]
++
++Sun May 24 02:02:00 2015  Koichi Sasada  <ko1@atdot.net>
++
++	* test/ruby/test_symbol.rb: fix syntax error.
++
++Sun May 24 02:02:00 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* hash.c (rb_any_hash): Symbols are compared by the identities
++	  always.  [ruby-core:68767] [Bug #11035]
++
++Sun May 24 02:01:07 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* hash.c (rb_any_hash): use same hash values with Float#hash so
++	  that -0.0 and +0.0 will be identical.
++	  [ruby-core:68541] [Bug #10979]
++
++Thu May 21 01:34:48 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* gc.c (id2ref): prohibit from accessing internal objects.
++	  [ruby-core:68348] [Bug #10918]
++
++Thu May 21 01:32:02 2015  Rei Odaira  <Rei.Odaira@gmail.com>
++
++	* ext/pty/pty.c: AIX supports autopush.
++	  Patch by Perry Smith [ruby-core:58539] [Bug #9144]
++
++Thu May 21 01:07:41 2015  Misumi Rize  <r@ayase-e.li>
++
++	* vm_insnhelper.c (vm_throw_start): search the target to break
++	  from a block with nested rescue, from the nested blocks.
++	  [ruby-core:67765] [Bug #10775] [Fix GH-820]
++
++Thu May 21 00:55:45 2015  Koichi Sasada  <ko1@atdot.net>
++
++	* vm_args.c: protect value stack from calling other methods
++	  during complex parameter setting process (splat, kw, and so on).
++	  [Bug #11027]
++
++	* vm_core.h: remove rb_thead_t::mark_stack_len.
++	  With this modification, we don't need to use th->mark_stack_len.
++
++	* test/ruby/test_keyword.rb: add a test.
++
++	* cont.c (cont_capture): catch up this fix.
++
++	* vm.c (rb_thread_mark): ditto.
++
++Thu May 21 00:07:54 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* vm_eval.c (rb_obj_instance_eval, rb_obj_instance_exec): allow
++	  symbols to just instance_eval/exec, except for definition of
++	  singletons.  [ruby-core:68961] [Bug #11086]
++
++Wed May 20 04:33:50 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* string.c (STR_SET_EMBED): clear NOFREE flag at embedding as
++	  embedded strings no longer refer static strings.
++	  [ruby-core:68436] [Bug #10942]
++
++Wed May 20 03:46:11 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* dir.c (need_normalization): use getattrlist() if fgetattrlist()
++	  is unavailable, on OSX 10.5.  [ruby-core:68829] [Bug #11054]
++
++Wed May 20 03:25:34 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* proc.c (proc_binding): replicate env from method object, and
++	  allocate the local variable area for the iseq local table.
++	  [ruby-core:68673] [Bug #11012]
++
++Wed May 20 03:25:34 2015  Koichi Sasada  <ko1@atdot.net>
++
++	* proc.c: use RUBY_VM_IFUNC_P() to recognize IFUNC or not.
++
++	* vm.c: ditto.
++
++	* vm_dump.c: ditto.
++
++	* vm_insnhelper.c: ditto.
++
++	* vm_core.h: use RB_TYPE_P() instead of BUILTIN_TYPE().
++
++Wed May 20 03:10:49 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* benchmark/bm_hash_aref_flo.rb: make more realistic data.
++	  [ruby-core:68632] [[Bug #10999]
++
++Wed May 20 02:49:49 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* proc.c (respond_to_missing_p): check if the receiver responds to
++	  the given method by respond_to_missing?.
++
++	* proc.c (mnew_missing): create Method object for method_missing.
++	  [ruby-core:68564] [Bug #10985]
++
++Wed May 20 02:16:05 2015  NAKAMURA Usaku  <usa@ruby-lang.org>
++
++	* dir.c (replace_real_basename): need to check the return value of
++	  GLOB_REALLOC().
++
++Wed May 20 02:16:05 2015  NAKAMURA Usaku  <usa@ruby-lang.org>
++
++	* dir.c (replace_real_basename): shouldn't create Ruby object before
++	  the object system is loaded.
++	  [ruby-core:68430] [Bug #10941]
++
++Wed May 20 01:58:12 2015  Tanaka Akira  <akr@fsij.org>
++
++	* lib/resolv.rb (Resolv::DNS::Label::Str#==): Check class equality.
++	  (Resolv::DNS::Name#initialize): Normalize labels as
++	  Resolv::DNS::Label::Str objects.
++
++Wed May 20 01:47:23 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* iseq.c (rb_iseq_compile_with_option): check source type, must be
++	  an IO or a String.  [ruby-core:69219] [Bug #11159]
++
++Fri May 15 05:01:25 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* symbol.c (Init_sym): make dsym_fstrs a hash compared by identity
++	  as the keys are unique fstrings, to get rid of running hash and
++	  compare methods and causing new object allocation during garbage
++	  collection phase.  [ruby-dev:48891] [Bug #10933]
++
++Thu May 14 00:50:40 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* parse.y (lambda): push and reset cmdarg_stack in lambda body.
++	  [ruby-core:69017] [Bug #11107]
++
++Thu May 14 00:39:29 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* dln.c (dln_load): check if a different libruby is loaded by the
++	  extension library, and then bail out to get rid of very frequent
++	  reported stale bug reports.
++
++Thu May 14 00:29:44 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* lib/fileutils.rb (FileUtils#mv): show the exact target path in
++	  the error message instead of the destination parent directory
++	  name.  patched by Joao Britto <jabcalves AT gmail.com> at
++	  [ruby-core:68706].  [Bug #11021]
++
++Thu May 14 00:19:04 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* thread_pthread.c (reserve_stack): keep sp safe zone to get rid
++	  of crash by -fstack-check.  [ruby-core:68740] [Bug #11030]
++
++Tue Apr 14 23:33:39 2015  Nobuyoshi Nakada  <nobu@ruby-lang.org>
++
++	* configure.in: check also procstat_getvmmap, which is not
++	  available on FreeBSD 9.  [ruby-core:68468] [Bug #10954]
++
++	* vm_dump.c (procstat_vm): use kinfo_getvmmap instead if
++	  procstat_getvmmap is not available.
++
+ Mon Apr 13 22:11:21 2015  CHIKANAGA Tomoyuki  <nagachika@ruby-lang.org>
+ 
+ 	* ext/openssl/lib/openssl/ssl.rb: stricter hostname verification
+diff --git a/benchmark/bm_hash_aref_flo.rb b/benchmark/bm_hash_aref_flo.rb
+index a097bb5..2217274 100644
+--- a/benchmark/bm_hash_aref_flo.rb
++++ b/benchmark/bm_hash_aref_flo.rb
+@@ -1,4 +1,4 @@
+ h = {}
+-strs = (1..10000).to_a.map!(&:to_f)
++strs = [*1..10000].map! {|i| i.fdiv(10)}
+ strs.each { |s| h[s] = s }
+ 50.times { strs.each { |s| h[s] } }
+diff --git a/bootstraptest/test_block.rb b/bootstraptest/test_block.rb
+index 6a2ccfc..cdc5960 100644
+--- a/bootstraptest/test_block.rb
++++ b/bootstraptest/test_block.rb
+@@ -597,3 +597,17 @@ assert_equal 'true', %q{
+   C1.new.foo{}
+ }
+ 
++assert_equal 'ok', %q{
++  1.times do
++    begin
++      raise
++    rescue
++      begin
++        raise
++      rescue
++        break
++      end
++    end
++  end
++  'ok'
++}
+diff --git a/class.c b/class.c
+index 65d0d30..f142f44 100644
+--- a/class.c
++++ b/class.c
+@@ -1531,7 +1531,8 @@ singleton_class_of(VALUE obj)
+ {
+     VALUE klass;
+ 
+-    if (FIXNUM_P(obj) || FLONUM_P(obj) || SYMBOL_P(obj)) {
++    if (FIXNUM_P(obj) || FLONUM_P(obj) || STATIC_SYM_P(obj)) {
++      no_singleton:
+ 	rb_raise(rb_eTypeError, "can't define singleton");
+     }
+     if (SPECIAL_CONST_P(obj)) {
+@@ -1541,9 +1542,9 @@ singleton_class_of(VALUE obj)
+ 	return klass;
+     }
+     else {
+-	enum ruby_value_type type = BUILTIN_TYPE(obj);
+-	if (type == T_FLOAT || type == T_BIGNUM) {
+-	    rb_raise(rb_eTypeError, "can't define singleton");
++	switch (BUILTIN_TYPE(obj)) {
++	  case T_FLOAT: case T_BIGNUM: case T_SYMBOL:
++	    goto no_singleton;
+ 	}
+     }
+ 
+diff --git a/configure.in b/configure.in
+index 8297c5a..7330df4 100644
+--- a/configure.in
++++ b/configure.in
+@@ -2036,6 +2036,7 @@ AC_CHECK_FUNCS(fchmod)
+ AC_CHECK_FUNCS(fchown)
+ AC_CHECK_FUNCS(fcntl)
+ AC_CHECK_FUNCS(fdatasync)
++AC_CHECK_FUNCS(fgetattrlist)
+ AC_CHECK_FUNCS(fmod)
+ AC_CHECK_FUNCS(fsync)
+ AC_CHECK_FUNCS(ftruncate)
+@@ -3085,6 +3086,9 @@ fi
+ AS_CASE(["$target_os"],
+ [freebsd*], [
+     AC_CHECK_LIB([procstat], [procstat_open_sysctl])
++    if test "x$ac_cv_lib_procstat_procstat_open_sysctl" = xyes; then
++	AC_CHECK_FUNCS(procstat_getvmmap)
++    fi
+     ])
+ AS_CASE(["$target_cpu-$target_os"],
+ [*-darwin*], [
+diff --git a/cont.c b/cont.c
+index 78ae089..22e0c5a 100644
+--- a/cont.c
++++ b/cont.c
+@@ -490,7 +490,7 @@ cont_capture(volatile int *stat)
+     contval = cont->self;
+ 
+ #ifdef CAPTURE_JUST_VALID_VM_STACK
+-    cont->vm_stack_slen = th->cfp->sp + th->mark_stack_len - th->stack;
++    cont->vm_stack_slen = th->cfp->sp - th->stack;
+     cont->vm_stack_clen = th->stack + th->stack_size - (VALUE*)th->cfp;
+     cont->vm_stack = ALLOC_N(VALUE, cont->vm_stack_slen + cont->vm_stack_clen);
+     MEMCPY(cont->vm_stack, th->stack, VALUE, cont->vm_stack_slen);
+diff --git a/dir.c b/dir.c
+index 0903ec8..84413c6 100644
+--- a/dir.c
++++ b/dir.c
+@@ -103,13 +103,23 @@ char *strchr(char*,char);
+ #include <sys/mount.h>
+ #include <sys/vnode.h>
+ 
++# if defined HAVE_FGETATTRLIST || !defined HAVE_GETATTRLIST
++#   define need_normalization(dirp, path) need_normalization(dirp)
++# else
++#   define need_normalization(dirp, path) need_normalization(path)
++# endif
+ static inline int
+-need_normalization(DIR *dirp)
++need_normalization(DIR *dirp, const char *path)
+ {
+-# ifdef HAVE_GETATTRLIST
++# if defined HAVE_FGETATTRLIST || defined HAVE_GETATTRLIST
+     u_int32_t attrbuf[SIZEUP32(fsobj_tag_t)];
+     struct attrlist al = {ATTR_BIT_MAP_COUNT, 0, ATTR_CMN_OBJTAG,};
+-    if (!fgetattrlist(dirfd(dirp), &al, attrbuf, sizeof(attrbuf), 0)) {
++#   if defined HAVE_FGETATTRLIST
++    int ret = fgetattrlist(dirfd(dirp), &al, attrbuf, sizeof(attrbuf), 0);
++#   else
++    int ret = getattrlist(path, &al, attrbuf, sizeof(attrbuf), 0);
++#   endif
++    if (!ret) {
+ 	const fsobj_tag_t *tag = (void *)(attrbuf+1);
+ 	switch (*tag) {
+ 	  case VT_HFS:
+@@ -694,7 +704,7 @@ dir_each(VALUE dir)
+     RETURN_ENUMERATOR(dir, 0, 0);
+     GetDIR(dir, dirp);
+     rewinddir(dirp->dir);
+-    IF_NORMALIZE_UTF8PATH(norm_p = need_normalization(dirp->dir));
++    IF_NORMALIZE_UTF8PATH(norm_p = need_normalization(dirp->dir, RSTRING_PTR(dirp->path)));
+     while ((dp = READDIR(dirp->dir, dirp->enc)) != NULL) {
+ 	const char *name = dp->d_name;
+ 	size_t namlen = NAMLEN(dp);
+@@ -1481,12 +1491,34 @@ replace_real_basename(char *path, long base, rb_encoding *enc, int norm_p)
+     free(wplain);
+     if (h == INVALID_HANDLE_VALUE) return path;
+     FindClose(h);
+-    tmp = rb_w32_conv_from_wchar(fd.cFileName, enc);
+-    wlen = RSTRING_LEN(tmp);
+-    path = GLOB_REALLOC(path, base + wlen + 1);
+-    memcpy(path + base, RSTRING_PTR(tmp), wlen);
+-    path[base + wlen] = 0;
+-    rb_str_resize(tmp, 0);
++    if (tmp) {
++	char *buf;
++	tmp = rb_w32_conv_from_wchar(fd.cFileName, enc);
++	wlen = RSTRING_LEN(tmp);
++	buf = GLOB_REALLOC(path, base + wlen + 1);
++	if (buf) {
++	    path = buf;
++	    memcpy(path + base, RSTRING_PTR(tmp), wlen);
++	    path[base + wlen] = 0;
++	}
++	rb_str_resize(tmp, 0);
++    }
++    else {
++	char *utf8filename;
++	wlen = WideCharToMultiByte(CP_UTF8, 0, fd.cFileName, -1, NULL, 0, NULL, NULL);
++	utf8filename = GLOB_REALLOC(0, wlen);
++	if (utf8filename) {
++	    char *buf;
++	    WideCharToMultiByte(CP_UTF8, 0, fd.cFileName, -1, utf8filename, wlen, NULL, NULL);
++	    buf = GLOB_REALLOC(path, base + wlen + 1);
++	    if (buf) {
++		path = buf;
++		memcpy(path + base, utf8filename, wlen);
++		path[base + wlen] = 0;
++	    }
++	    GLOB_FREE(utf8filename);
++	}
++    }
+     return path;
+ }
+ #elif USE_NAME_ON_FS == 1
+@@ -1639,7 +1671,7 @@ glob_helper(
+ # endif
+ 	    return 0;
+ 	}
+-	IF_NORMALIZE_UTF8PATH(norm_p = need_normalization(dirp));
++	IF_NORMALIZE_UTF8PATH(norm_p = need_normalization(dirp, *path ? path : "."));
+ 
+ # if NORMALIZE_UTF8PATH
+ 	if (!(norm_p || magical || recursive)) {
+diff --git a/dln.c b/dln.c
+index 355cec1..e5269ca 100644
+--- a/dln.c
++++ b/dln.c
+@@ -106,13 +106,12 @@ dln_loaderror(const char *format, ...)
+ # define USE_DLN_DLOPEN
+ #endif
+ 
+-#ifndef FUNCNAME_PATTERN
+-# if defined(__hp9000s300) || ((defined(__NetBSD__) || defined(__FreeBSD__) || defined(__OpenBSD__)) && !defined(__ELF__)) || defined(__BORLANDC__) || defined(NeXT) || defined(__WATCOMC__) || defined(MACOSX_DYLD)
+-#  define FUNCNAME_PREFIX "_Init_"
+-# else
+-#  define FUNCNAME_PREFIX "Init_"
+-# endif
++#if defined(__hp9000s300) || ((defined(__NetBSD__) || defined(__FreeBSD__) || defined(__OpenBSD__)) && !defined(__ELF__)) || defined(__BORLANDC__) || defined(NeXT) || defined(__WATCOMC__) || defined(MACOSX_DYLD)
++# define EXTERNAL_PREFIX "_"
++#else
++# define EXTERNAL_PREFIX ""
+ #endif
++#define FUNCNAME_PREFIX EXTERNAL_PREFIX"Init_"
+ 
+ #if defined __CYGWIN__ || defined DOSISH
+ #define isdirsep(x) ((x) == '/' || (x) == '\\')
+@@ -1330,6 +1329,23 @@ dln_load(const char *file)
+ 	    error = dln_strerror();
+ 	    goto failed;
+ 	}
++# if defined RUBY_EXPORT
++	{
++	    static const char incompatible[] = "incompatible library version";
++	    void *ex = dlsym(handle, EXTERNAL_PREFIX"ruby_xmalloc");
++	    if (ex && ex != ruby_xmalloc) {
++
++#   if defined __APPLE__
++		/* dlclose() segfaults */
++		rb_fatal("%s - %s", incompatible, file);
++#   else
++		dlclose(handle);
++		error = incompatible;
++		goto failed;
++#   endif
++	    }
++	}
++# endif
+ 
+ 	init_fct = (void(*)())(VALUE)dlsym(handle, buf);
+ 	if (init_fct == NULL) {
+diff --git a/ext/-test-/file/extconf.rb b/ext/-test-/file/extconf.rb
+index 4e134dd..be4a2fb 100644
+--- a/ext/-test-/file/extconf.rb
++++ b/ext/-test-/file/extconf.rb
+@@ -1,4 +1,18 @@
+ $INCFLAGS << " -I$(topdir) -I$(top_srcdir)"
++
++headers = %w[sys/param.h sys/mount.h sys/vfs.h].select {|h| have_header(h)}
++if have_type("struct statfs", headers)
++  have_struct_member("struct statfs", "f_fstypename", headers)
++  have_struct_member("struct statfs", "f_type", headers)
++end
++
++headers = %w[sys/statvfs.h]
++if have_type("struct statvfs", headers)
++  have_struct_member("struct statvfs", "f_fstypename", headers)
++  have_struct_member("struct statvfs", "f_basetype", headers)
++  have_struct_member("struct statvfs", "f_type", headers)
++end
++
+ $srcs = Dir[File.join($srcdir, "*.{#{SRC_EXT.join(%q{,})}}")]
+ inits = $srcs.map {|s| File.basename(s, ".*")}
+ inits.delete("init")
+diff --git a/ext/-test-/file/fs.c b/ext/-test-/file/fs.c
+index 4a41bf3..1ab067e 100644
+--- a/ext/-test-/file/fs.c
++++ b/ext/-test-/file/fs.c
+@@ -1,55 +1,69 @@
+ #include "ruby/ruby.h"
+ #include "ruby/io.h"
+ 
+-#ifdef __linux__
+-# define HAVE_GETMNTENT
++#ifdef HAVE_SYS_MOUNT_H
++#include <sys/mount.h>
++#endif
++#ifdef HAVE_SYS_VFS_H
++#include <sys/vfs.h>
+ #endif
+ 
+-#ifdef HAVE_GETMNTENT
+-# include <stdio.h>
+-# include <mntent.h>
++#if defined HAVE_STRUCT_STATFS_F_FSTYPENAME
++typedef struct statfs statfs_t;
++# define STATFS(f, s) statfs((f), (s))
++# define HAVE_STRUCT_STATFS_T_F_FSTYPENAME 1
++# if defined HAVE_STRUCT_STATFS_F_TYPE
++#   define HAVE_STRUCT_STATFS_T_F_TYPE 1
++# endif
++#elif defined(HAVE_STRUCT_STATVFS_F_FSTYPENAME) /* NetBSD */
++typedef struct statvfs statfs_t;
++# define STATFS(f, s) statvfs((f), (s))
++# define HAVE_STRUCT_STATFS_T_F_FSTYPENAME 1
++# if defined HAVE_STRUCT_STATVFS_F_TYPE
++#   define HAVE_STRUCT_STATFS_T_F_TYPE 1
++# endif
++#elif defined(HAVE_STRUCT_STATVFS_F_BASETYPE) /* AIX, HP-UX, Solaris */
++typedef struct statvfs statfs_t;
++# define STATFS(f, s) statvfs((f), (s))
++# define HAVE_STRUCT_STATFS_T_F_FSTYPENAME 1
++# define f_fstypename f_basetype
++# if defined HAVE_STRUCT_STATVFS_F_TYPE
++#   define HAVE_STRUCT_STATFS_T_F_TYPE 1
++# endif
+ #endif
+ 
+ VALUE
+ get_fsname(VALUE self, VALUE str)
+ {
+-#ifdef HAVE_GETMNTENT
+-    const char *path;
+-    struct mntent mntbuf;
+-    static const int buflen = 4096;
+-    char *buf = alloca(buflen);
+-    int len = 0;
+-    FILE *fp;
+-#define FSNAME_LEN 100
+-    char name[FSNAME_LEN] = "";
++#ifdef STATFS
++    statfs_t st;
++# define CSTR(s) rb_str_new_cstr(s)
+ 
+     FilePathValue(str);
+-    path = RSTRING_PTR(str);
+-    fp = setmntent("/etc/mtab", "r");
+-    if (!fp) rb_sys_fail("setmntent(/etb/mtab)");;
+-
+-    while (getmntent_r(fp, &mntbuf, buf, buflen)) {
+-	int i;
+-	char *mnt_dir = mntbuf.mnt_dir;
+-	for (i=0; mnt_dir[i]; i++) {
+-	    if (mnt_dir[i] != path[i]) {
+-		goto next_entry;
+-	    }
+-	}
+-	if (i >= len) {
+-	    len = i;
+-	    strlcpy(name, mntbuf.mnt_type, FSNAME_LEN);
+-	}
+-next_entry:
+-	;
++    str = rb_str_encode_ospath(str);
++    if (STATFS(StringValueCStr(str), &st) == -1) {
++	rb_sys_fail_str(str);
+     }
+-    endmntent(fp);
+-
+-    if (!len) rb_sys_fail("no matching entry");;
+-    return rb_str_new_cstr(name);
+-#else
+-    return Qnil;
++# ifdef HAVE_STRUCT_STATFS_T_F_FSTYPENAME
++    if (st.f_fstypename[0])
++	return CSTR(st.f_fstypename);
++# endif
++# ifdef HAVE_STRUCT_STATFS_T_F_TYPE
++    switch (st.f_type) {
++      case 0x9123683E: /* BTRFS_SUPER_MAGIC */
++	return CSTR("btrfs");
++      case 0x7461636f: /* OCFS2_SUPER_MAGIC */
++	return CSTR("ocfs");
++      case 0xEF53: /* EXT2_SUPER_MAGIC EXT3_SUPER_MAGIC EXT4_SUPER_MAGIC */
++	return CSTR("ext4");
++      case 0x58465342: /* XFS_SUPER_MAGIC */
++	return CSTR("xfs");
++      case 0x01021994: /* TMPFS_MAGIC */
++	return CSTR("tmpfs");
++    }
++# endif
+ #endif
++    return Qnil;
+ }
+ 
+ void
+diff --git a/ext/-test-/printf/printf.c b/ext/-test-/printf/printf.c
+index ef7570f..666f559 100644
+--- a/ext/-test-/printf/printf.c
++++ b/ext/-test-/printf/printf.c
+@@ -20,7 +20,7 @@ printf_test_q(VALUE self, VALUE obj)
+ }
+ 
+ static char *
+-utoa(char *p, char *e, unsigned int x)
++uint_to_str(char *p, char *e, unsigned int x)
+ {
+     char *e0 = e;
+     if (e <= p) return p;
+@@ -71,12 +71,12 @@ printf_test_call(int argc, VALUE *argv, VALUE self)
+ 	    *p++ = '0';
+ 	}
+ 	if (!NIL_P(v = rb_hash_aref(opt, ID2SYM(rb_intern("width"))))) {
+-	    p = utoa(p, format + sizeof(format), NUM2UINT(v));
++	    p = uint_to_str(p, format + sizeof(format), NUM2UINT(v));
+ 	}
+ 	if (!NIL_P(v = rb_hash_aref(opt, ID2SYM(rb_intern("prec"))))) {
+ 	    *p++ = '.';
+ 	    if (FIXNUM_P(v))
+-		p = utoa(p, format + sizeof(format), NUM2UINT(v));
++		p = uint_to_str(p, format + sizeof(format), NUM2UINT(v));
+ 	}
+     }
+     *p++ = cnv;
+diff --git a/ext/-test-/string/nofree.c b/ext/-test-/string/nofree.c
+new file mode 100644
+index 0000000..d3d8071
+--- /dev/null
++++ b/ext/-test-/string/nofree.c
+@@ -0,0 +1,13 @@
++#include "ruby.h"
++
++VALUE
++bug_str_nofree(VALUE self)
++{
++    return rb_str_new_cstr("abcdef");
++}
++
++void
++Init_nofree(VALUE klass)
++{
++    rb_define_singleton_method(klass, "nofree", bug_str_nofree, 0);
++}
+diff --git a/ext/bigdecimal/README b/ext/bigdecimal/README
+deleted file mode 100644
+index 7a43628..0000000
+--- a/ext/bigdecimal/README
++++ /dev/null
+@@ -1,60 +0,0 @@
+-
+-  Ruby BIGDECIMAL(Variable Precision) extension library.
+-  Copyright (C) 1999  by Shigeo Kobayashi(shigeo@tinyforest.gr.jp)
+-
+-BigDecimal is copyrighted free software by Shigeo Kobayashi <shigeo@tinyforest.gr.jp>.
+-You can redistribute it and/or modify it under either the terms of the GPL
+-(see COPYING file), or the conditions below:
+-
+-  1. You may make and give away verbatim copies of the source form of the
+-     software without restriction, provided that you duplicate all of the
+-     original copyright notices and associated disclaimers.
+-
+-  2. You may modify your copy of the software in any way, provided that
+-     you do at least ONE of the following:
+-
+-       a) place your modifications in the Public Domain or otherwise
+-          make them Freely Available, such as by posting said
+-	  modifications to Usenet or an equivalent medium, or by allowing
+-	  the author to include your modifications in the software.
+-
+-       b) use the modified software only within your corporation or
+-          organization.
+-
+-       c) rename any non-standard executables so the names do not conflict
+-	  with standard executables, which must also be provided.
+-
+-       d) make other distribution arrangements with the author.
+-
+-  3. You may distribute the software in object code or executable
+-     form, provided that you do at least ONE of the following:
+-
+-       a) distribute the executables and library files of the software,
+-	  together with instructions (in the manual page or equivalent)
+-	  on where to get the original distribution.
+-
+-       b) accompany the distribution with the machine-readable source of
+-	  the software.
+-
+-       c) give non-standard executables non-standard names, with
+-          instructions on where to get the original software distribution.
+-
+-       d) make other distribution arrangements with the author.
+-
+-  4. You may modify and include the part of the software into any other
+-     software (possibly commercial).
+-
+-  5. THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
+-     IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+-     WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR
+-     PURPOSE.
+-
+-* The Author
+-
+-Feel free to send comments and bug reports to the ruby-core team.
+-
+-  http://bugs.ruby-lang.org
+-
+--------------------------------------------------------
+-created at: Thu Dec 22 1999
+-updated at: Wed Sep 28 2011
+diff --git a/ext/bigdecimal/bigdecimal.c b/ext/bigdecimal/bigdecimal.c
+index 9606646..aabdbc6 100644
+--- a/ext/bigdecimal/bigdecimal.c
++++ b/ext/bigdecimal/bigdecimal.c
+@@ -4,13 +4,6 @@
+  *
+  * Copyright(C) 2002 by Shigeo Kobayashi(shigeo@tinyforest.gr.jp)
+  *
+- * You may distribute under the terms of either the GNU General Public
+- * License or the Artistic License, as specified in the README file
+- * of this BigDecimal distribution.
+- *
+- *  NOTE: Change log in this source removed to reduce source code size.
+- *        See rev. 1.25 if needed.
+- *
+  */
+ 
+ /* #define BIGDECIMAL_DEBUG 1 */
+diff --git a/ext/bigdecimal/bigdecimal.gemspec b/ext/bigdecimal/bigdecimal.gemspec
+index 197bdea..7e291a3 100644
+--- a/ext/bigdecimal/bigdecimal.gemspec
++++ b/ext/bigdecimal/bigdecimal.gemspec
+@@ -6,6 +6,7 @@ Gem::Specification.new do |s|
+   s.name = "bigdecimal"
+   s.version = _VERSION
+   s.date = date
++  s.license = 'ruby'
+   s.summary = "Arbitrary-precision decimal floating-point number library."
+   s.homepage = "http://www.ruby-lang.org"
+   s.email = "mrkn@mrkn.jp"
+@@ -16,7 +17,6 @@ Gem::Specification.new do |s|
+     bigdecimal.gemspec
+     bigdecimal.c
+     bigdecimal.h
+-    README
+     depend extconf.rb
+     lib/bigdecimal/jacobian.rb
+     lib/bigdecimal/ludcmp.rb
+diff --git a/ext/bigdecimal/bigdecimal.h b/ext/bigdecimal/bigdecimal.h
+index 9d3e0fc..e8adea6 100644
+--- a/ext/bigdecimal/bigdecimal.h
++++ b/ext/bigdecimal/bigdecimal.h
+@@ -4,13 +4,6 @@
+  *
+  * Copyright(C) 2002 by Shigeo Kobayashi(shigeo@tinyforest.gr.jp)
+  *
+- * You may distribute under the terms of either the GNU General Public
+- * License or the Artistic License, as specified in the README file
+- * of this BigDecimal distribution.
+- *
+- * NOTES:
+- *   2003-03-28 V1.0 checked in.
+- *
+  */
+ 
+ #ifndef  RUBY_BIG_DECIMAL_H
+diff --git a/ext/openssl/ossl_asn1.c b/ext/openssl/ossl_asn1.c
+index 3a24d17..6d564a3 100644
+--- a/ext/openssl/ossl_asn1.c
++++ b/ext/openssl/ossl_asn1.c
+@@ -1029,7 +1029,7 @@ static VALUE
+ ossl_asn1_traverse(VALUE self, VALUE obj)
+ {
+     unsigned char *p;
+-    volatile VALUE tmp;
++    VALUE tmp;
+     long len, read = 0, offset = 0;
+ 
+     obj = ossl_to_der_if_possible(obj);
+@@ -1037,6 +1037,7 @@ ossl_asn1_traverse(VALUE self, VALUE obj)
+     p = (unsigned char *)RSTRING_PTR(tmp);
+     len = RSTRING_LEN(tmp);
+     ossl_asn1_decode0(&p, len, &offset, 0, 1, &read);
++    RB_GC_GUARD(tmp);
+     int_ossl_decode_sanity_check(len, read, offset);
+     return Qnil;
+ }
+@@ -1058,7 +1059,7 @@ ossl_asn1_decode(VALUE self, VALUE obj)
+ {
+     VALUE ret;
+     unsigned char *p;
+-    volatile VALUE tmp;
++    VALUE tmp;
+     long len, read = 0, offset = 0;
+ 
+     obj = ossl_to_der_if_possible(obj);
+@@ -1066,6 +1067,7 @@ ossl_asn1_decode(VALUE self, VALUE obj)
+     p = (unsigned char *)RSTRING_PTR(tmp);
+     len = RSTRING_LEN(tmp);
+     ret = ossl_asn1_decode0(&p, len, &offset, 0, 0, &read);
++    RB_GC_GUARD(tmp);
+     int_ossl_decode_sanity_check(len, read, offset);
+     return ret;
+ }
+@@ -1089,7 +1091,7 @@ ossl_asn1_decode_all(VALUE self, VALUE obj)
+     VALUE ary, val;
+     unsigned char *p;
+     long len, tmp_len = 0, read = 0, offset = 0;
+-    volatile VALUE tmp;
++    VALUE tmp;
+ 
+     obj = ossl_to_der_if_possible(obj);
+     tmp = rb_str_new4(StringValue(obj));
+@@ -1104,6 +1106,7 @@ ossl_asn1_decode_all(VALUE self, VALUE obj)
+ 	read += tmp_read;
+ 	tmp_len -= tmp_read;
+     }
++    RB_GC_GUARD(tmp);
+     int_ossl_decode_sanity_check(len, read, offset);
+     return ary;
+ }
+diff --git a/ext/pty/pty.c b/ext/pty/pty.c
+index 29cc689..631adb2 100644
+--- a/ext/pty/pty.c
++++ b/ext/pty/pty.c
+@@ -261,7 +261,7 @@ get_device_once(int *master, int *slave, char SlaveName[DEVICELEN], int nomesg,
+     if ((slavefd = rb_cloexec_open(slavedevice, O_RDWR|O_NOCTTY, 0)) == -1) goto error;
+     rb_update_max_fd(slavefd);
+ 
+-#if defined(I_PUSH) && !defined(__linux__)
++#if defined(I_PUSH) && !defined(__linux__) && !defined(_AIX)
+     if (ioctl(slavefd, I_PUSH, "ptem") == -1) goto error;
+     if (ioctl(slavefd, I_PUSH, "ldterm") == -1) goto error;
+     if (ioctl(slavefd, I_PUSH, "ttcompat") == -1) goto error;
+@@ -345,7 +345,7 @@ get_device_once(int *master, int *slave, char SlaveName[DEVICELEN], int nomesg,
+     if (no_mesg(slavedevice, nomesg) == -1) goto error;
+     if((slavefd = rb_cloexec_open(slavedevice, O_RDWR, 0)) == -1) goto error;
+     rb_update_max_fd(slavefd);
+-#if defined(I_PUSH) && !defined(__linux__)
++#if defined(I_PUSH) && !defined(__linux__) && !defined(_AIX)
+     if(ioctl(slavefd, I_PUSH, "ptem") == -1) goto error;
+     if(ioctl(slavefd, I_PUSH, "ldterm") == -1) goto error;
+     ioctl(slavefd, I_PUSH, "ttcompat");
+diff --git a/ext/socket/ancdata.c b/ext/socket/ancdata.c
+index f0dbb2b..b69417e 100644
+--- a/ext/socket/ancdata.c
++++ b/ext/socket/ancdata.c
+@@ -1135,7 +1135,7 @@ bsock_sendmsg_internal(int argc, VALUE *argv, VALUE sock, int nonblock)
+     struct msghdr mh;
+     struct iovec iov;
+ #if defined(HAVE_STRUCT_MSGHDR_MSG_CONTROL)
+-    volatile VALUE controls_str = 0;
++    VALUE controls_str = 0;
+     VALUE *controls_ptr = NULL;
+     int family;
+ #endif
+@@ -1291,6 +1291,9 @@ bsock_sendmsg_internal(int argc, VALUE *argv, VALUE sock, int nonblock)
+             rb_readwrite_sys_fail(RB_IO_WAIT_WRITABLE, "sendmsg(2) would block");
+ 	rb_sys_fail("sendmsg(2)");
+     }
++#if defined(HAVE_STRUCT_MSGHDR_MSG_CONTROL)
++    RB_GC_GUARD(controls_str);
++#endif
+ 
+     return SSIZET2NUM(ss);
+ }
+@@ -1711,6 +1714,7 @@ bsock_recvmsg_internal(int argc, VALUE *argv, VALUE sock, int nonblock)
+                 discard_cmsg(cmh, msg_end, (flags & MSG_PEEK) != 0);
+             rb_ary_push(ret, ctl);
+         }
++        RB_GC_GUARD(ctl_str);
+     }
+ #endif
+ 
+diff --git a/ext/socket/ipsocket.c b/ext/socket/ipsocket.c
+index ef5ce76..16a8373 100644
+--- a/ext/socket/ipsocket.c
++++ b/ext/socket/ipsocket.c
+@@ -41,6 +41,7 @@ inetsock_cleanup(struct inetsock_arg *arg)
+ static VALUE
+ init_inetsock_internal(struct inetsock_arg *arg)
+ {
++    int error = 0;
+     int type = arg->type;
+     struct addrinfo *res, *lres;
+     int fd, status = 0, local = 0;
+@@ -80,6 +81,7 @@ init_inetsock_internal(struct inetsock_arg *arg)
+ 	syscall = "socket(2)";
+ 	fd = status;
+ 	if (fd < 0) {
++	    error = errno;
+ 	    continue;
+ 	}
+ 	arg->fd = fd;
+@@ -107,6 +109,7 @@ init_inetsock_internal(struct inetsock_arg *arg)
+ 	}
+ 
+ 	if (status < 0) {
++	    error = errno;
+ 	    close(fd);
+ 	    arg->fd = fd = -1;
+ 	    continue;
+@@ -124,7 +127,7 @@ init_inetsock_internal(struct inetsock_arg *arg)
+ 	    port = arg->remote.serv;
+ 	}
+ 
+-	rsock_sys_fail_host_port(syscall, host, port);
++	rsock_syserr_fail_host_port(error, syscall, host, port);
+     }
+ 
+     arg->fd = -1;
+@@ -132,8 +135,9 @@ init_inetsock_internal(struct inetsock_arg *arg)
+     if (type == INET_SERVER) {
+ 	status = listen(fd, SOMAXCONN);
+ 	if (status < 0) {
++	    error = errno;
+ 	    close(fd);
+-            rb_sys_fail("listen(2)");
++	    rb_syserr_fail(error, "listen(2)");
+ 	}
+     }
+ 
+diff --git a/ext/socket/raddrinfo.c b/ext/socket/raddrinfo.c
+index e13684a..d838898 100644
+--- a/ext/socket/raddrinfo.c
++++ b/ext/socket/raddrinfo.c
+@@ -1643,6 +1643,7 @@ addrinfo_mload(VALUE self, VALUE ary)
+ 
+         len = res->ai->ai_addrlen;
+         memcpy(&ss, res->ai->ai_addr, res->ai->ai_addrlen);
++        rb_freeaddrinfo(res);
+         break;
+       }
+     }
+diff --git a/gc.c b/gc.c
+index 5940564..549d7ca 100644
+--- a/gc.c
++++ b/gc.c
+@@ -2771,6 +2771,9 @@ id2ref(VALUE obj, VALUE objid)
+     if (!is_live_object(objspace, ptr)) {
+ 	rb_raise(rb_eRangeError, "%p is recycled object", p0);
+     }
++    if (RBASIC(ptr)->klass == 0) {
++	rb_raise(rb_eRangeError, "%p is internal object", p0);
++    }
+     return (VALUE)ptr;
+ }
+ 
+diff --git a/hash.c b/hash.c
+index 8d37dc6..fb4c5a5 100644
+--- a/hash.c
++++ b/hash.c
+@@ -142,13 +142,19 @@ rb_any_hash(VALUE a)
+ 	}
+ 	else if (FLONUM_P(a)) {
+ 	    /* prevent pathological behavior: [Bug #10761] */
+-	    a = (st_index_t)rb_float_value(a);
++	    return rb_dbl_hash(rb_float_value(a));
+ 	}
+ 	hnum = rb_objid_hash((st_index_t)a);
+     }
+     else if (BUILTIN_TYPE(a) == T_STRING) {
+ 	hnum = rb_str_hash(a);
+     }
++    else if (BUILTIN_TYPE(a) == T_SYMBOL) {
++	hnum = rb_objid_hash((st_index_t)a);
++    }
++    else if (BUILTIN_TYPE(a) == T_FLOAT) {
++	return rb_dbl_hash(rb_float_value(a));
++    }
+     else {
+         hval = rb_hash(a);
+ 	hnum = FIX2LONG(hval);
+diff --git a/internal.h b/internal.h
+index 4da45a4..1833dca 100644
+--- a/internal.h
++++ b/internal.h
+@@ -773,6 +773,7 @@ double ruby_float_mod(double x, double y);
+ int rb_num_negative_p(VALUE);
+ VALUE rb_int_succ(VALUE num);
+ VALUE rb_int_pred(VALUE num);
++VALUE rb_dbl_hash(double d);
+ 
+ #if USE_FLONUM
+ #define RUBY_BIT_ROTL(v, n) (((v) << (n)) | ((v) >> ((sizeof(v) * 8) - n)))
+diff --git a/iseq.c b/iseq.c
+index de65dcb..9cf5df6 100644
+--- a/iseq.c
++++ b/iseq.c
+@@ -596,6 +596,7 @@ rb_iseq_compile_with_option(VALUE src, VALUE file, VALUE absolute_path, VALUE li
+ 	if (RB_TYPE_P((src), T_FILE))
+ 	    node = rb_parser_compile_file_path(parser, file, src, ln);
+ 	else {
++	    StringValue(src);
+ 	    node = rb_parser_compile_string_path(parser, file, src, ln);
+ 
+ 	    if (!node) {
+diff --git a/lib/fileutils.rb b/lib/fileutils.rb
+index 23fd193..932776c 100644
+--- a/lib/fileutils.rb
++++ b/lib/fileutils.rb
+@@ -518,7 +518,7 @@ module FileUtils
+       begin
+         if destent.exist?
+           if destent.directory?
+-            raise Errno::EEXIST, dest
++            raise Errno::EEXIST, d
+           else
+             destent.remove_file if rename_cannot_overwrite_file?
+           end
+diff --git a/lib/net/imap.rb b/lib/net/imap.rb
+index a772c46..0517ca1 100644
+--- a/lib/net/imap.rb
++++ b/lib/net/imap.rb
+@@ -2625,7 +2625,13 @@ module Net
+           return param
+         end
+         disposition = body_fld_dsp
+-        match(T_SPACE)
++
++        token = lookahead
++        if token.symbol == T_SPACE
++          shift_token
++        else
++          return param, disposition
++        end
+         language = body_fld_lang
+ 
+         token = lookahead
+diff --git a/lib/resolv.rb b/lib/resolv.rb
+index 7855c6e..dee6afd 100644
+--- a/lib/resolv.rb
++++ b/lib/resolv.rb
+@@ -1183,7 +1183,7 @@ class Resolv
+         end
+ 
+         def ==(other)
+-          return @downcase == other.downcase
++          return self.class == other.class && @downcase == other.downcase
+         end
+ 
+         def eql?(other)
+@@ -1219,6 +1219,14 @@ class Resolv
+       end
+ 
+       def initialize(labels, absolute=true) # :nodoc:
++        labels = labels.map {|label|
++          case label
++          when String then Label::Str.new(label)
++          when Label::Str then label
++          else
++            raise ArgumentError, "unexpected label: #{label.inspect}"
++          end
++        }
+         @labels = labels
+         @absolute = absolute
+       end
+diff --git a/load.c b/load.c
+index 65017c9..af3548c 100644
+--- a/load.c
++++ b/load.c
+@@ -318,7 +318,7 @@ loaded_feature_path(const char *name, long vlen, const char *feature, long len,
+     const char *e;
+ 
+     if (vlen < len+1) return 0;
+-    if (!strncmp(name+(vlen-len), feature, len)) {
++    if (strchr(feature, '.') && !strncmp(name+(vlen-len), feature, len)) {
+ 	plen = vlen - len;
+     }
+     else {
+diff --git a/marshal.c b/marshal.c
+index bd57b1f..ab1ab56 100644
+--- a/marshal.c
++++ b/marshal.c
+@@ -1298,11 +1298,18 @@ r_bytes0(long len, struct load_arg *arg)
+ static int
+ sym2encidx(VALUE sym, VALUE val)
+ {
+-    if (sym == ID2SYM(rb_id_encoding())) {
++    static const char name_encoding[8] = "encoding";
++    const char *p;
++    long l;
++    if (rb_enc_get_index(sym) != ENCINDEX_US_ASCII) return -1;
++    RSTRING_GETMEM(sym, p, l);
++    if (l <= 0) return -1;
++    if (l == sizeof(name_encoding) &&
++	memcmp(p, name_encoding, sizeof(name_encoding)) == 0) {
+ 	int idx = rb_enc_find_index(StringValueCStr(val));
+ 	return idx;
+     }
+-    else if (sym == ID2SYM(rb_intern("E"))) {
++    else if (l == 1 && *p == 'E') {
+ 	if (val == Qfalse) return rb_usascii_encindex();
+ 	else if (val == Qtrue) return rb_utf8_encindex();
+ 	/* bogus ignore */
+@@ -1330,7 +1337,8 @@ r_symreal(struct load_arg *arg, int ivar)
+     int idx = -1;
+     st_index_t n = arg->symbols->num_entries;
+ 
+-    st_insert(arg->symbols, (st_data_t)n, (st_data_t)0);
++    if (rb_enc_str_asciionly_p(s)) rb_enc_associate_index(s, ENCINDEX_US_ASCII);
++    st_insert(arg->symbols, (st_data_t)n, (st_data_t)s);
+     if (ivar) {
+ 	long num = r_long(arg);
+ 	while (num-- > 0) {
+@@ -1339,10 +1347,8 @@ r_symreal(struct load_arg *arg, int ivar)
+ 	}
+     }
+     if (idx > 0) rb_enc_associate_index(s, idx);
+-    sym = rb_str_intern(s);
+-    st_insert(arg->symbols, (st_data_t)n, (st_data_t)sym);
+ 
+-    return sym;
++    return s;
+ }
+ 
+ static VALUE
+@@ -1370,7 +1376,7 @@ r_symbol(struct load_arg *arg)
+ static VALUE
+ r_unique(struct load_arg *arg)
+ {
+-    return rb_sym2str(r_symbol(arg));
++    return r_symbol(arg);
+ }
+ 
+ static VALUE
+@@ -1468,7 +1474,7 @@ r_ivar(VALUE obj, int *has_encoding, struct load_arg *arg)
+ 		if (has_encoding) *has_encoding = TRUE;
+ 	    }
+ 	    else {
+-		rb_ivar_set(obj, SYM2ID(sym), val);
++		rb_ivar_set(obj, rb_intern_str(sym), val);
+ 	    }
+ 	} while (--len > 0);
+     }
+@@ -1793,13 +1799,13 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
+ 	    v = r_entry0(v, idx, arg);
+ 	    values = rb_ary_new2(len);
+ 	    for (i=0; i<len; i++) {
++		VALUE n = rb_sym2str(RARRAY_AREF(mem, i));
+ 		slot = r_symbol(arg);
+ 
+-		if (RARRAY_AREF(mem, i) != slot) {
++		if (!rb_str_equal(n, slot)) {
+ 		    rb_raise(rb_eTypeError, "struct %"PRIsVALUE" not compatible (:%"PRIsVALUE" for :%"PRIsVALUE")",
+ 			     rb_class_name(klass),
+-			     rb_sym2str(slot),
+-			     rb_sym2str(RARRAY_AREF(mem, i)));
++			     slot, n);
+ 		}
+                 rb_ary_push(values, r_object(arg));
+ 		arg->readable -= 2;
+@@ -1937,11 +1943,12 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
+ 	else {
+ 	    v = r_symreal(arg, 0);
+ 	}
++	v = rb_str_intern(v);
+ 	v = r_leave(v, arg);
+ 	break;
+ 
+       case TYPE_SYMLINK:
+-	v = r_symlink(arg);
++	v = rb_str_intern(r_symlink(arg));
+ 	break;
+ 
+       default:
+diff --git a/numeric.c b/numeric.c
+index 0222c76..e7435bb 100644
+--- a/numeric.c
++++ b/numeric.c
+@@ -1137,10 +1137,14 @@ flo_eq(VALUE x, VALUE y)
+ static VALUE
+ flo_hash(VALUE num)
+ {
+-    double d;
++    return rb_dbl_hash(RFLOAT_VALUE(num));
++}
++
++VALUE
++rb_dbl_hash(double d)
++{
+     st_index_t hash;
+ 
+-    d = RFLOAT_VALUE(num);
+     /* normalize -0.0 to 0.0 */
+     if (d == 0.0) d = 0.0;
+     hash = rb_memhash(&d, sizeof(d));
+diff --git a/parse.y b/parse.y
+index 0f9a567..1e29197 100644
+--- a/parse.y
++++ b/parse.y
+@@ -3534,14 +3534,19 @@ lambda		:   {
+ 		    {
+ 			$<num>$ = ruby_sourceline;
+ 		    }
++		    {
++			$<val>$ = cmdarg_stack;
++			cmdarg_stack = 0;
++		    }
+ 		  lambda_body
+ 		    {
+ 			lpar_beg = $<num>2;
++			cmdarg_stack = $<val>5;
+ 		    /*%%%*/
+-			$$ = NEW_LAMBDA($3, $5);
++			$$ = NEW_LAMBDA($3, $6);
+ 			nd_set_line($$, $<num>4);
+ 		    /*%
+-			$$ = dispatch2(lambda, $3, $5);
++			$$ = dispatch2(lambda, $3, $6);
+ 		    %*/
+ 			dyna_pop($<vars>1);
+ 		    }
+diff --git a/proc.c b/proc.c
+index 48d7dcb..5995c97 100644
+--- a/proc.c
++++ b/proc.c
+@@ -719,7 +719,7 @@ proc_call(int argc, VALUE *argv, VALUE procval)
+     GetProcPtr(procval, proc);
+ 
+     iseq = proc->block.iseq;
+-    if (BUILTIN_TYPE(iseq) == T_NODE || iseq->param.flags.has_block) {
++    if (RUBY_VM_IFUNC_P(iseq) || iseq->param.flags.has_block) {
+ 	if (rb_block_given_p()) {
+ 	    rb_proc_t *passed_proc;
+ 	    RB_GC_GUARD(passed_procval) = rb_block_proc();
+@@ -843,7 +843,7 @@ rb_block_min_max_arity(rb_block_t *block, int *max)
+ {
+     rb_iseq_t *iseq = block->iseq;
+     if (iseq) {
+-	if (BUILTIN_TYPE(iseq) != T_NODE) {
++	if (!RUBY_VM_IFUNC_P(iseq)) {
+ 	    return rb_iseq_min_max_arity(iseq, max);
+ 	}
+ 	else {
+@@ -1131,29 +1131,68 @@ rb_obj_is_method(VALUE m)
+     }
+ }
+ 
++static int
++respond_to_missing_p(VALUE klass, VALUE obj, VALUE sym, int scope)
++{
++    /* TODO: merge with obj_respond_to() */
++    ID rmiss = idRespond_to_missing;
++
++    if (obj == Qundef) return 0;
++    if (rb_method_basic_definition_p(klass, rmiss)) return 0;
++    return RTEST(rb_funcall(obj, rmiss, 2, sym, scope ? Qfalse : Qtrue));
++}
++
++
++static VALUE
++mnew_missing(VALUE rclass, VALUE klass, VALUE obj, ID id, ID rid, VALUE mclass)
++{
++    struct METHOD *data;
++    VALUE method = TypedData_Make_Struct(mclass, struct METHOD, &method_data_type, data);
++    rb_method_entry_t *me;
++    rb_method_definition_t *def;
++
++    data->recv = obj;
++    data->rclass = rclass;
++    data->defined_class = klass;
++    data->id = rid;
++
++    me = ALLOC(rb_method_entry_t);
++    data->me = me;
++    me->flag = 0;
++    me->mark = 0;
++    me->called_id = id;
++    me->klass = klass;
++    me->def = 0;
++
++    def = ALLOC(rb_method_definition_t);
++    me->def = def;
++    def->type = VM_METHOD_TYPE_MISSING;
++    def->original_id = id;
++    def->alias_count = 0;
++
++    data->ume = ALLOC(struct unlinked_method_entry_list_entry);
++    data->me->def->alias_count++;
++
++    OBJ_INFECT(method, klass);
++
++    return method;
++}
++
+ static VALUE
+ mnew_internal(rb_method_entry_t *me, VALUE defined_class, VALUE klass,
+ 	      VALUE obj, ID id, VALUE mclass, int scope, int error)
+ {
+-    VALUE method;
++    struct METHOD *data;
+     VALUE rclass = klass;
++    VALUE method;
+     ID rid = id;
+-    struct METHOD *data;
+     rb_method_definition_t *def = 0;
+     rb_method_flag_t flag = NOEX_UNDEF;
+ 
+   again:
+     if (UNDEFINED_METHOD_ENTRY_P(me)) {
+-	ID rmiss = idRespond_to_missing;
+-	VALUE sym = ID2SYM(id);
+-
+-	if (obj != Qundef && !rb_method_basic_definition_p(klass, rmiss)) {
+-	    if (RTEST(rb_funcall(obj, rmiss, 2, sym, scope ? Qfalse : Qtrue))) {
+-		me = 0;
+-		defined_class = klass;
+-
+-		goto gen_method;
+-	    }
++	if (respond_to_missing_p(klass, obj, ID2SYM(id), scope)) {
++	    return mnew_missing(rclass, klass, obj, id, rid, mclass);
+ 	}
+ 	if (!error) return Qnil;
+ 	rb_print_undef(klass, id, 0);
+@@ -1180,7 +1219,6 @@ mnew_internal(rb_method_entry_t *me, VALUE defined_class, VALUE klass,
+ 	rclass = RCLASS_SUPER(rclass);
+     }
+ 
+-  gen_method:
+     method = TypedData_Make_Struct(mclass, struct METHOD, &method_data_type, data);
+ 
+     data->recv = obj;
+@@ -1188,25 +1226,7 @@ mnew_internal(rb_method_entry_t *me, VALUE defined_class, VALUE klass,
+     data->defined_class = defined_class;
+     data->id = rid;
+     data->me = ALLOC(rb_method_entry_t);
+-    if (me) {
+-	*data->me = *me;
+-    }
+-    else {
+-	me = data->me;
+-	me->flag = 0;
+-	me->mark = 0;
+-	me->called_id = id;
+-	me->klass = klass;
+-	me->def = 0;
+-
+-	def = ALLOC(rb_method_definition_t);
+-	me->def = def;
+-
+-	def->type = VM_METHOD_TYPE_MISSING;
+-	def->original_id = id;
+-	def->alias_count = 0;
+-
+-    }
++    *data->me = *me;
+     data->ume = ALLOC(struct unlinked_method_entry_list_entry);
+     data->me->def->alias_count++;
+ 
+@@ -1438,6 +1458,23 @@ rb_method_name_error(VALUE klass, VALUE str)
+ 		      QUOTE(str), s0, rb_class_name(c));
+ }
+ 
++static VALUE
++obj_method(VALUE obj, VALUE vid, int scope)
++{
++    ID id = rb_check_id(&vid);
++    const VALUE klass = CLASS_OF(obj);
++    const VALUE mclass = rb_cMethod;
++
++    if (!id) {
++	if (respond_to_missing_p(klass, obj, vid, scope)) {
++	    id = rb_intern_str(vid);
++	    return mnew_missing(klass, klass, obj, id, id, mclass);
++	}
++	rb_method_name_error(klass, vid);
++    }
++    return mnew(klass, obj, id, mclass, scope);
++}
++
+ /*
+  *  call-seq:
+  *     obj.method(sym)    -> method
+@@ -1469,11 +1506,7 @@ rb_method_name_error(VALUE klass, VALUE str)
+ VALUE
+ rb_obj_method(VALUE obj, VALUE vid)
+ {
+-    ID id = rb_check_id(&vid);
+-    if (!id) {
+-	rb_method_name_error(CLASS_OF(obj), vid);
+-    }
+-    return mnew(CLASS_OF(obj), obj, id, rb_cMethod, FALSE);
++    return obj_method(obj, vid, FALSE);
+ }
+ 
+ /*
+@@ -1486,11 +1519,7 @@ rb_obj_method(VALUE obj, VALUE vid)
+ VALUE
+ rb_obj_public_method(VALUE obj, VALUE vid)
+ {
+-    ID id = rb_check_id(&vid);
+-    if (!id) {
+-	rb_method_name_error(CLASS_OF(obj), vid);
+-    }
+-    return mnew(CLASS_OF(obj), obj, id, rb_cMethod, TRUE);
++    return obj_method(obj, vid, TRUE);
+ }
+ 
+ /*
+@@ -1524,6 +1553,11 @@ rb_obj_singleton_method(VALUE obj, VALUE vid)
+     VALUE klass;
+     ID id = rb_check_id(&vid);
+     if (!id) {
++	if (!NIL_P(klass = rb_singleton_class_get(obj)) &&
++	    respond_to_missing_p(klass, obj, vid, FALSE)) {
++	    id = rb_intern_str(vid);
++	    return mnew_missing(klass, klass, obj, id, id, rb_cMethod);
++	}
+ 	rb_name_error_str(vid, "undefined singleton method `%"PRIsVALUE"' for `%"PRIsVALUE"'",
+ 			  QUOTE(vid), obj);
+     }
+@@ -1683,7 +1717,7 @@ rb_mod_define_method(int argc, VALUE *argv, VALUE mod)
+ 	rb_proc_t *proc;
+ 	body = proc_dup(body);
+ 	GetProcPtr(body, proc);
+-	if (BUILTIN_TYPE(proc->block.iseq) != T_NODE) {
++	if (!RUBY_VM_IFUNC_P(proc->block.iseq)) {
+ 	    proc->block.iseq->defined_method_id = id;
+ 	    RB_OBJ_WRITE(proc->block.iseq->self, &proc->block.iseq->klass, mod);
+ 	    proc->is_lambda = TRUE;
+@@ -2443,22 +2477,40 @@ static VALUE
+ proc_binding(VALUE self)
+ {
+     rb_proc_t *proc;
+-    VALUE bindval;
++    VALUE bindval, envval;
+     rb_binding_t *bind;
+     rb_iseq_t *iseq;
+ 
+     GetProcPtr(self, proc);
++    envval = proc->envval;
+     iseq = proc->block.iseq;
+-    if (RB_TYPE_P((VALUE)iseq, T_NODE)) {
++    if (RUBY_VM_IFUNC_P(iseq)) {
++	rb_env_t *env;
+ 	if (!IS_METHOD_PROC_NODE((NODE *)iseq)) {
+ 	    rb_raise(rb_eArgError, "Can't create Binding from C level Proc");
+ 	}
+ 	iseq = rb_method_get_iseq(RNODE(iseq)->u2.value);
++	GetEnvPtr(envval, env);
++	if (iseq && env->local_size < iseq->local_size) {
++	    int prev_local_size = env->local_size;
++	    int local_size = iseq->local_size;
++	    VALUE newenvval = TypedData_Wrap_Struct(RBASIC_CLASS(envval), RTYPEDDATA_TYPE(envval), 0);
++	    rb_env_t *newenv = xmalloc(sizeof(rb_env_t) + ((local_size + 1) * sizeof(VALUE)));
++	    RTYPEDDATA_DATA(newenvval) = newenv;
++	    newenv->env_size = local_size + 2;
++	    newenv->local_size = local_size;
++	    newenv->prev_envval = env->prev_envval;
++	    newenv->block = env->block;
++	    MEMCPY(newenv->env, env->env, VALUE, prev_local_size + 1);
++	    rb_mem_clear(newenv->env + prev_local_size + 1, local_size - prev_local_size);
++	    newenv->env[local_size + 1] = newenvval;
++	    envval = newenvval;
++	}
+     }
+ 
+     bindval = rb_binding_alloc(rb_cBinding);
+     GetBindingPtr(bindval, bind);
+-    bind->env = proc->envval;
++    bind->env = envval;
+     bind->blockprocval = proc->blockprocval;
+     if (RUBY_VM_NORMAL_ISEQ_P(iseq)) {
+ 	bind->path = iseq->location.path;
+diff --git a/range.c b/range.c
+index f4ab7e1..857cb48 100644
+--- a/range.c
++++ b/range.c
+@@ -329,6 +329,21 @@ discrete_object_p(VALUE obj)
+     return rb_respond_to(obj, id_succ);
+ }
+ 
++static int
++linear_object_p(VALUE obj)
++{
++    if (FIXNUM_P(obj) || FLONUM_P(obj)) return TRUE;
++    if (SPECIAL_CONST_P(obj)) return FALSE;
++    switch (BUILTIN_TYPE(obj)) {
++      case T_FLOAT:
++      case T_BIGNUM:
++	return TRUE;
++    }
++    if (rb_obj_is_kind_of(obj, rb_cNumeric)) return TRUE;
++    if (rb_obj_is_kind_of(obj, rb_cTime)) return TRUE;
++    return FALSE;
++}
++
+ static VALUE
+ range_step_size(VALUE range, VALUE args, VALUE eobj)
+ {
+@@ -1155,8 +1170,7 @@ range_include(VALUE range, VALUE val)
+     VALUE beg = RANGE_BEG(range);
+     VALUE end = RANGE_END(range);
+     int nv = FIXNUM_P(beg) || FIXNUM_P(end) ||
+-	     rb_obj_is_kind_of(beg, rb_cNumeric) ||
+-	     rb_obj_is_kind_of(end, rb_cNumeric);
++	     linear_object_p(beg) || linear_object_p(end);
+ 
+     if (nv ||
+ 	!NIL_P(rb_check_to_integer(beg, "to_int")) ||
+diff --git a/rational.c b/rational.c
+index addb195..134db64 100644
+--- a/rational.c
++++ b/rational.c
+@@ -2465,13 +2465,14 @@ nurat_s_convert(int argc, VALUE *argv, VALUE klass)
+  * a/b (b>0).  Where a is numerator and b is denominator.  Integer a
+  * equals rational a/1 mathematically.
+  *
+- * In ruby, you can create rational object with Rational, to_r or
+- * rationalize method.  The return values will be irreducible.
++ * In ruby, you can create rational object with Rational, to_r,
++ * rationalize method or suffixing r to a literal.  The return values will be irreducible.
+  *
+  *    Rational(1)      #=> (1/1)
+  *    Rational(2, 3)   #=> (2/3)
+  *    Rational(4, -6)  #=> (-2/3)
+  *    3.to_r           #=> (3/1)
++ *    2/3r             #=> (2/3)
+  *
+  * You can also create rational object from floating-point numbers or
+  * strings.
+diff --git a/string.c b/string.c
+index 2652b29..e6a5fb8 100644
+--- a/string.c
++++ b/string.c
+@@ -60,7 +60,7 @@ VALUE rb_cSymbol;
+     FL_SET((str), STR_NOEMBED);\
+     STR_SET_EMBED_LEN((str), 0);\
+ } while (0)
+-#define STR_SET_EMBED(str) FL_UNSET((str), STR_NOEMBED)
++#define STR_SET_EMBED(str) FL_UNSET((str), (STR_NOEMBED|STR_NOFREE))
+ #define STR_SET_EMBED_LEN(str, n) do { \
+     long tmp_n = (n);\
+     RBASIC(str)->flags &= ~RSTRING_EMBED_LEN_MASK;\
+@@ -4226,6 +4226,9 @@ rb_str_sub_bang(int argc, VALUE *argv, VALUE str)
+  *  double-quoted string, both back-references must be preceded by an
+  *  additional backslash. However, within +replacement+ the special match
+  *  variables, such as <code>&$</code>, will not refer to the current match.
++ *  If +replacement+ is a String that looks like a pattern's capture group but
++ *  is actaully not a pattern capture group e.g. <code>"\\'"</code>, then it
++ *  will have to be preceded by two backslashes like so <code>"\\\\'"</code>.
+  *
+  *  If the second argument is a Hash, and the matched text is one of its keys,
+  *  the corresponding value is the replacement string.
+diff --git a/symbol.c b/symbol.c
+index 1127020..696f017 100644
+--- a/symbol.c
++++ b/symbol.c
+@@ -122,7 +122,7 @@ static const struct st_hash_type symhash = {
+ void
+ Init_sym(void)
+ {
+-    VALUE dsym_fstrs = rb_hash_new();
++    VALUE dsym_fstrs = rb_ident_hash_new();
+     global_symbols.dsymbol_fstr_hash = dsym_fstrs;
+     rb_gc_register_mark_object(dsym_fstrs);
+     rb_obj_hide(dsym_fstrs);
+diff --git a/test/-ext-/string/test_nofree.rb b/test/-ext-/string/test_nofree.rb
+new file mode 100644
+index 0000000..234c84d
+--- /dev/null
++++ b/test/-ext-/string/test_nofree.rb
+@@ -0,0 +1,10 @@
++require 'test/unit'
++
++class Test_StringNoFree < Test::Unit::TestCase
++  def test_no_memory_leak
++    bug10942 = '[ruby-core:68436] [Bug #10942] no leak on nofree string'
++    assert_no_memory_leak(%w(-r-test-/string/string), '',
++                          '1000000.times {Bug::String.nofree << "a" * 100}',
++                          bug10942, rss: true, limit: 2.0)
++  end
++end
+diff --git a/test/-ext-/symbol/test_inadvertent_creation.rb b/test/-ext-/symbol/test_inadvertent_creation.rb
+index 4e7a85f..f772086 100644
+--- a/test/-ext-/symbol/test_inadvertent_creation.rb
++++ b/test/-ext-/symbol/test_inadvertent_creation.rb
+@@ -82,6 +82,28 @@ module Test_Symbol
+       assert_not_interned_false(c, :class_variable_defined?, noninterned_name("@@"), feature5072)
+     end
+ 
++    def test_missing_method
++      bug10985 = '[ruby-core:68564] [Bug #10985]'
++      m = nil
++      c = Class.new do
++        def self.respond_to_missing?(*)
++          true
++        end
++      end
++
++      s = noninterned_name
++      assert_nothing_raised(NameError, bug10985) {m = c.method(s)}
++      assert_raise_with_message(NoMethodError, /#{s}/) {m.call}
++
++      s = noninterned_name
++      assert_nothing_raised(NameError, bug10985) {m = c.public_method(s.to_sym)}
++      assert_raise_with_message(NoMethodError, /#{s}/) {m.call}
++
++      s = noninterned_name
++      assert_nothing_raised(NameError, bug10985) {m = c.singleton_method(s.to_sym)}
++      assert_raise_with_message(NoMethodError, /#{s}/) {m.call}
++    end
++
+     Feature5079 = '[ruby-core:38404]'
+ 
+     def test_undefined_instance_variable
+diff --git a/test/fileutils/test_fileutils.rb b/test/fileutils/test_fileutils.rb
+index fe9a1b3..295fbfd9 100644
+--- a/test/fileutils/test_fileutils.rb
++++ b/test/fileutils/test_fileutils.rb
+@@ -416,7 +416,8 @@ class TestFileUtils < Test::Unit::TestCase
+ 
+     mkdir 'tmp/tmpdir'
+     mkdir_p 'tmp/dest2/tmpdir'
+-    assert_raise(Errno::EEXIST) {
++    assert_raise_with_message(Errno::EEXIST, %r' - tmp/dest2/tmpdir\z',
++                              '[ruby-core:68706] [Bug #11021]') {
+       mv 'tmp/tmpdir', 'tmp/dest2'
+     }
+     mkdir 'tmp/dest2/tmpdir/junk'
+diff --git a/test/net/imap/test_imap_response_parser.rb b/test/net/imap/test_imap_response_parser.rb
+index ded7dd1..1612d78 100644
+--- a/test/net/imap/test_imap_response_parser.rb
++++ b/test/net/imap/test_imap_response_parser.rb
+@@ -276,4 +276,17 @@ EOF
+     assert_equal("SEARCH", response.name)
+     assert_equal([87216, 87221], response.data)
+   end
++
++  # [Bug #11128]
++  def test_body_ext_mpart_without_lang
++    parser = Net::IMAP::ResponseParser.new
++    response = parser.parse("* 4 FETCH (BODY (((\"text\" \"plain\" (\"charset\" \"utf-8\") NIL NIL \"7bit\" 257 9 NIL NIL NIL NIL)(\"text\" \"html\" (\"charset\" \"utf-8\") NIL NIL \"quoted-printable\" 655 9 NIL NIL NIL NIL) \"alternative\" (\"boundary\" \"001a1137a5047848dd05157ddaa1\") NIL)(\"application\" \"pdf\" (\"name\" \"test.xml\" \"x-apple-part-url\" \"9D00D9A2-98AB-4EFB-85BA-FB255F8BF3D7\") NIL NIL \"base64\" 4383638 NIL (\"attachment\" (\"filename\" \"test.xml\")) NIL NIL) \"mixed\" (\"boundary\" \"001a1137a5047848e405157ddaa3\") NIL))\r\n")
++    assert_equal("FETCH", response.name)
++    body = response.data.attr["BODY"]
++    assert_equal(nil, body.parts[0].disposition)
++    assert_equal(nil, body.parts[0].language)
++    assert_equal("ATTACHMENT", body.parts[1].disposition.dsp_type)
++    assert_equal("test.xml", body.parts[1].disposition.param["FILENAME"])
++    assert_equal(nil, body.parts[1].language)
++  end
+ end
+diff --git a/test/resolv/test_dns.rb b/test/resolv/test_dns.rb
+index 8e54dd7..d7e5c36 100644
+--- a/test/resolv/test_dns.rb
++++ b/test/resolv/test_dns.rb
+@@ -190,4 +190,11 @@ class TestResolvDNS < Test::Unit::TestCase
+     upper = Resolv::DNS::Name.create("Ruby-Lang.org")
+     assert_equal(lower, upper, bug10550)
+   end
++
++  def test_ipv6_name
++    addr = Resolv::IPv6.new("\0"*16)
++    labels = addr.to_name.to_a
++    expected = (['0'] * 32 + ['ip6', 'arpa']).map {|label| Resolv::DNS::Label::Str.new(label) }
++    assert_equal(expected, labels)
++  end
+ end
+diff --git a/test/ruby/test_autoload.rb b/test/ruby/test_autoload.rb
+index a95c274..da8855b 100644
+--- a/test/ruby/test_autoload.rb
++++ b/test/ruby/test_autoload.rb
+@@ -55,6 +55,32 @@ p Foo::Bar
+     }
+   end
+ 
++  def test_autoload_with_unqualified_file_name # [ruby-core:69206]
++    lp = $LOAD_PATH.dup
++    lf = $LOADED_FEATURES.dup
++
++    Dir.mktmpdir('autoload') { |tmpdir|
++      $LOAD_PATH << tmpdir
++
++      Dir.chdir(tmpdir) do
++        eval <<-END
++          class ::Object
++            module A
++              autoload :C, 'b'
++            end
++          end
++        END
++
++        File.open('b.rb', 'w') {|file| file.puts 'module A; class C; end; end'}
++        assert_kind_of Class, ::A::C
++      end
++    }
++  ensure
++    $LOAD_PATH.replace lp
++    $LOADED_FEATURES.replace lf
++    Object.send(:remove_const, :A) if Object.const_defined?(:A)
++  end
++
+   def test_require_explicit
+     Tempfile.create(['autoload', '.rb']) {|file|
+       file.puts 'class Object; AutoloadTest = 1; end'
+diff --git a/test/ruby/test_float.rb b/test/ruby/test_float.rb
+index ac2d843..eab4d12 100644
+--- a/test/ruby/test_float.rb
++++ b/test/ruby/test_float.rb
+@@ -672,4 +672,12 @@ class TestFloat < Test::Unit::TestCase
+     assert_equal(0.0, z)
+     assert_equal(-Float::INFINITY, 1.0/z)
+   end
++
++  def test_hash_0
++    bug10979 = '[ruby-core:68541] [Bug #10979]'
++    assert_equal(+0.0.hash, -0.0.hash)
++    assert_operator(+0.0, :eql?, -0.0)
++    h = {0.0 => bug10979}
++    assert_equal(bug10979, h[-0.0])
++  end
+ end
+diff --git a/test/ruby/test_iseq.rb b/test/ruby/test_iseq.rb
+index 4af440a..686646d 100644
+--- a/test/ruby/test_iseq.rb
++++ b/test/ruby/test_iseq.rb
+@@ -134,4 +134,11 @@ class TestISeq < Test::Unit::TestCase
+       assert(!op.to_s.match(/^opt_/), "#{op}")
+     }
+   end
++
++  def test_invalid_source
++    bug11159 = '[ruby-core:69219] [Bug #11159]'
++    assert_raise(TypeError, bug11159) {ISeq.compile(nil)}
++    assert_raise(TypeError, bug11159) {ISeq.compile(:foo)}
++    assert_raise(TypeError, bug11159) {ISeq.compile(1)}
++  end
+ end
+diff --git a/test/ruby/test_keyword.rb b/test/ruby/test_keyword.rb
+index 70cdba1..9c76e15 100644
+--- a/test/ruby/test_keyword.rb
++++ b/test/ruby/test_keyword.rb
+@@ -566,4 +566,14 @@ class TestKeywordArguments < Test::Unit::TestCase
+     result = m(["a" => 10]) { |a = nil, **b| [a, b] }
+     assert_equal([{"a" => 10}, {}], result)
+   end
++
++  def method_for_test_to_hash_call_during_setup_complex_parameters k1:, k2:, **rest_kw
++    [k1, k2, rest_kw]
++  end
++
++  def test_to_hash_call_during_setup_complex_parameters
++    sym = "sym_#{Time.now}".to_sym
++    h = method_for_test_to_hash_call_during_setup_complex_parameters k1: "foo", k2: "bar", sym => "baz"
++    assert_equal ["foo", "bar", {sym => "baz"}], h, '[Bug #11027]'
++  end
+ end
+diff --git a/test/ruby/test_marshal.rb b/test/ruby/test_marshal.rb
+index 9b82d52..3d5d6c9 100644
+--- a/test/ruby/test_marshal.rb
++++ b/test/ruby/test_marshal.rb
+@@ -252,6 +252,17 @@ class TestMarshal < Test::Unit::TestCase
+     assert_include(Marshal.dump([:a, :a]), ';')
+   end
+ 
++  def test_symlink_in_ivar
++    bug10991 = '[ruby-core:68587] [Bug #10991]'
++    sym = Marshal.load("\x04\x08" +
++                       "I" ":\x0bKernel" +
++                       ("\x06" +
++                        ("I" ":\x07@a" +
++                         ("\x06" ":\x07@b" "e;\x0""o:\x0bObject""\x0")) +
++                        "0"))
++    assert_equal(:Kernel, sym, bug10991)
++  end
++
+   ClassUTF8 = eval("class R\u{e9}sum\u{e9}; self; end")
+ 
+   iso_8859_1 = Encoding::ISO_8859_1
+diff --git a/test/ruby/test_method.rb b/test/ruby/test_method.rb
+index c8b5ff1..35ddc87 100644
+--- a/test/ruby/test_method.rb
++++ b/test/ruby/test_method.rb
+@@ -877,4 +877,18 @@ class TestMethod < Test::Unit::TestCase
+       obj.bar
+     end
+   end
++
++  def test_to_proc_binding
++    bug11012 = '[ruby-core:68673] [Bug #11012]'
++    class << (obj = Object.new)
++      src = 1000.times.map {|i|"v#{i} = nil"}.join("\n")
++      eval("def foo()\n""#{src}\n""end")
++    end
++
++    b = obj.method(:foo).to_proc.binding
++    b.local_variables.each_with_index {|n, i|
++      b.local_variable_set(n, i)
++    }
++    assert_equal([998, 999], %w[v998 v999].map {|n| b.local_variable_get(n)}, bug11012)
++  end
+ end
+diff --git a/test/ruby/test_range.rb b/test/ruby/test_range.rb
+index f81047d..852515f 100644
+--- a/test/ruby/test_range.rb
++++ b/test/ruby/test_range.rb
+@@ -283,6 +283,14 @@ class TestRange < Test::Unit::TestCase
+     assert_not_operator(0..10, :===, 11)
+   end
+ 
++  def test_eqq_time
++    bug11113 = '[ruby-core:69052] [Bug #11113]'
++    t = Time.now
++    assert_nothing_raised(TypeError, bug11113) {
++      assert_operator(t..(t+10), :===, t+5)
++    }
++  end
++
+   def test_include
+     assert_include("a".."z", "c")
+     assert_not_include("a".."z", "5")
+diff --git a/test/ruby/test_rubyoptions.rb b/test/ruby/test_rubyoptions.rb
+index 8d3da54..7cb1248 100644
+--- a/test/ruby/test_rubyoptions.rb
++++ b/test/ruby/test_rubyoptions.rb
+@@ -720,6 +720,14 @@ class TestRubyOptions < Test::Unit::TestCase
+                           bug10555, encoding: "locale")
+       end
+     end
++
++    def test_command_line_glob_with_dir
++      bug10941 = '[ruby-core:68430] [Bug #10941]'
++      with_tmpchdir do |dir|
++        Dir.mkdir('test')
++        assert_in_out_err(["-e", "", "test/*"], "", [], [], bug10941)
++      end
++    end
+   end
+ 
+   if /mswin|mingw/ =~ RUBY_PLATFORM
+diff --git a/test/ruby/test_settracefunc.rb b/test/ruby/test_settracefunc.rb
+index 58e927c..1dcd2cc 100644
+--- a/test/ruby/test_settracefunc.rb
++++ b/test/ruby/test_settracefunc.rb
+@@ -1332,4 +1332,24 @@ class TestSetTraceFunc < Test::Unit::TestCase
+     }
+     assert_equal [__LINE__ - 3, __LINE__ - 2], lines, 'Bug #10449'
+   end
++
++  class Bug10724
++    def initialize
++      loop{return}
++    end
++  end
++
++  def test_throwing_return_with_finish_frame
++    target_th = Thread.current
++    evs = []
++
++    TracePoint.new(:call, :return){|tp|
++      return if Thread.current != target_th
++      evs << tp.event
++    }.enable{
++      a = Bug10724.new
++    }
++
++    assert_equal([:call, :return], evs)
++  end
+ end
+diff --git a/test/ruby/test_symbol.rb b/test/ruby/test_symbol.rb
+index 596f2b0..ee29cd5 100644
+--- a/test/ruby/test_symbol.rb
++++ b/test/ruby/test_symbol.rb
+@@ -199,6 +199,35 @@ class TestSymbol < Test::Unit::TestCase
+     assert_raise(TypeError) { a = :foo; def a.foo; end }
+   end
+ 
++  SymbolsForEval = [
++    :foo,
++    "dynsym_#{Random.rand(10000)}_#{Time.now}".to_sym
++  ]
++
++  def test_instance_eval
++    bug11086 = '[ruby-core:68961] [Bug #11086]'
++    SymbolsForEval.each do |sym|
++      assert_nothing_raised(TypeError, sym, bug11086) {
++        sym.instance_eval {}
++      }
++      assert_raise(TypeError, sym, bug11086) {
++        sym.instance_eval {def foo; end}
++      }
++    end
++  end
++
++  def test_instance_exec
++    bug11086 = '[ruby-core:68961] [Bug #11086]'
++    SymbolsForEval.each do |sym|
++      assert_nothing_raised(TypeError, sym, bug11086) {
++        sym.instance_exec {}
++      }
++      assert_raise(TypeError, sym, bug11086) {
++        sym.instance_exec {def foo; end}
++      }
++    end
++  end
++
+   def test_frozen_symbol
+     assert_equal(true, :foo.frozen?)
+     assert_equal(true, :each.frozen?)
+@@ -238,4 +267,23 @@ class TestSymbol < Test::Unit::TestCase
+       200_000.times { |i| i.to_s.to_sym }
+     end;
+   end
++
++  def test_hash_redefinition
++    assert_separately([], <<-'end;')
++      bug11035 = '[ruby-core:68767] [Bug #11035]'
++      class Symbol
++        def hash
++          raise
++        end
++      end
++
++      h = {}
++      assert_nothing_raised(RuntimeError, bug11035) {
++        h[:foo] = 1
++      }
++      assert_nothing_raised(RuntimeError, bug11035) {
++        h['bar'.to_sym] = 2
++      }
++    end;
++  end
+ end
+diff --git a/test/ruby/test_syntax.rb b/test/ruby/test_syntax.rb
+index 0274a11..dbb1816 100644
+--- a/test/ruby/test_syntax.rb
++++ b/test/ruby/test_syntax.rb
+@@ -400,6 +400,11 @@ WARN
+     assert_valid_syntax("bar def foo; self.each do end end", bug9308)
+   end
+ 
++  def test_do_block_in_lambda
++    bug11107 = '[ruby-core:69017] [Bug #11107]'
++    assert_valid_syntax('p ->() do a() do end end', bug11107)
++  end
++
+   def test_reserved_method_no_args
+     bug6403 = '[ruby-dev:45626]'
+     assert_valid_syntax("def self; :foo; end", __FILE__, bug6403)
+diff --git a/test/socket/test_addrinfo.rb b/test/socket/test_addrinfo.rb
+index 61b889e..96e1991 100644
+--- a/test/socket/test_addrinfo.rb
++++ b/test/socket/test_addrinfo.rb
+@@ -468,6 +468,17 @@ class TestSocketAddrinfo < Test::Unit::TestCase
+     assert_equal(ai1.canonname, ai2.canonname)
+   end
+ 
++  def test_marshal_memory_leak
++    bug11051 = '[ruby-dev:48923] [Bug #11051]'
++    assert_no_memory_leak(%w[-rsocket], <<-PREP, <<-CODE, bug11051, rss: true, limit: 2.0)
++    d = Marshal.dump(Addrinfo.tcp("127.0.0.1", 80))
++    1000.times {Marshal.load(d)}
++    PREP
++    GC.start
++    20_000.times {Marshal.load(d)}
++    CODE
++  end
++
+   if Socket.const_defined?("AF_INET6") && Socket::AF_INET6.is_a?(Integer)
+ 
+     def test_addrinfo_new_inet6
+diff --git a/thread_pthread.c b/thread_pthread.c
+index 711e60b..5fcad19 100644
+--- a/thread_pthread.c
++++ b/thread_pthread.c
+@@ -662,11 +662,16 @@ reserve_stack(volatile char *limit, size_t size)
+ # endif
+     struct rlimit rl;
+     volatile char buf[0x100];
++    enum {stack_check_margin = 0x1000}; /* for -fstack-check */
++
+     STACK_GROW_DIR_DETECTION;
+ 
+     if (!getrlimit(RLIMIT_STACK, &rl) && rl.rlim_cur == RLIM_INFINITY)
+ 	return;
+ 
++    if (size < stack_check_margin) return;
++    size -= stack_check_margin;
++
+     size -= sizeof(buf); /* margin */
+     if (IS_STACK_DIR_UPPER()) {
+ 	const volatile char *end = buf + sizeof(buf);
+@@ -674,13 +679,14 @@ reserve_stack(volatile char *limit, size_t size)
+ 	if (limit > end) {
+ 	    size = limit - end;
+ 	    limit = alloca(size);
+-	    limit[size-1] = 0;
++	    limit[stack_check_margin+size-1] = 0;
+ 	}
+     }
+     else {
+ 	limit -= size;
+ 	if (buf > limit) {
+ 	    limit = alloca(buf - limit);
++	    limit -= stack_check_margin;
+ 	    limit[0] = 0;
+ 	}
+     }
+diff --git a/version.h b/version.h
+index 6766b31..e5f8480 100644
+--- a/version.h
++++ b/version.h
+@@ -1,10 +1,10 @@
+ #define RUBY_VERSION "2.2.2"
+-#define RUBY_RELEASE_DATE "2015-04-13"
+-#define RUBY_PATCHLEVEL 95
++#define RUBY_RELEASE_DATE "2015-06-12"
++#define RUBY_PATCHLEVEL 133
+ 
+ #define RUBY_RELEASE_YEAR 2015
+-#define RUBY_RELEASE_MONTH 4
+-#define RUBY_RELEASE_DAY 13
++#define RUBY_RELEASE_MONTH 6
++#define RUBY_RELEASE_DAY 12
+ 
+ #include "ruby/version.h"
+ 
+diff --git a/vm.c b/vm.c
+index e6ef3a8..17f3c53 100644
+--- a/vm.c
++++ b/vm.c
+@@ -380,7 +380,7 @@ env_mark(void * const ptr)
+     RUBY_MARK_UNLESS_NULL(env->block.proc);
+ 
+     if (env->block.iseq) {
+-	if (BUILTIN_TYPE(env->block.iseq) == T_NODE) {
++	if (RUBY_VM_IFUNC_P(env->block.iseq)) {
+ 	    RUBY_MARK_UNLESS_NULL((VALUE)env->block.iseq);
+ 	}
+ 	else {
+@@ -768,7 +768,7 @@ invoke_block_from_c(rb_thread_t *th, const rb_block_t *block,
+     if (SPECIAL_CONST_P(block->iseq)) {
+ 	return Qnil;
+     }
+-    else if (BUILTIN_TYPE(block->iseq) != T_NODE) {
++    else if (!RUBY_VM_IFUNC_P(block->iseq)) {
+ 	VALUE ret;
+ 	const rb_iseq_t *iseq = block->iseq;
+ 	const rb_control_frame_t *cfp;
+@@ -1287,6 +1287,30 @@ vm_frametype_name(const rb_control_frame_t *cfp)
+ }
+ #endif
+ 
++static void
++hook_before_rewind(rb_thread_t *th, rb_control_frame_t *cfp)
++{
++    switch (VM_FRAME_TYPE(th->cfp)) {
++      case VM_FRAME_MAGIC_METHOD:
++	RUBY_DTRACE_METHOD_RETURN_HOOK(th, 0, 0);
++	EXEC_EVENT_HOOK_AND_POP_FRAME(th, RUBY_EVENT_RETURN, th->cfp->self, 0, 0, Qnil);
++	break;
++      case VM_FRAME_MAGIC_BLOCK:
++      case VM_FRAME_MAGIC_LAMBDA:
++	if (VM_FRAME_TYPE_BMETHOD_P(th->cfp)) {
++	    EXEC_EVENT_HOOK(th, RUBY_EVENT_B_RETURN, th->cfp->self, 0, 0, Qnil);
++	    EXEC_EVENT_HOOK_AND_POP_FRAME(th, RUBY_EVENT_RETURN, th->cfp->self, th->cfp->me->called_id, th->cfp->me->klass, Qnil);
++	}
++	else {
++	    EXEC_EVENT_HOOK_AND_POP_FRAME(th, RUBY_EVENT_B_RETURN, th->cfp->self, 0, 0, Qnil);
++	}
++	break;
++      case VM_FRAME_MAGIC_CLASS:
++	EXEC_EVENT_HOOK_AND_POP_FRAME(th, RUBY_EVENT_END, th->cfp->self, 0, 0, Qnil);
++	break;
++    }
++}
++
+ /* evaluator body */
+ 
+ /*                  finish
+@@ -1385,7 +1409,6 @@ vm_frametype_name(const rb_control_frame_t *cfp)
+   };
+  */
+ 
+-
+ static VALUE
+ vm_exec(rb_thread_t *th)
+ {
+@@ -1455,15 +1478,9 @@ vm_exec(rb_thread_t *th)
+ 			    }
+ 			}
+ 			if (!catch_iseqval) {
+-			    result = GET_THROWOBJ_VAL(err);
+ 			    th->errinfo = Qnil;
+-
+-			    switch (VM_FRAME_TYPE(cfp)) {
+-			      case VM_FRAME_MAGIC_LAMBDA:
+-				EXEC_EVENT_HOOK_AND_POP_FRAME(th, RUBY_EVENT_B_RETURN, th->cfp->self, 0, 0, Qnil);
+-				break;
+-			    }
+-
++			    result = GET_THROWOBJ_VAL(err);
++			    hook_before_rewind(th, th->cfp);
+ 			    vm_pop_frame(th);
+ 			    goto finish_vme;
+ 			}
+@@ -1606,26 +1623,7 @@ vm_exec(rb_thread_t *th)
+ 	}
+ 	else {
+ 	    /* skip frame */
+-
+-	    switch (VM_FRAME_TYPE(th->cfp)) {
+-	      case VM_FRAME_MAGIC_METHOD:
+-		RUBY_DTRACE_METHOD_RETURN_HOOK(th, 0, 0);
+-		EXEC_EVENT_HOOK_AND_POP_FRAME(th, RUBY_EVENT_RETURN, th->cfp->self, 0, 0, Qnil);
+-		break;
+-	      case VM_FRAME_MAGIC_BLOCK:
+-	      case VM_FRAME_MAGIC_LAMBDA:
+-		if (VM_FRAME_TYPE_BMETHOD_P(th->cfp)) {
+-		    EXEC_EVENT_HOOK(th, RUBY_EVENT_B_RETURN, th->cfp->self, 0, 0, Qnil);
+-		    EXEC_EVENT_HOOK_AND_POP_FRAME(th, RUBY_EVENT_RETURN, th->cfp->self, th->cfp->me->called_id, th->cfp->me->klass, Qnil);
+-		}
+-		else {
+-		    EXEC_EVENT_HOOK_AND_POP_FRAME(th, RUBY_EVENT_B_RETURN, th->cfp->self, 0, 0, Qnil);
+-		}
+-		break;
+-	      case VM_FRAME_MAGIC_CLASS:
+-		EXEC_EVENT_HOOK_AND_POP_FRAME(th, RUBY_EVENT_END, th->cfp->self, 0, 0, Qnil);
+-		break;
+-	    }
++	    hook_before_rewind(th, th->cfp);
+ 
+ 	    if (VM_FRAME_TYPE_FINISH_P(th->cfp)) {
+ 		vm_pop_frame(th);
+@@ -2015,7 +2013,6 @@ rb_thread_mark(void *ptr)
+ 	    rb_control_frame_t *limit_cfp = (void *)(th->stack + th->stack_size);
+ 
+ 	    rb_gc_mark_values((long)(sp - p), p);
+-	    rb_gc_mark_locations(sp, sp + th->mark_stack_len);
+ 
+ 	    while (cfp != limit_cfp) {
+ 		rb_iseq_t *iseq = cfp->iseq;
+diff --git a/vm_args.c b/vm_args.c
+index 446ad48..abdd161 100644
+--- a/vm_args.c
++++ b/vm_args.c
+@@ -83,19 +83,17 @@ args_reduce(struct args_info *args, int over_argc)
+ }
+ 
+ static inline int
+-args_check_block_arg0(struct args_info *args, rb_thread_t *th, const int msl)
++args_check_block_arg0(struct args_info *args, rb_thread_t *th)
+ {
+     VALUE ary = Qnil;
+ 
+     if (args->rest && RARRAY_LEN(args->rest) == 1) {
+ 	VALUE arg0 = RARRAY_AREF(args->rest, 0);
+ 	ary = rb_check_array_type(arg0);
+-	th->mark_stack_len = msl;
+     }
+     else if (args->argc == 1) {
+ 	VALUE arg0 = args->argv[0];
+ 	ary = rb_check_array_type(arg0);
+-	th->mark_stack_len = msl;
+ 	args->argv[0] = arg0; /* see: https://bugs.ruby-lang.org/issues/8484 */
+     }
+ 
+@@ -173,10 +171,9 @@ args_rest_array(struct args_info *args)
+ }
+ 
+ static int
+-keyword_hash_p(VALUE *kw_hash_ptr, VALUE *rest_hash_ptr, rb_thread_t *th, const int msl)
++keyword_hash_p(VALUE *kw_hash_ptr, VALUE *rest_hash_ptr, rb_thread_t *th)
+ {
+     *rest_hash_ptr = rb_check_hash_type(*kw_hash_ptr);
+-    th->mark_stack_len = msl;
+ 
+     if (!NIL_P(*rest_hash_ptr)) {
+ 	VALUE hash = rb_extract_keywords(rest_hash_ptr);
+@@ -191,7 +188,7 @@ keyword_hash_p(VALUE *kw_hash_ptr, VALUE *rest_hash_ptr, rb_thread_t *th, const
+ }
+ 
+ static VALUE
+-args_pop_keyword_hash(struct args_info *args, VALUE *kw_hash_ptr, rb_thread_t *th, const int msl)
++args_pop_keyword_hash(struct args_info *args, VALUE *kw_hash_ptr, rb_thread_t *th)
+ {
+     VALUE rest_hash;
+ 
+@@ -200,7 +197,7 @@ args_pop_keyword_hash(struct args_info *args, VALUE *kw_hash_ptr, rb_thread_t *t
+ 	assert(args->argc > 0);
+ 	*kw_hash_ptr = args->argv[args->argc-1];
+ 
+-	if (keyword_hash_p(kw_hash_ptr, &rest_hash, th, msl)) {
++	if (keyword_hash_p(kw_hash_ptr, &rest_hash, th)) {
+ 	    if (rest_hash) {
+ 		args->argv[args->argc-1] = rest_hash;
+ 	    }
+@@ -216,7 +213,7 @@ args_pop_keyword_hash(struct args_info *args, VALUE *kw_hash_ptr, rb_thread_t *t
+ 	if (len > 0) {
+ 	    *kw_hash_ptr = RARRAY_AREF(args->rest, len - 1);
+ 
+-	    if (keyword_hash_p(kw_hash_ptr, &rest_hash, th, msl)) {
++	    if (keyword_hash_p(kw_hash_ptr, &rest_hash, th)) {
+ 		if (rest_hash) {
+ 		    RARRAY_ASET(args->rest, len - 1, rest_hash);
+ 		}
+@@ -511,9 +508,27 @@ setup_parameters_complex(rb_thread_t * const th, const rb_iseq_t * const iseq, r
+     int given_argc;
+     struct args_info args_body, *args;
+     VALUE keyword_hash = Qnil;
+-    const int msl = ci->argc + iseq->param.size;
++    VALUE * const orig_sp = th->cfp->sp;
++    int i;
+ 
+-    th->mark_stack_len = msl;
++    /*
++     * Extend SP for GC.
++     *
++     * [pushed values] [uninitialized values]
++     * <- ci->argc -->
++     * <- iseq->param.size------------------>
++     * ^ locals        ^ sp
++     *
++     * =>
++     * [pushed values] [initialized values  ]
++     * <- ci->argc -->
++     * <- iseq->param.size------------------>
++     * ^ locals                             ^ sp
++     */
++    for (i=ci->argc; i<iseq->param.size; i++) {
++	locals[i] = Qnil;
++    }
++    th->cfp->sp = &locals[i];
+ 
+     /* setup args */
+     args = &args_body;
+@@ -556,7 +571,7 @@ setup_parameters_complex(rb_thread_t * const th, const rb_iseq_t * const iseq, r
+ 	    (min_argc > 0 || iseq->param.opt_num > 1 ||
+ 	     iseq->param.flags.has_kw || iseq->param.flags.has_kwrest) &&
+ 	    !iseq->param.flags.ambiguous_param0 &&
+-	    args_check_block_arg0(args, th, msl)) {
++	    args_check_block_arg0(args, th)) {
+ 	    given_argc = RARRAY_LENINT(args->rest);
+ 	}
+ 	break;
+@@ -564,7 +579,7 @@ setup_parameters_complex(rb_thread_t * const th, const rb_iseq_t * const iseq, r
+ 	if (given_argc == 1 &&
+ 	    given_argc != iseq->param.lead_num &&
+ 	    !iseq->param.flags.has_rest &&
+-	    args_check_block_arg0(args, th, msl)) {
++	    args_check_block_arg0(args, th)) {
+ 	    given_argc = RARRAY_LENINT(args->rest);
+ 	}
+     }
+@@ -590,7 +605,7 @@ setup_parameters_complex(rb_thread_t * const th, const rb_iseq_t * const iseq, r
+     if (given_argc > min_argc &&
+ 	(iseq->param.flags.has_kw || iseq->param.flags.has_kwrest) &&
+ 	args->kw_argv == NULL) {
+-	if (args_pop_keyword_hash(args, &keyword_hash, th, msl)) {
++	if (args_pop_keyword_hash(args, &keyword_hash, th)) {
+ 	    given_argc--;
+ 	}
+     }
+@@ -662,8 +677,7 @@ setup_parameters_complex(rb_thread_t * const th, const rb_iseq_t * const iseq, r
+     }
+ #endif
+ 
+-    th->mark_stack_len = 0;
+-
++    th->cfp->sp = orig_sp;
+     return opt_pc;
+ }
+ 
+diff --git a/vm_core.h b/vm_core.h
+index 3eb1b85..9079130 100644
+--- a/vm_core.h
++++ b/vm_core.h
+@@ -642,7 +642,6 @@ typedef struct rb_thread_struct {
+     enum rb_thread_status status;
+     int to_kill;
+     int priority;
+-    int mark_stack_len;
+ 
+     native_thread_data_t native_thread_data;
+     void *blocking_region_buffer;
+@@ -913,7 +912,7 @@ rb_block_t *rb_vm_control_frame_block_ptr(rb_control_frame_t *cfp);
+ #define RUBY_VM_CONTROL_FRAME_STACK_OVERFLOW_P(th, cfp) \
+   (!RUBY_VM_VALID_CONTROL_FRAME_P((cfp), RUBY_VM_END_CONTROL_FRAME(th)))
+ 
+-#define RUBY_VM_IFUNC_P(ptr)        (BUILTIN_TYPE(ptr) == T_NODE)
++#define RUBY_VM_IFUNC_P(ptr)        RB_TYPE_P((VALUE)(ptr), T_NODE)
+ #define RUBY_VM_NORMAL_ISEQ_P(ptr) \
+   ((ptr) && !RUBY_VM_IFUNC_P(ptr))
+ 
+diff --git a/vm_dump.c b/vm_dump.c
+index da2e6a9..a8d4875 100644
+--- a/vm_dump.c
++++ b/vm_dump.c
+@@ -36,7 +36,7 @@ control_frame_dump(rb_thread_t *th, rb_control_frame_t *cfp)
+     const char *magic, *iseq_name = "-", *selfstr = "-", *biseq_name = "-";
+     VALUE tmp;
+ 
+-    if (cfp->block_iseq != 0 && BUILTIN_TYPE(cfp->block_iseq) != T_NODE) {
++    if (cfp->block_iseq != 0 && !RUBY_VM_IFUNC_P(cfp->block_iseq)) {
+ 	biseq_name = "";	/* RSTRING(cfp->block_iseq->location.label)->ptr; */
+     }
+ 
+@@ -735,7 +735,11 @@ procstat_vm(struct procstat *procstat, struct kinfo_proc *kipp)
+ 		ptrwidth, "START", ptrwidth, "END", "PRT", "RES",
+ 		"PRES", "REF", "SHD", "FL", "TP", "PATH");
+ 
++#ifdef HAVE_PROCSTAT_GETVMMAP
+ 	freep = procstat_getvmmap(procstat, kipp, &cnt);
++#else
++	freep = kinfo_getvmmap(kipp->ki_pid, &cnt);
++#endif
+ 	if (freep == NULL)
+ 		return;
+ 	for (i = 0; i < cnt; i++) {
+diff --git a/vm_eval.c b/vm_eval.c
+index 2bdf63b..bcd455b 100644
+--- a/vm_eval.c
++++ b/vm_eval.c
+@@ -1629,6 +1629,20 @@ specific_eval(int argc, const VALUE *argv, VALUE klass, VALUE self)
+     }
+ }
+ 
++static VALUE
++singleton_class_for_eval(VALUE self)
++{
++    if (SPECIAL_CONST_P(self)) {
++	return rb_special_singleton_class(self);
++    }
++    switch (BUILTIN_TYPE(self)) {
++      case T_FLOAT: case T_BIGNUM: case T_SYMBOL:
++	return Qnil;
++      default:
++	return rb_singleton_class(self);
++    }
++}
++
+ /*
+  *  call-seq:
+  *     obj.instance_eval(string [, filename [, lineno]] )   -> obj
+@@ -1665,14 +1679,7 @@ specific_eval(int argc, const VALUE *argv, VALUE klass, VALUE self)
+ VALUE
+ rb_obj_instance_eval(int argc, const VALUE *argv, VALUE self)
+ {
+-    VALUE klass;
+-
+-    if (SPECIAL_CONST_P(self)) {
+-	klass = rb_special_singleton_class(self);
+-    }
+-    else {
+-	klass = rb_singleton_class(self);
+-    }
++    VALUE klass = singleton_class_for_eval(self);
+     return specific_eval(argc, argv, klass, self);
+ }
+ 
+@@ -1697,14 +1704,7 @@ rb_obj_instance_eval(int argc, const VALUE *argv, VALUE self)
+ VALUE
+ rb_obj_instance_exec(int argc, const VALUE *argv, VALUE self)
+ {
+-    VALUE klass;
+-
+-    if (SPECIAL_CONST_P(self)) {
+-	klass = rb_special_singleton_class(self);
+-    }
+-    else {
+-	klass = rb_singleton_class(self);
+-    }
++    VALUE klass = singleton_class_for_eval(self);
+     return yield_under(klass, self, rb_ary_new4(argc, argv));
+ }
+ 
+diff --git a/vm_insnhelper.c b/vm_insnhelper.c
+index 21c60af..8b2f8e7 100644
+--- a/vm_insnhelper.c
++++ b/vm_insnhelper.c
+@@ -630,13 +630,11 @@ vm_throw_start(rb_thread_t * const th, rb_control_frame_t * const reg_cfp, int s
+ 	rb_iseq_t *base_iseq = GET_ISEQ();
+ 	escape_cfp = reg_cfp;
+ 
+-      search_parent:
+-	if (base_iseq->type != ISEQ_TYPE_BLOCK) {
++	while (base_iseq->type != ISEQ_TYPE_BLOCK) {
+ 	    if (escape_cfp->iseq->type == ISEQ_TYPE_CLASS) {
+ 		escape_cfp = RUBY_VM_PREVIOUS_CONTROL_FRAME(escape_cfp);
+ 		ep = escape_cfp->ep;
+ 		base_iseq = escape_cfp->iseq;
+-		goto search_parent;
+ 	    }
+ 	    else {
+ 		ep = VM_EP_PREV_EP(ep);
+@@ -2073,7 +2071,7 @@ vm_invoke_block(rb_thread_t *th, rb_control_frame_t *reg_cfp, rb_call_info_t *ci
+     }
+     iseq = block->iseq;
+ 
+-    if (BUILTIN_TYPE(iseq) != T_NODE) {
++    if (!RUBY_VM_IFUNC_P(iseq)) {
+ 	int opt_pc;
+ 	const int arg_size = iseq->param.size;
+ 	int is_lambda = block_proc_is_lambda(block->proc);
+diff --git a/win32/win32.c b/win32/win32.c
+index b7d7e32..fc2c99e 100644
+--- a/win32/win32.c
++++ b/win32/win32.c
+@@ -6318,12 +6318,16 @@ rb_w32_close(int fd)
+ }
+ 
+ static int
+-setup_overlapped(OVERLAPPED *ol, int fd)
++setup_overlapped(OVERLAPPED *ol, int fd, int iswrite)
+ {
+     memset(ol, 0, sizeof(*ol));
+     if (!(_osfile(fd) & (FDEV | FPIPE))) {
+ 	LONG high = 0;
+-	DWORD method = _osfile(fd) & FAPPEND ? FILE_END : FILE_CURRENT;
++	/* On mode:a, it can write only FILE_END.
++	 * On mode:a+, though it can write only FILE_END,
++	 * it can read from everywhere.
++	 */
++	DWORD method = ((_osfile(fd) & FAPPEND) && iswrite) ? FILE_END : FILE_CURRENT;
+ 	DWORD low = SetFilePointer((HANDLE)_osfhnd(fd), 0, &high, method);
+ #ifndef INVALID_SET_FILE_POINTER
+ #define INVALID_SET_FILE_POINTER ((DWORD)-1)
+@@ -6420,7 +6424,7 @@ rb_w32_read(int fd, void *buf, size_t size)
+ 
+     /* if have cancel_io, use Overlapped I/O */
+     if (cancel_io) {
+-	if (setup_overlapped(&ol, fd)) {
++	if (setup_overlapped(&ol, fd, FALSE)) {
+ 	    MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+ 	    return -1;
+ 	}
+@@ -6550,7 +6554,7 @@ rb_w32_write(int fd, const void *buf, size_t size)
+ 
+     /* if have cancel_io, use Overlapped I/O */
+     if (cancel_io) {
+-	if (setup_overlapped(&ol, fd)) {
++	if (setup_overlapped(&ol, fd, TRUE)) {
+ 	    MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+ 	    return -1;
+ 	}

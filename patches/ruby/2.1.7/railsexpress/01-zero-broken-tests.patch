@@ -35,14 +35,14 @@ index 946be9b..12a99fe 100644
      Etc.group {|s| a << s }
      b = []
 diff --git a/test/rinda/test_rinda.rb b/test/rinda/test_rinda.rb
-index f5472d2..67a180e 100644
+index f5472d2..b1d48d8 100644
 --- a/test/rinda/test_rinda.rb
 +++ b/test/rinda/test_rinda.rb
 @@ -479,6 +479,8 @@ class TupleSpaceProxyTest < Test::Unit::TestCase
    end
  
    def test_take_bug_8215
-+    skip "test_take_bug_8215 broken on my machine" if ENV['RUBY_TEST_OPTIONS_BROKEN_DRB']=='1'
++    skip "test_take_bug_8215 is broken on my machine" if ENV['RUBY_TEST_OPTIONS_BROKEN_DRB']=='1'
 +
      require_relative '../ruby/envutil'
      service = DRb.start_service(nil, @ts_base)
