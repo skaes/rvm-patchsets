@@ -165,7 +165,7 @@ All patches are provided without any warranty. Use at your own risk!
 
 * Some of the patches are based on the work of others
 * Some of the the patches are included in ruby enterprise edition
-* The set of integrated patces depend on the ruby version
+* The set of integrated patches depend on the ruby version
 * A modified version of my GC patches have been included in stock ruby
 
 * sigvtalrm patch: http://timetobleed.com/ruby-threading-bugfix-small-fix-goes-a-long-way
