@@ -1,0 +1,12 @@
+diff --git a/test/ruby/test_process.rb b/test/ruby/test_process.rb
+index ca35d15..2547441 100644
+--- a/test/ruby/test_process.rb
++++ b/test/ruby/test_process.rb
+@@ -1787,6 +1787,7 @@ def test_execopts_uid
+   end
+ 
+   def test_execopts_gid
++    skip "Etc.getgrgid broken on this machine" if ENV['RUBY_TEST_OPTIONS_BROKEN_GETGRGID'] == '1'
+     skip "Process.groups not implemented on Windows platform" if windows?
+     feature6975 = '[ruby-core:47414]'
+ 
