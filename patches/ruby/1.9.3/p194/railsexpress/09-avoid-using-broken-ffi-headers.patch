@@ -3,9 +3,9 @@ index 03b0ac2..4b8c4cf 100644
 --- a/ext/fiddle/extconf.rb
 +++ b/ext/fiddle/extconf.rb
 @@ -4,11 +4,16 @@ require 'mkmf'
- 
+
  dir_config 'libffi'
- 
+
 -pkg_config("libffi")
 -unless have_header('ffi.h')
 +def have_ffi_headers
