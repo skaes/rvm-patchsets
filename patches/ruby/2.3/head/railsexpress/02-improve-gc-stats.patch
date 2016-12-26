@@ -1,5 +1,15 @@
+improve gc stats
+
+From: Stefan Kaes <skaes@railsexpress.de>
+
+
+---
+ gc.c                  |  232 ++++++++++++++++++++++++++++++++++++++++++++++++-
+ include/ruby/intern.h |    8 ++
+ 2 files changed, 236 insertions(+), 4 deletions(-)
+
 diff --git a/gc.c b/gc.c
-index c1e8cf8..111b0a3 100644
+index 8a345db..049c57b 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -503,6 +503,8 @@ typedef struct rb_objspace {
@@ -351,10 +361,10 @@ index c1e8cf8..111b0a3 100644
  
      gc_constants = rb_hash_new();
 diff --git a/include/ruby/intern.h b/include/ruby/intern.h
-index 99b850c..fba60eb 100644
+index aec2d52..d7c92c1 100644
 --- a/include/ruby/intern.h
 +++ b/include/ruby/intern.h
-@@ -499,12 +499,20 @@ void rb_gc_finalize_deferred(void);
+@@ -500,12 +500,20 @@ void rb_gc_finalize_deferred(void);
  void rb_gc_call_finalizer_at_exit(void);
  VALUE rb_gc_enable(void);
  VALUE rb_gc_disable(void);
