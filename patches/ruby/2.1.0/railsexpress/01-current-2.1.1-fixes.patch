@@ -344,7 +344,7 @@ index 676e05b..7be9d72 100644
  # -*- ruby -*-
 -_VERSION = "1.2.3"
 +_VERSION = "1.2.4"
- date = %w$Date::                           $[1]
+ date = %w$Date:: 2013-11-26 11:23:13 +0900#$[1]
  
  Gem::Specification.new do |s|
 diff --git a/ext/openssl/ossl_ssl.c b/ext/openssl/ossl_ssl.c
