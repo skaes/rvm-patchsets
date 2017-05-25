@@ -9,7 +9,7 @@ From: Stefan Kaes <skaes@railsexpress.de>
  2 files changed, 236 insertions(+), 4 deletions(-)
 
 diff --git a/gc.c b/gc.c
-index 8470625..72237be 100644
+index 847062557f..72237bec70 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -521,6 +521,8 @@ typedef struct rb_objspace {
@@ -361,7 +361,7 @@ index 8470625..72237be 100644
  
      gc_constants = rb_hash_new();
 diff --git a/include/ruby/intern.h b/include/ruby/intern.h
-index efa8f40..f486497 100644
+index efa8f4058c..f48649753d 100644
 --- a/include/ruby/intern.h
 +++ b/include/ruby/intern.h
 @@ -496,6 +496,9 @@ void rb_gc_finalize_deferred(void);

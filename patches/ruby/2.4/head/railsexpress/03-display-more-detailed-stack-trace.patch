@@ -8,7 +8,7 @@ From: Stefan Kaes <skaes@railsexpress.de>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/eval_error.c b/eval_error.c
-index ff3db23..bc605d9 100644
+index ff3db23a6b..bc605d9edc 100644
 --- a/eval_error.c
 +++ b/eval_error.c
 @@ -160,8 +160,8 @@ rb_threadptr_error_print(rb_thread_t *volatile th, volatile VALUE errinfo)
