@@ -50,7 +50,7 @@ the patches:
     rvm install 2.1.8 --patch railsexpress -n railsexpress
     rvm install 2.2.5 --patch railsexpress -n railsexpress
     rvm install 2.3.3 --patch railsexpress -n railsexpress
-    rvm install 2.4.0 --patch railsexpress -n railsexpress
+    rvm install 2.4.1 --patch railsexpress -n railsexpress
 
 or use rvm's name parsing magic:
 
@@ -59,7 +59,7 @@ or use rvm's name parsing magic:
     rvm install 2.1.8-railsexpress --patch railsexpress
     rvm install 2.2.5-railsexpress --patch railsexpress
     rvm install 2.3.3-railsexpress --patch railsexpress
-    rvm install 2.4.0-railsexpress --patch railsexpress
+    rvm install 2.4.1-railsexpress --patch railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
@@ -96,7 +96,8 @@ there's no guarantee. The following versions are currently supported:
     2.2.4       # outdated, please use 2.2.5
     2.2.5       # current rvm default for 2.2 branch
     2.3.3       # current rvm default for 2.3 branch
-    2.4.0       # current rvm default for 2.4 branch
+    2.4.0       # outdated, please use 2.4.1
+    2.4.1       # current rvm default for 2.4 branch
 
 In order to make some patch level N the default for rvm, add the line(s)
 
@@ -113,7 +114,7 @@ To enable heap dump support, pass the --enable-gcdebug option to the rvm install
     rvm install 2.1.8 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.2.5 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.3.3 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.4.0 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 2.4.1 --patch railsexpress -n gcdebug -C --enable-gcdebug
 
 If rvm cannot configure your ruby, update your rvm install.
 
