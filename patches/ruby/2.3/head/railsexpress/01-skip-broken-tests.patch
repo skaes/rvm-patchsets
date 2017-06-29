@@ -9,7 +9,7 @@ From: Stefan Kaes <skaes@railsexpress.de>
  2 files changed, 2 insertions(+)
 
 diff --git a/test/etc/test_etc.rb b/test/etc/test_etc.rb
-index ec9083e..9a0db5f 100644
+index ec9083eb16..9a0db5fa7e 100644
 --- a/test/etc/test_etc.rb
 +++ b/test/etc/test_etc.rb
 @@ -97,6 +97,7 @@ def test_getgrgid
@@ -21,7 +21,7 @@ index ec9083e..9a0db5f 100644
      Etc.group do |s|
        groups[s.name] ||= s.gid unless /\A\+/ =~ s.name
 diff --git a/test/ruby/test_process.rb b/test/ruby/test_process.rb
-index 28e6a10..3b2f04f 100644
+index 28e6a10882..3b2f04f99c 100644
 --- a/test/ruby/test_process.rb
 +++ b/test/ruby/test_process.rb
 @@ -1802,6 +1802,7 @@ def test_execopts_uid
