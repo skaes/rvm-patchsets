@@ -1,18 +1,19 @@
-improve gc stats
+improve GC stats
 
 From: Stefan Kaes <skaes@railsexpress.de>
 
-
+this patch adds GC profiling with constant memory use.
+used by ruby_prof, railsbench and time_bandits
 ---
  gc.c                  |  232 ++++++++++++++++++++++++++++++++++++++++++++++++-
  include/ruby/intern.h |    8 ++
  2 files changed, 236 insertions(+), 4 deletions(-)
 
 diff --git a/gc.c b/gc.c
-index 5d73a7e157..dca4bf0bb2 100644
+index 51872f26dd..93ef8770b6 100644
 --- a/gc.c
 +++ b/gc.c
-@@ -503,6 +503,8 @@ typedef struct rb_objspace {
+@@ -473,6 +473,8 @@ typedef struct rb_objspace {
  #if GC_ENABLE_INCREMENTAL_MARK
  	unsigned int during_incremental_marking : 1;
  #endif
@@ -21,7 +22,7 @@ index 5d73a7e157..dca4bf0bb2 100644
      } flags;
  
      rb_event_flag_t hook_events;
-@@ -578,14 +580,21 @@ typedef struct rb_objspace {
+@@ -548,14 +550,21 @@ typedef struct rb_objspace {
  
  	/* temporary profiling space */
  	double gc_sweep_start_time;
@@ -43,7 +44,7 @@ index 5d73a7e157..dca4bf0bb2 100644
      } profile;
      struct gc_list *global_list;
  
-@@ -721,6 +730,7 @@ VALUE *ruby_initial_gc_stress_ptr = &ruby_initial_gc_stress;
+@@ -686,6 +695,7 @@ VALUE *ruby_initial_gc_stress_ptr = &ruby_initial_gc_stress;
  #define heap_tomb               (&objspace->tomb_heap)
  #define dont_gc 		objspace->flags.dont_gc
  #define during_gc		objspace->flags.during_gc
@@ -51,7 +52,7 @@ index 5d73a7e157..dca4bf0bb2 100644
  #define finalizing		objspace->atomic_flags.finalizing
  #define finalizer_table 	objspace->finalizer_table
  #define global_list		objspace->global_list
-@@ -5836,6 +5846,155 @@ rb_gc_writebarrier_remember(VALUE obj)
+@@ -5538,6 +5548,155 @@ rb_gc_writebarrier_remember(VALUE obj)
  
  static st_table *rgengc_unprotect_logging_table;
  
@@ -207,7 +208,7 @@ index 5d73a7e157..dca4bf0bb2 100644
  static int
  rgengc_unprotect_logging_exit_func_i(st_data_t key, st_data_t val, st_data_t arg)
  {
-@@ -7553,6 +7712,10 @@ objspace_malloc_increase(rb_objspace_t *objspace, void *mem, size_t new_size, si
+@@ -7249,6 +7408,10 @@ objspace_malloc_increase(rb_objspace_t *objspace, void *mem, size_t new_size, si
  {
      if (new_size > old_size) {
  	ATOMIC_SIZE_ADD(malloc_increase, new_size - old_size);
@@ -218,7 +219,7 @@ index 5d73a7e157..dca4bf0bb2 100644
  #if RGENGC_ESTIMATE_OLDMALLOC
  	ATOMIC_SIZE_ADD(objspace->rgengc.oldmalloc_increase, new_size - old_size);
  #endif
-@@ -7891,6 +8054,12 @@ gc_malloc_allocated_size(VALUE self)
+@@ -7557,6 +7720,12 @@ gc_malloc_allocated_size(VALUE self)
      return UINT2NUM(rb_objspace.malloc_params.allocated_size);
  }
  
@@ -231,7 +232,7 @@ index 5d73a7e157..dca4bf0bb2 100644
  /*
   *  call-seq:
   *     GC.malloc_allocations -> Integer
-@@ -7905,6 +8074,12 @@ gc_malloc_allocations(VALUE self)
+@@ -7571,6 +7740,12 @@ gc_malloc_allocations(VALUE self)
  {
      return UINT2NUM(rb_objspace.malloc_params.allocations);
  }
@@ -244,7 +245,7 @@ index 5d73a7e157..dca4bf0bb2 100644
  #endif
  
  /*
-@@ -8446,6 +8621,14 @@ gc_prof_mark_timer_start(rb_objspace_t *objspace)
+@@ -8113,6 +8288,14 @@ gc_prof_mark_timer_start(rb_objspace_t *objspace)
  #if GC_PROFILE_MORE_DETAIL
      if (gc_prof_enabled(objspace)) {
  	gc_prof_record(objspace)->gc_mark_time = getrusage_time();
@@ -259,7 +260,7 @@ index 5d73a7e157..dca4bf0bb2 100644
      }
  #endif
  }
-@@ -8458,6 +8641,17 @@ gc_prof_mark_timer_stop(rb_objspace_t *objspace)
+@@ -8127,6 +8310,17 @@ gc_prof_mark_timer_stop(rb_objspace_t *objspace)
      if (gc_prof_enabled(objspace)) {
          gc_profile_record *record = gc_prof_record(objspace);
  	record->gc_mark_time = elapsed_time_from(record->gc_mark_time);
@@ -277,7 +278,7 @@ index 5d73a7e157..dca4bf0bb2 100644
      }
  #endif
  }
-@@ -8469,9 +8663,13 @@ gc_prof_sweep_timer_start(rb_objspace_t *objspace)
+@@ -8140,9 +8334,13 @@ gc_prof_sweep_timer_start(rb_objspace_t *objspace)
      if (gc_prof_enabled(objspace)) {
  	gc_profile_record *record = gc_prof_record(objspace);
  
@@ -293,7 +294,7 @@ index 5d73a7e157..dca4bf0bb2 100644
      }
  }
  
-@@ -8488,16 +8686,30 @@ gc_prof_sweep_timer_stop(rb_objspace_t *objspace)
+@@ -8161,16 +8359,30 @@ gc_prof_sweep_timer_stop(rb_objspace_t *objspace)
  	    sweep_time = elapsed_time_from(objspace->profile.gc_sweep_start_time);
  	    /* need to accumulate GC time for lazy sweep after gc() */
  	    record->gc_time += sweep_time;
@@ -325,7 +326,7 @@ index 5d73a7e157..dca4bf0bb2 100644
      }
  }
  
-@@ -8516,9 +8728,13 @@ gc_prof_set_malloc_info(rb_objspace_t *objspace)
+@@ -8189,9 +8401,13 @@ gc_prof_set_malloc_info(rb_objspace_t *objspace)
  static inline void
  gc_prof_set_heap_info(rb_objspace_t *objspace)
  {
@@ -340,7 +341,7 @@ index 5d73a7e157..dca4bf0bb2 100644
  	size_t total = objspace->profile.heap_used_at_gc_start * HEAP_OBJ_LIMIT;
  
  #if GC_PROFILE_MORE_DETAIL
-@@ -9306,11 +9522,19 @@ Init_GC(void)
+@@ -8832,11 +9048,19 @@ Init_GC(void)
      rb_define_singleton_method(rb_mGC, "start", gc_start_internal, -1);
      rb_define_singleton_method(rb_mGC, "enable", rb_gc_enable, 0);
      rb_define_singleton_method(rb_mGC, "disable", rb_gc_disable, 0);
@@ -361,10 +362,10 @@ index 5d73a7e157..dca4bf0bb2 100644
  
      gc_constants = rb_hash_new();
 diff --git a/include/ruby/intern.h b/include/ruby/intern.h
-index aec2d528ca..d7c92c1984 100644
+index 3af7ecad89..7e556b9467 100644
 --- a/include/ruby/intern.h
 +++ b/include/ruby/intern.h
-@@ -500,12 +500,20 @@ void rb_gc_finalize_deferred(void);
+@@ -495,12 +495,20 @@ void rb_gc_finalize_deferred(void);
  void rb_gc_call_finalizer_at_exit(void);
  VALUE rb_gc_enable(void);
  VALUE rb_gc_disable(void);
