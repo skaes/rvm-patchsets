@@ -8,10 +8,10 @@ From: Stefan Kaes <skaes@railsexpress.de>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/eval_error.c b/eval_error.c
-index 2a638f3768..fba57deff9 100644
+index ff3db23a6b..bc605d9edc 100644
 --- a/eval_error.c
 +++ b/eval_error.c
-@@ -164,8 +164,8 @@ error_print(void)
+@@ -160,8 +160,8 @@ rb_threadptr_error_print(rb_thread_t *volatile th, volatile VALUE errinfo)
          int skip = eclass == rb_eSysStackError;
  
  #define TRACE_MAX (TRACE_HEAD+TRACE_TAIL+5)

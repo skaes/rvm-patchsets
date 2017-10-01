@@ -1,9 +1,8 @@
-silence test errors
+
 
 From: Stefan Kaes <skaes@railsexpress.de>
 
-on an Active Directory enabled Mac some group tests fail.
-but I don't care about fixing those.
+
 ---
  test/etc/test_etc.rb      |    4 ++++
  test/rinda/test_rinda.rb  |    1 +

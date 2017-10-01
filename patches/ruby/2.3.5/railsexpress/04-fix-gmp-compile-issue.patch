@@ -1,0 +1,50 @@
+fix gmp compile issue
+
+From: Stefan Kaes <skaes@railsexpress.de>
+
+
+---
+ ChangeLog    |   10 ++++++++++
+ configure.in |    6 ++++--
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 21443c274c..2d1f21f197 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,13 @@
++Fri Sep 15 05:40:40 2017  URABE Shyouhei  <shyouhei@ruby-lang.org>
++
++	fix --with-gmp (broken by r57490)
++
++	Looking at the generated shell script (also the autoconf manual), it
++	seems AC_SEARCH_LIBS() m4 macro does not define HAVE_LIBsomething C
++	preprocessor macros, unlike AC_CHECK_LIB() which does define them.
++	This previous change effectively killed building with GMP because
++	building that mode depends on existence of HAVE_LIBGMP. [Bug #13402]
++
+ Thu Sep 14 20:25:55 2017  Yusuke Endoh  <mame@ruby-lang.org>
+ 
+ 	lib/webrick/log.rb: sanitize any type of logs
+diff --git a/configure.in b/configure.in
+index c69cb40cf3..2cd0f27b64 100644
+--- a/configure.in
++++ b/configure.in
+@@ -1337,13 +1337,15 @@ AC_ARG_WITH([gmp],
+ AS_IF([test "x$with_gmp" != xno],
+   [AC_CHECK_HEADERS(gmp.h)
+    AS_IF([test "x$ac_cv_header_gmp_h" != xno],
+-     AC_SEARCH_LIBS([__gmpz_init], [gmp]))])
++     AC_SEARCH_LIBS([__gmpz_init], [gmp],
++       [AC_DEFINE(HAVE_LIBGMP, 1)]))])
+ 
+ AC_ARG_WITH([jemalloc],
+   [AS_HELP_STRING([--with-jemalloc],[use jemalloc allocator])],
+   [with_jemalloc=$withval], [with_jemalloc=no])
+ AS_IF([test "x$with_jemalloc" = xyes],[
+-  AC_SEARCH_LIBS([malloc_conf], [jemalloc], [], [with_jemalloc=no])
++  AC_SEARCH_LIBS([malloc_conf], [jemalloc],
++    [AC_DEFINE(HAVE_LIBJEMALLOC, 1)], [with_jemalloc=no])
+   AC_CHECK_HEADER(jemalloc/jemalloc.h, [
+     AC_DEFINE(RUBY_ALTERNATIVE_MALLOC_HEADER, [<jemalloc/jemalloc.h>])
+   ])

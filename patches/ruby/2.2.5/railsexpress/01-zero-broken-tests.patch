@@ -1,17 +1,5 @@
-silence test errors
-
-From: Stefan Kaes <skaes@railsexpress.de>
-
-on an Active Directory enabled Mac some group tests fail.
-but I don't care about fixing those.
----
- test/etc/test_etc.rb      |    4 ++++
- test/rinda/test_rinda.rb  |    1 +
- test/ruby/test_process.rb |    2 ++
- 3 files changed, 7 insertions(+)
-
 diff --git a/test/etc/test_etc.rb b/test/etc/test_etc.rb
-index 374b379fc4..f0951609b6 100644
+index 374b379..f095160 100644
 --- a/test/etc/test_etc.rb
 +++ b/test/etc/test_etc.rb
 @@ -68,6 +68,7 @@ class TestEtc < Test::Unit::TestCase
@@ -47,7 +35,7 @@ index 374b379fc4..f0951609b6 100644
      Etc.group {|s| a << s }
      b = []
 diff --git a/test/rinda/test_rinda.rb b/test/rinda/test_rinda.rb
-index 3df4460cb8..c850ebb02b 100644
+index 0f05abd..e57648a 100644
 --- a/test/rinda/test_rinda.rb
 +++ b/test/rinda/test_rinda.rb
 @@ -488,6 +488,7 @@ class TupleSpaceProxyTest < Test::Unit::TestCase
@@ -59,10 +47,10 @@ index 3df4460cb8..c850ebb02b 100644
  
      uri = service.uri
 diff --git a/test/ruby/test_process.rb b/test/ruby/test_process.rb
-index 66dc07b84a..63d3e542f0 100644
+index 459e0a5..e75d1e4 100644
 --- a/test/ruby/test_process.rb
 +++ b/test/ruby/test_process.rb
-@@ -1671,6 +1671,8 @@ class TestProcess < Test::Unit::TestCase
+@@ -1667,6 +1667,8 @@ class TestProcess < Test::Unit::TestCase
  
    def test_execopts_gid
      skip "Process.groups not implemented on Windows platform" if windows?

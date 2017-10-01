@@ -1,17 +1,8 @@
-display more detailed stack trace
-
-From: Stefan Kaes <skaes@railsexpress.de>
-
-
----
- eval_error.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
 diff --git a/eval_error.c b/eval_error.c
-index 2a638f3768..fba57deff9 100644
+index 54d6db9..a9a1a0b 100644
 --- a/eval_error.c
 +++ b/eval_error.c
-@@ -164,8 +164,8 @@ error_print(void)
+@@ -178,8 +178,8 @@ error_print(void)
          int skip = eclass == rb_eSysStackError;
  
  #define TRACE_MAX (TRACE_HEAD+TRACE_TAIL+5)
@@ -21,4 +12,4 @@ index 2a638f3768..fba57deff9 100644
 +#define TRACE_TAIL 100
  
  	for (i = 1; i < len; i++) {
- 	    VALUE line = RARRAY_AREF(errat, i);
+ 	    if (RB_TYPE_P(ptr[i], T_STRING)) {

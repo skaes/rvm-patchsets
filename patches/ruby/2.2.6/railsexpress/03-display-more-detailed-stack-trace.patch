@@ -1,4 +1,4 @@
-display more detailed stack trace
+
 
 From: Stefan Kaes <skaes@railsexpress.de>
 
@@ -8,7 +8,7 @@ From: Stefan Kaes <skaes@railsexpress.de>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/eval_error.c b/eval_error.c
-index 2a638f3768..fba57deff9 100644
+index 241c90c36f..875e6bfb03 100644
 --- a/eval_error.c
 +++ b/eval_error.c
 @@ -164,8 +164,8 @@ error_print(void)

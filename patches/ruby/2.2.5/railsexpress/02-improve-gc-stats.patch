@@ -1,16 +1,5 @@
-improve GC stats
-
-From: Stefan Kaes <skaes@railsexpress.de>
-
-this patch adds GC profiling with constant memory use.
-used by ruby_prof, railsbench and time_bandits
----
- gc.c                  |  232 ++++++++++++++++++++++++++++++++++++++++++++++++-
- include/ruby/intern.h |    8 ++
- 2 files changed, 236 insertions(+), 4 deletions(-)
-
 diff --git a/gc.c b/gc.c
-index 51872f26dd..93ef8770b6 100644
+index 5ebb937..aeec1b4 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -473,6 +473,8 @@ typedef struct rb_objspace {
@@ -362,10 +351,10 @@ index 51872f26dd..93ef8770b6 100644
  
      gc_constants = rb_hash_new();
 diff --git a/include/ruby/intern.h b/include/ruby/intern.h
-index 3af7ecad89..7e556b9467 100644
+index 00474a7..3e511ce 100644
 --- a/include/ruby/intern.h
 +++ b/include/ruby/intern.h
-@@ -495,12 +495,20 @@ void rb_gc_finalize_deferred(void);
+@@ -494,12 +494,20 @@ void rb_gc_finalize_deferred(void);
  void rb_gc_call_finalizer_at_exit(void);
  VALUE rb_gc_enable(void);
  VALUE rb_gc_disable(void);

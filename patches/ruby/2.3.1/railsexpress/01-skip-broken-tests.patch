@@ -1,0 +1,24 @@
+diff --git a/test/etc/test_etc.rb b/test/etc/test_etc.rb
+index ec9083e..9a0db5f 100644
+--- a/test/etc/test_etc.rb
++++ b/test/etc/test_etc.rb
+@@ -97,6 +97,7 @@ def test_getgrgid
+   end
+ 
+   def test_getgrnam
++    skip "Broken Etc.getgrnam on this machine" if ENV['RUBY_TEST_OPTIONS_BROKEN_GETGRNAM']=='1'
+     groups = {}
+     Etc.group do |s|
+       groups[s.name] ||= s.gid unless /\A\+/ =~ s.name
+diff --git a/test/ruby/test_process.rb b/test/ruby/test_process.rb
+index 8d6274a..d1e08f2 100644
+--- a/test/ruby/test_process.rb
++++ b/test/ruby/test_process.rb
+@@ -1798,6 +1798,7 @@ def test_execopts_uid
+   end
+ 
+   def test_execopts_gid
++    skip "Etc.getgrgid broken on this machine" if ENV['RUBY_TEST_OPTIONS_BROKEN_GETGRGID'] == '1'
+     skip "Process.groups not implemented on Windows platform" if windows?
+     feature6975 = '[ruby-core:47414]'
+ 

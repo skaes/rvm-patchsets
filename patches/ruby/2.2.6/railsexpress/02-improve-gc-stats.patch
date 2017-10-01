@@ -1,9 +1,8 @@
-improve GC stats
+
 
 From: Stefan Kaes <skaes@railsexpress.de>
 
-this patch adds GC profiling with constant memory use.
-used by ruby_prof, railsbench and time_bandits
+
 ---
  gc.c                  |  232 ++++++++++++++++++++++++++++++++++++++++++++++++-
  include/ruby/intern.h |    8 ++

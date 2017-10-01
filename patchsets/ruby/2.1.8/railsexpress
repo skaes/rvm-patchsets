@@ -1,0 +1,9 @@
+railsexpress/01-zero-broken-tests.patch
+railsexpress/02-improve-gc-stats.patch
+railsexpress/03-display-more-detailed-stack-trace.patch
+railsexpress/04-show-full-backtrace-on-stack-overflow.patch
+railsexpress/05-funny-falcon-stc-density.patch
+railsexpress/06-funny-falcon-stc-pool-allocation.patch
+railsexpress/07-aman-opt-aset-aref-str.patch
+railsexpress/08-funny-falcon-method-cache.patch
+railsexpress/09-heap-dump-support.patch
