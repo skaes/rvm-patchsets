@@ -34,8 +34,8 @@ switching to bash fixes these (see https://github.com/skaes/rvm-patchsets/issues
 
 ### Step 2
 
-If you want to simply replace your normal rubies with patched versions, reinstall them
-with the following commands:
+If you want to simply replace your normal rubies with patched versions (railsexpress),
+reinstall them with the following commands:
 
     rvm reinstall 1.9.3 --patch railsexpress
     rvm reinstall 2.0.0 --patch railsexpress
@@ -44,8 +44,12 @@ with the following commands:
     rvm reinstall 2.3.5 --patch railsexpress
     rvm reinstall 2.4.2 --patch railsexpress
 
+Alternatively, you can pass the ruby version to reinstall to the install script:
+
+    ./install.sh 1.9.3 2.0.0 2.1.4
+
 If you don't want to mess up your vanilla rubies, pass a `-n` flag to rvm when installing
-the patches:
+the railsexpress patches:
 
     rvm install 1.9.3 --patch railsexpress -n railsexpress
     rvm install 2.0.0 --patch railsexpress -n railsexpress
@@ -53,6 +57,13 @@ the patches:
     rvm install 2.2.8 --patch railsexpress -n railsexpress
     rvm install 2.3.5 --patch railsexpress -n railsexpress
     rvm install 2.4.2 --patch railsexpress -n railsexpress
+
+Install the rubies you want to patch with float_warnings accordingly:
+
+    rvm install 1.9.3 --patch float_warnings -n float_warnings
+    rvm install 2.0.0 --patch float_warnings -n float_warnings
+    rvm install 2.1.7 --patch float_warnings -n float_warnings
+    rvm install 2.2.3 --patch float_warnings -n float_warnings
 
 or use rvm's name parsing magic:
 
@@ -63,9 +74,16 @@ or use rvm's name parsing magic:
     rvm install 2.3.5-railsexpress --patch railsexpress
     rvm install 2.4.2-railsexpress --patch railsexpress
 
+... same for float_warnings:
+    rvm install 1.9.3-float_warnings --patch float_warnings
+    rvm install 2.0.0-float_warnings --patch float_warnings
+    rvm install 2.1.7-float_warnings --patch float_warnings
+    rvm install 2.2.3-float_warnings --patch float_warnings
+
 This will then require you to specify the ruby version for rvm like so:
 
     rvm use 2.3.3-railsexpress
+    rvm usr 2.2.3-float_warnings
 
 ## Notes
 
@@ -193,3 +211,4 @@ All patches are provided without any warranty. Use at your own risk!
 * load performance patch: https://github.com/ruby/ruby/commit/9ce69e7cef1272c86a93eeb9a1888fe6d2a94704#load.c
 * optimized hashes: https://gist.github.com/4136373
 * array as queue: https://gist.github.com/4136373
+* float_warnings patch: https://slides.com/wolfgangteuber/saving-money-with-ruby/fullscreen#

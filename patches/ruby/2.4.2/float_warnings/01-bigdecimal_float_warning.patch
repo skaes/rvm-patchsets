@@ -1,0 +1,29 @@
+diff --git a/ext/bigdecimal/bigdecimal.c b/ext/bigdecimal/bigdecimal.c
+index 220d993..36fbefc 100644
+--- a/ext/bigdecimal/bigdecimal.c
++++ b/ext/bigdecimal/bigdecimal.c
+@@ -2631,6 +2631,7 @@ BigDecimal_new(int argc, VALUE *argv)
+ 	return GetVpValue(iniValue, 1);
+ 
+       case T_FLOAT:
++        rb_warn("initializing BigDecimal with an instance of Float.");
+         d = RFLOAT_VALUE(iniValue);
+         if (!isfinite(d)) {
+             Real *pv = VpCreateRbObject(1, NULL);
+diff --git a/ext/bigdecimal/lib/bigdecimal/util.rb b/ext/bigdecimal/lib/bigdecimal/util.rb
+index 670a625..6c24009 100644
+--- a/ext/bigdecimal/lib/bigdecimal/util.rb
++++ b/ext/bigdecimal/lib/bigdecimal/util.rb
+@@ -37,7 +37,12 @@ class Float < Numeric
+   #     # => 0.5e0
+   #
+   def to_d(precision=nil)
++    location = caller[0].gsub(/:in `.*'$/, '')
++    warn("#{location}: warning: calling .to_d on an instance of Float.")
++    old_verbose, $VERBOSE = $VERBOSE, nil
+     BigDecimal(self, precision || Float::DIG)
++  ensure
++    $VERBOSE = old_verbose
+   end
+ end
+ 
