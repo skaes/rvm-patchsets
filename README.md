@@ -43,6 +43,7 @@ with the following commands:
     rvm reinstall 2.2.9 --patch railsexpress
     rvm reinstall 2.3.6 --patch railsexpress
     rvm reinstall 2.4.3 --patch railsexpress
+    rvm reinstall 2.5.0 --patch railsexpress
 
 If you don't want to mess up your vanilla rubies, pass a `-n` flag to rvm when installing
 the patches:
@@ -53,6 +54,7 @@ the patches:
     rvm install 2.2.9 --patch railsexpress -n railsexpress
     rvm install 2.3.6 --patch railsexpress -n railsexpress
     rvm install 2.4.3 --patch railsexpress -n railsexpress
+    rvm install 2.5.0 --patch railsexpress -n railsexpress
 
 or use rvm's name parsing magic:
 
@@ -62,10 +64,11 @@ or use rvm's name parsing magic:
     rvm install 2.2.9-railsexpress --patch railsexpress
     rvm install 2.3.6-railsexpress --patch railsexpress
     rvm install 2.4.3-railsexpress --patch railsexpress
+    rvm install 2.5.0-railsexpress --patch railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
-    rvm use 2.4.3-railsexpress
+    rvm use 2.5.0-railsexpress
 
 ## Notes
 
@@ -109,6 +112,7 @@ there's no guarantee. The following versions are currently supported:
     2.4.1       # outdated, please use 2.4.3
     2.4.2       # outdated, please use 2.4.3
     2.4.3       # current rvm default for 2.4 branch
+    2.5.0       # current rvm default for 2.5 branch
 
 In order to make some patch level N the default for rvm, add the line(s)
 
@@ -126,6 +130,7 @@ To enable heap dump support, pass the --enable-gcdebug option to the rvm install
     rvm install 2.2.9 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.3.6 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.4.3 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 2.5.0 --patch railsexpress -n gcdebug -C --enable-gcdebug
 
 If rvm cannot configure your ruby, update your rvm install.
 
@@ -167,9 +172,9 @@ You can then use it with the command
 
     rvm use 2.0.0-head-railsexpress
 
-On 2.1, 2.2, 2.3 and 2.4 you can install head similarly:
+On 2.1, 2.2, 2.3, 2.4 and 2.5 you can install head similarly:
 
-    rvm install 2.4-head --patch railsexpress -n railsexpress
+    rvm install 2.5-head --patch railsexpress -n railsexpress
 
 ### Patch Improvements
 
