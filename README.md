@@ -44,6 +44,7 @@ with the following commands:
     rvm reinstall 2.3.8 --patch railsexpress
     rvm reinstall 2.4.4 --patch railsexpress
     rvm reinstall 2.5.3 --patch railsexpress
+    rvm reinstall 2.6.0 --patch railsexpress
 
 If you don't want to mess up your vanilla rubies, pass a `-n` flag to rvm when installing
 the patches:
@@ -55,6 +56,7 @@ the patches:
     rvm install 2.3.8 --patch railsexpress -n railsexpress
     rvm install 2.4.5 --patch railsexpress -n railsexpress
     rvm install 2.5.3 --patch railsexpress -n railsexpress
+    rvm install 2.6.0 --patch railsexpress -n railsexpress
 
 or use rvm's name parsing magic:
 
@@ -65,10 +67,11 @@ or use rvm's name parsing magic:
     rvm install 2.3.8-railsexpress --patch railsexpress
     rvm install 2.4.5-railsexpress --patch railsexpress
     rvm install 2.5.3-railsexpress --patch railsexpress
+    rvm install 2.6.0-railsexpress --patch railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
-    rvm use 2.5.1-railsexpress
+    rvm use 2.6.0-railsexpress
 
 ## Notes
 
@@ -120,6 +123,7 @@ there's no guarantee. The following versions are currently supported:
     2.5.0       # outdated, please use 2.5.3
     2.5.1       # outdated, please use 2.5.3
     2.5.3       # current rvm default for 2.5 branch
+    2.6.0       # current rvm default for 2.6 branch
 
 In order to make some patch level N the default for rvm, add the line(s)
 
@@ -138,6 +142,7 @@ To enable heap dump support, pass the --enable-gcdebug option to the rvm install
     rvm install 2.3.8 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.4.5 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.5.3 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 2.6.0 --patch railsexpress -n gcdebug -C --enable-gcdebug
 
 If rvm cannot configure your ruby, update your rvm install.
 
@@ -159,7 +164,7 @@ With MacPorts, this is as easy as
     sudo port install apple-gcc42
     sudo ln -s /opt/local/bin/gcc-apple-4.2 /usr/bin/gcc-4.2
 
-For 2.x, clang works fine.
+For 2.x, clang should work fine.
 
 Additionally, when compiling ruby, you might need to set
 
@@ -179,9 +184,9 @@ You can then use it with the command
 
     rvm use 2.0.0-head-railsexpress
 
-On 2.1, 2.2, 2.3, 2.4 and 2.5 you can install head similarly:
+On 2.1, 2.2, 2.3, 2.4, 2.5 and 2.6 you can install head similarly:
 
-    rvm install 2.5-head --patch railsexpress -n railsexpress
+    rvm install 2.6-head --patch railsexpress -n railsexpress
 
 ### Patch Improvements
 
