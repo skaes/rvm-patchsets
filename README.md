@@ -43,7 +43,7 @@ with the following commands:
     rvm reinstall 2.2.10 --patch railsexpress
     rvm reinstall 2.3.8 --patch railsexpress
     rvm reinstall 2.4.5 --patch railsexpress
-    rvm reinstall 2.5.4 --patch railsexpress
+    rvm reinstall 2.5.5 --patch railsexpress
     rvm reinstall 2.6.2 --patch railsexpress
 
 If you don't want to mess up your vanilla rubies, pass a `-n` flag to rvm when installing
@@ -55,7 +55,7 @@ the patches:
     rvm install 2.2.10 --patch railsexpress -n railsexpress
     rvm install 2.3.8 --patch railsexpress -n railsexpress
     rvm install 2.4.5 --patch railsexpress -n railsexpress
-    rvm install 2.5.4 --patch railsexpress -n railsexpress
+    rvm install 2.5.5 --patch railsexpress -n railsexpress
     rvm install 2.6.2 --patch railsexpress -n railsexpress
 
 or use rvm's name parsing magic:
@@ -66,7 +66,7 @@ or use rvm's name parsing magic:
     rvm install 2.2.10-railsexpress --patch railsexpress
     rvm install 2.3.8-railsexpress --patch railsexpress
     rvm install 2.4.5-railsexpress --patch railsexpress
-    rvm install 2.5.4-railsexpress --patch railsexpress
+    rvm install 2.5.5-railsexpress --patch railsexpress
     rvm install 2.6.2-railsexpress --patch railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
@@ -120,10 +120,11 @@ there's no guarantee. The following versions are currently supported:
     2.4.3       # outdated, please use 2.4.5
     2.4.4       # outdated, please use 2.4.5
     2.4.5       # current rvm default for 2.4 branch
-    2.5.0       # outdated, please use 2.5.4
-    2.5.1       # outdated, please use 2.5.4
-    2.5.3       # outdated, please use 2.5.4
-    2.5.4       # current rvm default for 2.5 branch
+    2.5.0       # outdated, please use 2.5.5
+    2.5.1       # outdated, please use 2.5.5
+    2.5.3       # outdated, please use 2.5.5
+    2.5.4       # outdated, please use 2.5.5
+    2.5.5       # current rvm default for 2.5 branch
     2.6.0       # outdated, please use 2.6.2
     2.6.1       # outdated, please use 2.6.2
     2.6.2       # current rvm default for 2.6 branch
@@ -144,7 +145,7 @@ To enable heap dump support, pass the --enable-gcdebug option to the rvm install
     rvm install 2.2.10 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.3.8 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.4.5 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.5.4 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 2.5.5 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.6.2 --patch railsexpress -n gcdebug -C --enable-gcdebug
 
 If rvm cannot configure your ruby, update your rvm install.
