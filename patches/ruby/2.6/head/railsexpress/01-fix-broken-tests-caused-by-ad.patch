@@ -62,10 +62,10 @@ index 0b50ff578f..299b5bee81 100644
      next unless $?.success?
      grpname.chomp!
 diff --git a/test/ruby/test_process.rb b/test/ruby/test_process.rb
-index 7911a0cb20..e0523f0c6b 100644
+index b2f1ad7056..3223cb92d8 100644
 --- a/test/ruby/test_process.rb
 +++ b/test/ruby/test_process.rb
-@@ -1545,6 +1545,7 @@ def test_groups
+@@ -1553,6 +1553,7 @@ def test_groups
    end
  
    def test_maxgroups
@@ -73,7 +73,7 @@ index 7911a0cb20..e0523f0c6b 100644
      max = Process.maxgroups
    rescue NotImplementedError
    else
-@@ -1896,6 +1897,7 @@ def test_execopts_uid
+@@ -1904,6 +1905,7 @@ def test_execopts_uid
  
    def test_execopts_gid
      skip "Process.groups not implemented on Windows platform" if windows?
