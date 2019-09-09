@@ -1,0 +1,33 @@
+Fix a use-after-free bug by avoiding rb_str_new_frozen
+
+From: Yusuke Endoh <mame@ruby-lang.org>
+
+`str2 = rb_str_new_frozen(str1)` seems to make str1 a shared string that
+refers to str2, but str2 is not marked as STR_IS_SHARED_M nor
+STR_NOFREE.
+`rb_fstring(str2)` frees str2's ptr because it is not marked, and the
+free'ed pointer is the same as str1's ptr.
+After that, accessing str1 may cause use-after-free memory corruption.
+
+I guess this is a bug of rb_str_new_frozen, but I'm completely unsure
+what it should be; the string states and flags are not documented.
+So, this is a workaround for [Bug #16136].  I confirmed that rspec of
+activeadmin runs gracefully.
+---
+ symbol.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/symbol.c b/symbol.c
+index f3506a02dd..a408ee052e 100644
+--- a/symbol.c
++++ b/symbol.c
+@@ -743,7 +743,8 @@ rb_str_intern(VALUE str)
+ 	enc = ascii;
+     }
+     else {
+-	str = rb_str_new_frozen(str);
++        str = rb_str_dup(str);
++        OBJ_FREEZE(str);
+     }
+     str = rb_fstring(str);
+     type = rb_str_symname_type(str, IDSET_ATTRSET_FOR_INTERN);
