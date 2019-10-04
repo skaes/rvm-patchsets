@@ -1,0 +1,29 @@
+fix broken tests caused by AD setup
+
+From: Stefan Kaes <skaes@railsexpress.de>
+
+
+---
+ test/ruby/test_process.rb |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/test/ruby/test_process.rb b/test/ruby/test_process.rb
+index ba7b0f1177..59665e9f7a 100644
+--- a/test/ruby/test_process.rb
++++ b/test/ruby/test_process.rb
+@@ -1520,6 +1520,7 @@ def test_groups
+   end
+ 
+   def test_maxgroups
++    skip "Broken groups on my AD enabled machine" if ENV['RUBY_TEST_OPTIONS_BROKEN_GROUP']
+     max = Process.maxgroups
+   rescue NotImplementedError
+   else
+@@ -1853,6 +1854,7 @@ def test_execopts_uid
+ 
+   def test_execopts_gid
+     skip "Process.groups not implemented on Windows platform" if windows?
++    skip "Broken groups on my AD enabled machine" if ENV['RUBY_TEST_OPTIONS_BROKEN_GROUP']
+     feature6975 = '[ruby-core:47414]'
+ 
+     [30000, *Process.groups.map {|g| g = Etc.getgrgid(g); [g.name, g.gid]}].each do |group, gid|
