@@ -146,19 +146,15 @@ In order to make some patch level N the default for rvm, add the line(s)
     ruby_2.0.0_patch_level=N
     # invalid after version 2.1.0
 
-to $rvm_path/user/db.
+to `$rvm_path/user/db`.
 
 To enable heap dump support, pass the --enable-gcdebug option to the rvm install command.
 
     rvm install 1.9.3 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.0.0 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.1.8 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.2.10 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.3.8 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.4.9 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.5.7 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.6.5 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.7.0 --patch railsexpress -n gcdebug -C --enable-gcdebug
+
+Note that I haven't gotten around to implement heap dump support yet for Ruby versions 2.1
+and higher. There are some gems built around the heap dump support provided by Ruby natively.
 
 If rvm cannot configure your ruby, update your rvm install.
 
