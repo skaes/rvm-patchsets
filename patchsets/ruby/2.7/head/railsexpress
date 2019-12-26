@@ -1,0 +1,3 @@
+railsexpress/01-fix-broken-tests-caused-by-ad.patch
+railsexpress/02-improve-gc-stats.patch
+railsexpress/03-more-detailed-stacktrace.patch

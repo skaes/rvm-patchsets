@@ -42,9 +42,10 @@ with the following commands:
     rvm reinstall 2.1.8 --patch railsexpress
     rvm reinstall 2.2.10 --patch railsexpress
     rvm reinstall 2.3.8 --patch railsexpress
-    rvm reinstall 2.4.6 --patch railsexpress
-    rvm reinstall 2.5.6 --patch railsexpress
-    rvm reinstall 2.6.4 --patch railsexpress
+    rvm reinstall 2.4.9 --patch railsexpress
+    rvm reinstall 2.5.7 --patch railsexpress
+    rvm reinstall 2.6.5 --patch railsexpress
+    rvm reinstall 2.7.0 --patch railsexpress
 
 If you don't want to mess up your vanilla rubies, pass a `-n` flag to rvm when installing
 the patches:
@@ -54,9 +55,10 @@ the patches:
     rvm install 2.1.8 --patch railsexpress -n railsexpress
     rvm install 2.2.10 --patch railsexpress -n railsexpress
     rvm install 2.3.8 --patch railsexpress -n railsexpress
-    rvm install 2.4.6 --patch railsexpress -n railsexpress
-    rvm install 2.5.6 --patch railsexpress -n railsexpress
-    rvm install 2.6.4 --patch railsexpress -n railsexpress
+    rvm install 2.4.9 --patch railsexpress -n railsexpress
+    rvm install 2.5.7 --patch railsexpress -n railsexpress
+    rvm install 2.6.5 --patch railsexpress -n railsexpress
+    rvm install 2.7.0 --patch railsexpress -n railsexpress
 
 or use rvm's name parsing magic:
 
@@ -65,13 +67,14 @@ or use rvm's name parsing magic:
     rvm install 2.1.8-railsexpress --patch railsexpress
     rvm install 2.2.10-railsexpress --patch railsexpress
     rvm install 2.3.8-railsexpress --patch railsexpress
-    rvm install 2.4.6-railsexpress --patch railsexpress
-    rvm install 2.5.6-railsexpress --patch railsexpress
-    rvm install 2.6.4-railsexpress --patch railsexpress
+    rvm install 2.4.9-railsexpress --patch railsexpress
+    rvm install 2.5.7-railsexpress --patch railsexpress
+    rvm install 2.6.5-railsexpress --patch railsexpress
+    rvm install 2.7.0-railsexpress --patch railsexpress
 
 This will then require you to specify the ruby version for rvm like so:
 
-    rvm use 2.6.0-railsexpress
+    rvm use 2.7.0-railsexpress
 
 ## Notes
 
@@ -114,24 +117,28 @@ there's no guarantee. The following versions are currently supported:
     2.3.6       # outdated, please use 2.3.8
     2.3.7       # outdated, please use 2.3.7
     2.3.8       # current rvm default for 2.3 branch
-    2.4.0       # outdated, please use 2.4.6
-    2.4.1       # outdated, please use 2.4.6
-    2.4.2       # outdated, please use 2.4.6
-    2.4.3       # outdated, please use 2.4.6
-    2.4.4       # outdated, please use 2.4.6
-    2.4.5       # outdated, please use 2.4.6
-    2.4.6       # current rvm default for 2.4 branch
-    2.5.0       # outdated, please use 2.5.6
-    2.5.1       # outdated, please use 2.5.6
-    2.5.3       # outdated, please use 2.5.6
-    2.5.4       # outdated, please use 2.5.6
-    2.5.5       # outdated, please use 2.5.6
-    2.5.6       # current rvm default for 2.5 branch
-    2.6.0       # outdated, please use 2.6.4
-    2.6.1       # outdated, please use 2.6.4
-    2.6.2       # outdated, please use 2.6.4
-    2.6.3       # outdated, please use 2.6.4
-    2.6.4       # current rvm default for 2.6 branch
+    2.4.0       # outdated, please use 2.4.9
+    2.4.1       # outdated, please use 2.4.9
+    2.4.2       # outdated, please use 2.4.9
+    2.4.3       # outdated, please use 2.4.9
+    2.4.4       # outdated, please use 2.4.9
+    2.4.5       # outdated, please use 2.4.9
+    2.4.6       # outdated, please use 2.4.9
+    2.4.9       # current rvm default for 2.4 branch
+    2.5.0       # outdated, please use 2.5.7
+    2.5.1       # outdated, please use 2.5.7
+    2.5.3       # outdated, please use 2.5.7
+    2.5.4       # outdated, please use 2.5.7
+    2.5.5       # outdated, please use 2.5.7
+    2.5.6       # outdated, please use 2.5.7
+    2.5.7       # current rvm default for 2.5 branch
+    2.6.0       # outdated, please use 2.6.5
+    2.6.1       # outdated, please use 2.6.5
+    2.6.2       # outdated, please use 2.6.5
+    2.6.3       # outdated, please use 2.6.5
+    2.6.4       # outdated, please use 2.6.5
+    2.6.5       # current rvm default for 2.6 branch
+    2.7.0       # current rvm default for 2.7 branch
 
 In order to make some patch level N the default for rvm, add the line(s)
 
@@ -148,9 +155,10 @@ To enable heap dump support, pass the --enable-gcdebug option to the rvm install
     rvm install 2.1.8 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.2.10 --patch railsexpress -n gcdebug -C --enable-gcdebug
     rvm install 2.3.8 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.4.6 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.5.6 --patch railsexpress -n gcdebug -C --enable-gcdebug
-    rvm install 2.6.4 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 2.4.9 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 2.5.7 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 2.6.5 --patch railsexpress -n gcdebug -C --enable-gcdebug
+    rvm install 2.7.0 --patch railsexpress -n gcdebug -C --enable-gcdebug
 
 If rvm cannot configure your ruby, update your rvm install.
 
@@ -192,9 +200,9 @@ You can then use it with the command
 
     rvm use 2.0.0-head-railsexpress
 
-On 2.1, 2.2, 2.3, 2.4, 2.5 and 2.6 you can install head similarly:
+On 2.1, 2.2, 2.3, 2.4, 2.5, 2.6 and 2.7 you can install head similarly:
 
-    rvm install 2.6-head --patch railsexpress -n railsexpress
+    rvm install 2.7-head --patch railsexpress -n railsexpress
 
 ### Patch Improvements
 
