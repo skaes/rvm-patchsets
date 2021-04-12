@@ -1,0 +1,83 @@
+fix broken tests caused by AD setup
+
+From: Stefan Kaes <skaes@railsexpress.de>
+
+
+---
+ spec/ruby/core/process/groups_spec.rb      |   14 ++++++++------
+ spec/ruby/library/etc/getgrgid_spec.rb     |    1 +
+ spec/ruby/library/etc/struct_group_spec.rb |    2 ++
+ test/ruby/test_process.rb                  |    2 ++
+ 4 files changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/spec/ruby/core/process/groups_spec.rb b/spec/ruby/core/process/groups_spec.rb
+index cbbe4fed25..31dc317c77 100644
+--- a/spec/ruby/core/process/groups_spec.rb
++++ b/spec/ruby/core/process/groups_spec.rb
+@@ -2,13 +2,15 @@
+ 
+ describe "Process.groups" do
+   platform_is_not :windows do
+-    it "gets an Array of the gids of groups in the supplemental group access list" do
+-      groups = `id -G`.scan(/\d+/).map { |i| i.to_i }
+-      gid = Process.gid
++    guard -> { return ENV['RUBY_TEST_OPTIONS_BROKEN_GROUP'] != "1" } do
++      it "gets an Array of the gids of groups in the supplemental group access list" do
++        groups = `id -G`.scan(/\d+/).map { |i| i.to_i }
++        gid = Process.gid
+ 
+-      expected = (groups.sort - [gid]).uniq.sort
+-      actual = (Process.groups - [gid]).uniq.sort
+-      actual.should == expected
++        expected = (groups.sort - [gid]).uniq.sort
++        actual = (Process.groups - [gid]).uniq.sort
++        actual.should == expected
++      end
+     end
+   end
+ end
+diff --git a/spec/ruby/library/etc/getgrgid_spec.rb b/spec/ruby/library/etc/getgrgid_spec.rb
+index c7bd55b20e..9ea7d0dfb7 100644
+--- a/spec/ruby/library/etc/getgrgid_spec.rb
++++ b/spec/ruby/library/etc/getgrgid_spec.rb
+@@ -15,6 +15,7 @@
+ platform_is_not :windows do
+   grpname = nil
+   guard -> {
++    return false if ENV['RUBY_TEST_OPTIONS_BROKEN_GROUP']
+     grpname = IO.popen(%w'id -gn', err: IO::NULL, &:read).chomp
+     $?.success?
+   } do
+diff --git a/spec/ruby/library/etc/struct_group_spec.rb b/spec/ruby/library/etc/struct_group_spec.rb
+index 0b50ff578f..299b5bee81 100644
+--- a/spec/ruby/library/etc/struct_group_spec.rb
++++ b/spec/ruby/library/etc/struct_group_spec.rb
+@@ -3,6 +3,8 @@
+ 
+ describe "Struct::Group" do
+   platform_is_not :windows do
++    next if ENV['RUBY_TEST_OPTIONS_BROKEN_GROUP']
++
+     grpname = IO.popen(%w'id -gn', err: IO::NULL, &:read)
+     next unless $?.success?
+     grpname.chomp!
+diff --git a/test/ruby/test_process.rb b/test/ruby/test_process.rb
+index ab723c6f63..2a103d0e27 100644
+--- a/test/ruby/test_process.rb
++++ b/test/ruby/test_process.rb
+@@ -1561,6 +1561,7 @@ def test_groups
+   end
+ 
+   def test_maxgroups
++    skip "Broken groups on my AD enabled machine" if ENV['RUBY_TEST_OPTIONS_BROKEN_GROUP']
+     max = Process.maxgroups
+   rescue NotImplementedError
+   else
+@@ -1915,6 +1916,7 @@ def test_execopts_uid
+   def test_execopts_gid
+     skip "Process.groups not implemented on Windows platform" if windows?
+     skip "root can use Process.groups on Android platform" if RUBY_PLATFORM =~ /android/
++    skip "Broken groups on my AD enabled machine" if ENV['RUBY_TEST_OPTIONS_BROKEN_GROUP']
+     feature6975 = '[ruby-core:47414]'
+ 
+     groups = Process.groups.map do |g|
