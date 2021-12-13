@@ -21,7 +21,7 @@ index 2dcebdde9f..daee7019d0 100644
  AC_CHECK_FUNCS(memalign)
  AC_CHECK_FUNCS(memset_s)
 diff --git a/gc.c b/gc.c
-index b9b647847d..f5ffccc219 100644
+index dd58a0321c..ad967bd851 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -286,6 +286,9 @@ rb_gc_guarded_ptr_val(volatile VALUE *ptr, VALUE val)
@@ -50,7 +50,7 @@ index b9b647847d..f5ffccc219 100644
  
      GC_OLDMALLOC_LIMIT_MIN,
      GC_OLDMALLOC_LIMIT_MAX,
-@@ -8431,6 +8436,20 @@ gc_start(rb_objspace_t *objspace, int reason)
+@@ -8443,6 +8448,20 @@ gc_start(rb_objspace_t *objspace, int reason)
      gc_prof_timer_start(objspace);
      {
  	gc_marks(objspace, do_full_mark);
@@ -71,7 +71,7 @@ index b9b647847d..f5ffccc219 100644
      }
      gc_prof_timer_stop(objspace);
  
-@@ -10281,6 +10300,7 @@ ruby_gc_set_params(void)
+@@ -10293,6 +10312,7 @@ ruby_gc_set_params(void)
      get_envparam_size  ("RUBY_GC_OLDMALLOC_LIMIT_MAX", &gc_params.oldmalloc_limit_max, 0);
      get_envparam_double("RUBY_GC_OLDMALLOC_LIMIT_GROWTH_FACTOR", &gc_params.oldmalloc_limit_growth_factor, 1.0, 0.0, FALSE);
  #endif
