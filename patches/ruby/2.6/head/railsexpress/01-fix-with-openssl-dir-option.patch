@@ -1,0 +1,22 @@
+fix with-openssl-dir option
+
+From: Stefan Kaes <skaes@railsexpress.de>
+
+
+---
+ ext/openssl/extconf.rb |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ext/openssl/extconf.rb b/ext/openssl/extconf.rb
+index 4f218562b1..f0d945ea15 100644
+--- a/ext/openssl/extconf.rb
++++ b/ext/openssl/extconf.rb
+@@ -38,7 +38,7 @@
+ end
+ 
+ Logging::message "=== Checking for required stuff... ===\n"
+-result = pkg_config("openssl") && have_header("openssl/ssl.h")
++result = !with_config("openssl-dir") && pkg_config("openssl") && have_header("openssl/ssl.h")
+ 
+ def find_openssl_library
+   if $mswin || $mingw
