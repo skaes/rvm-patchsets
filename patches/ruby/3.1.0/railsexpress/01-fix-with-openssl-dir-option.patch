@@ -1,0 +1,22 @@
+
+
+From: Stefan Kaes <skaes@railsexpress.de>
+
+
+---
+ ext/openssl/extconf.rb |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ext/openssl/extconf.rb b/ext/openssl/extconf.rb
+index fedcb930f5..951bff6a07 100644
+--- a/ext/openssl/extconf.rb
++++ b/ext/openssl/extconf.rb
+@@ -92,7 +92,7 @@ def find_openssl_library
+ end
+ 
+ Logging::message "=== Checking for required stuff... ===\n"
+-pkg_config_found = pkg_config("openssl") && have_header("openssl/ssl.h")
++pkg_config_found = !with_config("openssl-dir") && pkg_config("openssl") && have_header("openssl/ssl.h")
+ 
+ if !pkg_config_found && !find_openssl_library
+   Logging::message "=== Checking for required stuff failed. ===\n"

@@ -1,0 +1,3 @@
+railsexpress/01-fix-with-openssl-dir-option.patch
+railsexpress/02-improve-gc-stats.patch
+railsexpress/03-malloc-trim.patch
