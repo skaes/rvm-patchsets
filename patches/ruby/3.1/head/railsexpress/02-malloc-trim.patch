@@ -21,10 +21,10 @@ index 5a6b074f8a..477ed8c47c 100644
  AC_CHECK_FUNCS(memalign)
  AC_CHECK_FUNCS(memset_s)
 diff --git a/gc.c b/gc.c
-index 9be41119e5..d7afcaf9de 100644
+index cc34e0054b..0ae27b13c0 100644
 --- a/gc.c
 +++ b/gc.c
-@@ -299,6 +299,9 @@ rb_gc_guarded_ptr_val(volatile VALUE *ptr, VALUE val)
+@@ -303,6 +303,9 @@ rb_gc_guarded_ptr_val(volatile VALUE *ptr, VALUE val)
  #ifndef GC_MALLOC_LIMIT_GROWTH_FACTOR
  #define GC_MALLOC_LIMIT_GROWTH_FACTOR 1.4
  #endif
@@ -34,7 +34,7 @@ index 9be41119e5..d7afcaf9de 100644
  
  #ifndef GC_OLDMALLOC_LIMIT_MIN
  #define GC_OLDMALLOC_LIMIT_MIN (16 * 1024 * 1024 /* 16MB */)
-@@ -337,6 +340,7 @@ typedef struct {
+@@ -341,6 +344,7 @@ typedef struct {
      size_t malloc_limit_min;
      size_t malloc_limit_max;
      double malloc_limit_growth_factor;
@@ -42,7 +42,7 @@ index 9be41119e5..d7afcaf9de 100644
  
      size_t oldmalloc_limit_min;
      size_t oldmalloc_limit_max;
-@@ -359,6 +363,7 @@ static ruby_gc_params_t gc_params = {
+@@ -363,6 +367,7 @@ static ruby_gc_params_t gc_params = {
      GC_MALLOC_LIMIT_MIN,
      GC_MALLOC_LIMIT_MAX,
      GC_MALLOC_LIMIT_GROWTH_FACTOR,
@@ -50,7 +50,7 @@ index 9be41119e5..d7afcaf9de 100644
  
      GC_OLDMALLOC_LIMIT_MIN,
      GC_OLDMALLOC_LIMIT_MAX,
-@@ -9070,6 +9075,20 @@ gc_start(rb_objspace_t *objspace, unsigned int reason)
+@@ -9074,6 +9079,20 @@ gc_start(rb_objspace_t *objspace, unsigned int reason)
      gc_prof_timer_start(objspace);
      {
  	gc_marks(objspace, do_full_mark);
@@ -71,7 +71,7 @@ index 9be41119e5..d7afcaf9de 100644
      }
      gc_prof_timer_stop(objspace);
  
-@@ -11049,6 +11068,7 @@ ruby_gc_set_params(void)
+@@ -11053,6 +11072,7 @@ ruby_gc_set_params(void)
      get_envparam_size  ("RUBY_GC_OLDMALLOC_LIMIT_MAX", &gc_params.oldmalloc_limit_max, 0);
      get_envparam_double("RUBY_GC_OLDMALLOC_LIMIT_GROWTH_FACTOR", &gc_params.oldmalloc_limit_growth_factor, 1.0, 0.0, FALSE);
  #endif
