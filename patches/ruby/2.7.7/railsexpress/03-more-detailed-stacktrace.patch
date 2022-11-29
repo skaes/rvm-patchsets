@@ -1,0 +1,24 @@
+more detailed stacktrace
+
+From: Stefan Kaes <skaes@railsexpress.de>
+
+
+---
+ eval_error.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/eval_error.c b/eval_error.c
+index 9d2de6dbc5..25c27250b5 100644
+--- a/eval_error.c
++++ b/eval_error.c
+@@ -241,8 +241,8 @@ print_backtrace(const VALUE eclass, const VALUE errat, const VALUE str, int reve
+ 		     (len < threshold ? 0 : 9) + 1);
+ 
+ #define TRACE_MAX (TRACE_HEAD+TRACE_TAIL+5)
+-#define TRACE_HEAD 8
+-#define TRACE_TAIL 5
++#define TRACE_HEAD 100
++#define TRACE_TAIL 100
+ 
+ 	for (i = 1; i < len; i++) {
+ 	    VALUE line = RARRAY_AREF(errat, reverse ? len - i : i);
