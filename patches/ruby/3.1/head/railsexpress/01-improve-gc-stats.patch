@@ -10,7 +10,7 @@ From: Stefan Kaes <skaes@railsexpress.de>
  3 files changed, 265 insertions(+), 4 deletions(-)
 
 diff --git a/gc.c b/gc.c
-index ef9327df1f..cc34e0054b 100644
+index 030a4627bd..3c84f8101c 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -727,6 +727,8 @@ typedef struct rb_objspace {
@@ -50,7 +50,7 @@ index ef9327df1f..cc34e0054b 100644
  #define finalizing		objspace->atomic_flags.finalizing
  #define finalizer_table 	objspace->finalizer_table
  #define global_list		objspace->global_list
-@@ -8536,6 +8544,107 @@ rb_gc_writebarrier_remember(VALUE obj)
+@@ -8553,6 +8561,107 @@ rb_gc_writebarrier_remember(VALUE obj)
  
  static st_table *rgengc_unprotect_logging_table;
  
@@ -158,7 +158,7 @@ index ef9327df1f..cc34e0054b 100644
  static int
  rgengc_unprotect_logging_exit_func_i(st_data_t key, st_data_t val, st_data_t arg)
  {
-@@ -11277,6 +11386,10 @@ objspace_malloc_increase_body(rb_objspace_t *objspace, void *mem, size_t new_siz
+@@ -11294,6 +11403,10 @@ objspace_malloc_increase_body(rb_objspace_t *objspace, void *mem, size_t new_siz
  {
      if (new_size > old_size) {
  	ATOMIC_SIZE_ADD(malloc_increase, new_size - old_size);
@@ -169,7 +169,7 @@ index ef9327df1f..cc34e0054b 100644
  #if RGENGC_ESTIMATE_OLDMALLOC
  	ATOMIC_SIZE_ADD(objspace->rgengc.oldmalloc_increase, new_size - old_size);
  #endif
-@@ -11883,6 +11996,12 @@ gc_malloc_allocated_size(VALUE self)
+@@ -11900,6 +12013,12 @@ gc_malloc_allocated_size(VALUE self)
      return UINT2NUM(rb_objspace.malloc_params.allocated_size);
  }
  
@@ -182,7 +182,7 @@ index ef9327df1f..cc34e0054b 100644
  /*
   *  call-seq:
   *     GC.malloc_allocations -> Integer
-@@ -11897,6 +12016,12 @@ gc_malloc_allocations(VALUE self)
+@@ -11914,6 +12033,12 @@ gc_malloc_allocations(VALUE self)
  {
      return UINT2NUM(rb_objspace.malloc_params.allocations);
  }
@@ -195,7 +195,7 @@ index ef9327df1f..cc34e0054b 100644
  #endif
  
  void
-@@ -12519,6 +12644,14 @@ gc_prof_mark_timer_start(rb_objspace_t *objspace)
+@@ -12537,6 +12662,14 @@ gc_prof_mark_timer_start(rb_objspace_t *objspace)
  #if GC_PROFILE_MORE_DETAIL
      if (gc_prof_enabled(objspace)) {
  	gc_prof_record(objspace)->gc_mark_time = getrusage_time();
@@ -210,7 +210,7 @@ index ef9327df1f..cc34e0054b 100644
      }
  #endif
  }
-@@ -12531,6 +12664,17 @@ gc_prof_mark_timer_stop(rb_objspace_t *objspace)
+@@ -12549,6 +12682,17 @@ gc_prof_mark_timer_stop(rb_objspace_t *objspace)
      if (gc_prof_enabled(objspace)) {
          gc_profile_record *record = gc_prof_record(objspace);
  	record->gc_mark_time = elapsed_time_from(record->gc_mark_time);
@@ -228,7 +228,7 @@ index ef9327df1f..cc34e0054b 100644
      }
  #endif
  }
-@@ -12542,9 +12686,13 @@ gc_prof_sweep_timer_start(rb_objspace_t *objspace)
+@@ -12560,9 +12704,13 @@ gc_prof_sweep_timer_start(rb_objspace_t *objspace)
      if (gc_prof_enabled(objspace)) {
  	gc_profile_record *record = gc_prof_record(objspace);
  
@@ -244,7 +244,7 @@ index ef9327df1f..cc34e0054b 100644
      }
  }
  
-@@ -12561,16 +12709,30 @@ gc_prof_sweep_timer_stop(rb_objspace_t *objspace)
+@@ -12579,16 +12727,30 @@ gc_prof_sweep_timer_stop(rb_objspace_t *objspace)
  	    sweep_time = elapsed_time_from(objspace->profile.gc_sweep_start_time);
  	    /* need to accumulate GC time for lazy sweep after gc() */
  	    record->gc_time += sweep_time;
@@ -276,7 +276,7 @@ index ef9327df1f..cc34e0054b 100644
      }
  }
  
-@@ -12589,9 +12751,13 @@ gc_prof_set_malloc_info(rb_objspace_t *objspace)
+@@ -12607,9 +12769,13 @@ gc_prof_set_malloc_info(rb_objspace_t *objspace)
  static inline void
  gc_prof_set_heap_info(rb_objspace_t *objspace)
  {
