@@ -10,7 +10,7 @@ From: Stefan Kaes <skaes@railsexpress.de>
  3 files changed, 263 insertions(+), 2 deletions(-)
 
 diff --git a/gc.c b/gc.c
-index 0fccc17a32..3c677cdebb 100644
+index 0fccc17a32..04aafb2e42 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -753,6 +753,8 @@ typedef struct rb_objspace {
@@ -53,7 +53,7 @@ index 0fccc17a32..3c677cdebb 100644
  static st_table *rgengc_unprotect_logging_table;
  
 +VALUE
-+rb_gc_enable_stats()
++rb_gc_enable_stats(void)
 +{
 +    rb_objspace_t *objspace = &rb_objspace;
 +    int old = collect_gc_stats;
@@ -68,7 +68,7 @@ index 0fccc17a32..3c677cdebb 100644
 +}
 +
 +VALUE
-+rb_gc_disable_stats()
++rb_gc_disable_stats(void)
 +{
 +    rb_objspace_t *objspace = &rb_objspace;
 +    int old = collect_gc_stats;
@@ -84,7 +84,7 @@ index 0fccc17a32..3c677cdebb 100644
 +
 +
 +VALUE
-+rb_gc_stats_enabled()
++rb_gc_stats_enabled(void)
 +{
 +    rb_objspace_t *objspace = &rb_objspace;
 +    return collect_gc_stats ? Qtrue : Qfalse;
@@ -96,7 +96,7 @@ index 0fccc17a32..3c677cdebb 100644
 +    return rb_gc_stats_enabled();
 +}
 +
-+double rb_gc_total_time()
++double rb_gc_total_time(void)
 +{
 +    return rb_objspace.profile.time;
 +}
@@ -108,7 +108,7 @@ index 0fccc17a32..3c677cdebb 100644
 +}
 +
 +VALUE
-+rb_gc_heap_slots()
++rb_gc_heap_slots(void)
 +{
 +    rb_objspace_t *objspace = &rb_objspace;
 +    return SIZET2NUM(heap_allocated_pages * HEAP_PAGE_OBJ_LIMIT);
@@ -121,7 +121,7 @@ index 0fccc17a32..3c677cdebb 100644
 +}
 +
 +VALUE
-+rb_gc_heap_slots_live_after_last_gc()
++rb_gc_heap_slots_live_after_last_gc(void)
 +{
 +    rb_objspace_t *objspace = &rb_objspace;
 +    return SIZET2NUM(objspace->profile.live_after_last_sweep);
@@ -133,7 +133,7 @@ index 0fccc17a32..3c677cdebb 100644
 +    return rb_gc_heap_slots_live_after_last_gc();
 +}
 +
-+size_t rb_gc_total_mallocs() {
++size_t rb_gc_total_mallocs(void) {
 +    return rb_objspace.profile.total_mallocs;
 +}
 +

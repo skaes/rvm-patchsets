@@ -21,7 +21,7 @@ index 218c441ff7..a8df47e365 100644
  AC_CHECK_FUNCS(memalign)
  AC_CHECK_FUNCS(memset_s)
 diff --git a/gc.c b/gc.c
-index 3c677cdebb..df98fc10e0 100644
+index 04aafb2e42..9062bfd13b 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -314,6 +314,9 @@ rb_gc_guarded_ptr_val(volatile VALUE *ptr, VALUE val)
