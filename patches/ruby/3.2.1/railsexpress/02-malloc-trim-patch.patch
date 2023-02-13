@@ -1,0 +1,77 @@
+malloc trim
+
+From: Stefan Kaes <skaes@railsexpress.de>
+
+
+---
+ configure.ac |    1 +
+ gc.c         |   16 ++++++++++++++++
+ 2 files changed, 17 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index 218c441ff7..a8df47e365 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2077,6 +2077,7 @@ AC_CHECK_FUNCS(lstat)
+ AC_CHECK_FUNCS(lutimes)
+ AC_CHECK_FUNCS(malloc_usable_size)
+ AC_CHECK_FUNCS(malloc_size)
++AC_CHECK_FUNCS(malloc_trim)
+ AC_CHECK_FUNCS(mblen)
+ AC_CHECK_FUNCS(memalign)
+ AC_CHECK_FUNCS(memset_s)
+diff --git a/gc.c b/gc.c
+index a0bacd99e9..61551666af 100644
+--- a/gc.c
++++ b/gc.c
+@@ -314,6 +314,9 @@ rb_gc_guarded_ptr_val(volatile VALUE *ptr, VALUE val)
+ #ifndef GC_MALLOC_LIMIT_GROWTH_FACTOR
+ #define GC_MALLOC_LIMIT_GROWTH_FACTOR 1.4
+ #endif
++#ifndef GC_MALLOC_TRIM_FREQUENCY
++#define GC_MALLOC_TRIM_FREQUENCY 0
++#endif
+ 
+ #ifndef GC_OLDMALLOC_LIMIT_MIN
+ #define GC_OLDMALLOC_LIMIT_MIN (16 * 1024 * 1024 /* 16MB */)
+@@ -352,6 +355,7 @@ typedef struct {
+     size_t malloc_limit_min;
+     size_t malloc_limit_max;
+     double malloc_limit_growth_factor;
++    size_t malloc_trim_frequency;
+ 
+     size_t oldmalloc_limit_min;
+     size_t oldmalloc_limit_max;
+@@ -374,6 +378,7 @@ static ruby_gc_params_t gc_params = {
+     GC_MALLOC_LIMIT_MIN,
+     GC_MALLOC_LIMIT_MAX,
+     GC_MALLOC_LIMIT_GROWTH_FACTOR,
++    GC_MALLOC_TRIM_FREQUENCY,
+ 
+     GC_OLDMALLOC_LIMIT_MIN,
+     GC_OLDMALLOC_LIMIT_MAX,
+@@ -9654,6 +9659,16 @@ gc_start(rb_objspace_t *objspace, unsigned int reason)
+     gc_prof_timer_start(objspace);
+     {
+         gc_marks(objspace, do_full_mark);
++#ifdef HAVE_MALLOC_TRIM
++        /* [Experimental] Explicitly free all eligible pages to the kernel.  See:
++         *
++         * - https://www.joyfulbikeshedding.com/blog/2019-03-14-what-causes-ruby-memory-bloat.html
++         * - https://bugs.ruby-lang.org/issues/15667
++         */
++        size_t gc_count = rb_objspace.profile.major_gc_count;
++        if (do_full_mark && gc_params.malloc_trim_frequency && gc_count % gc_params.malloc_trim_frequency == 0)
++            malloc_trim(0);
++#endif
+     }
+     gc_prof_timer_stop(objspace);
+ 
+@@ -11933,6 +11948,7 @@ ruby_gc_set_params(void)
+     get_envparam_size  ("RUBY_GC_OLDMALLOC_LIMIT_MAX", &gc_params.oldmalloc_limit_max, 0);
+     get_envparam_double("RUBY_GC_OLDMALLOC_LIMIT_GROWTH_FACTOR", &gc_params.oldmalloc_limit_growth_factor, 1.0, 0.0, FALSE);
+ #endif
++    get_envparam_size  ("RUBY_GC_MALLOC_TRIM_FREQUENCY", &gc_params.malloc_trim_frequency, 0);
+ }
+ 
+ static void
