@@ -1,2 +1,3 @@
 railsexpress/01-improve-gc-stats.patch
 railsexpress/02-malloc-trim-patch.patch
+railsexpress/03-fix-bigdecimal-linker-problems-on-macos.patch
