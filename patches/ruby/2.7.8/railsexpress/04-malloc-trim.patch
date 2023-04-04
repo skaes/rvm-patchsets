@@ -9,10 +9,10 @@ From: Stefan Kaes <skaes@railsexpress.de>
  2 files changed, 21 insertions(+)
 
 diff --git a/configure.ac b/configure.ac
-index 28fdfefbbc..90d31cc391 100644
+index 4395a2b156..57131ba27b 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1943,6 +1943,7 @@ AC_CHECK_FUNCS(lstat)
+@@ -1873,6 +1873,7 @@ AC_CHECK_FUNCS(lstat)
  AC_CHECK_FUNCS(lutimes)
  AC_CHECK_FUNCS(malloc_usable_size)
  AC_CHECK_FUNCS(malloc_size)
@@ -21,10 +21,10 @@ index 28fdfefbbc..90d31cc391 100644
  AC_CHECK_FUNCS(memalign)
  AC_CHECK_FUNCS(memset_s)
 diff --git a/gc.c b/gc.c
-index 2ed3c1596e..e14f35ffd6 100644
+index b21867b57b..2afcc732d6 100644
 --- a/gc.c
 +++ b/gc.c
-@@ -286,6 +286,9 @@ rb_gc_guarded_ptr_val(volatile VALUE *ptr, VALUE val)
+@@ -290,6 +290,9 @@ rb_gc_guarded_ptr_val(volatile VALUE *ptr, VALUE val)
  #ifndef GC_MALLOC_LIMIT_GROWTH_FACTOR
  #define GC_MALLOC_LIMIT_GROWTH_FACTOR 1.4
  #endif
@@ -34,7 +34,7 @@ index 2ed3c1596e..e14f35ffd6 100644
  
  #ifndef GC_OLDMALLOC_LIMIT_MIN
  #define GC_OLDMALLOC_LIMIT_MIN (16 * 1024 * 1024 /* 16MB */)
-@@ -324,6 +327,7 @@ typedef struct {
+@@ -328,6 +331,7 @@ typedef struct {
      size_t malloc_limit_min;
      size_t malloc_limit_max;
      double malloc_limit_growth_factor;
@@ -42,7 +42,7 @@ index 2ed3c1596e..e14f35ffd6 100644
  
      size_t oldmalloc_limit_min;
      size_t oldmalloc_limit_max;
-@@ -346,6 +350,7 @@ static ruby_gc_params_t gc_params = {
+@@ -350,6 +354,7 @@ static ruby_gc_params_t gc_params = {
      GC_MALLOC_LIMIT_MIN,
      GC_MALLOC_LIMIT_MAX,
      GC_MALLOC_LIMIT_GROWTH_FACTOR,
@@ -50,7 +50,7 @@ index 2ed3c1596e..e14f35ffd6 100644
  
      GC_OLDMALLOC_LIMIT_MIN,
      GC_OLDMALLOC_LIMIT_MAX,
-@@ -8421,6 +8426,20 @@ gc_start(rb_objspace_t *objspace, int reason)
+@@ -7463,6 +7468,20 @@ gc_start(rb_objspace_t *objspace, int reason)
      gc_prof_timer_start(objspace);
      {
  	gc_marks(objspace, do_full_mark);
@@ -71,11 +71,11 @@ index 2ed3c1596e..e14f35ffd6 100644
      }
      gc_prof_timer_stop(objspace);
  
-@@ -10267,6 +10286,7 @@ ruby_gc_set_params(void)
+@@ -9586,6 +9605,7 @@ ruby_gc_set_params(void)
      get_envparam_size  ("RUBY_GC_OLDMALLOC_LIMIT_MAX", &gc_params.oldmalloc_limit_max, 0);
      get_envparam_double("RUBY_GC_OLDMALLOC_LIMIT_GROWTH_FACTOR", &gc_params.oldmalloc_limit_growth_factor, 1.0, 0.0, FALSE);
  #endif
 +    get_envparam_size  ("RUBY_GC_MALLOC_TRIM_FREQUENCY", &gc_params.malloc_trim_frequency, 0);
  }
  
- static void
+ void

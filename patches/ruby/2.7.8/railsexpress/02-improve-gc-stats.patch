@@ -4,29 +4,30 @@ From: Stefan Kaes <skaes@railsexpress.de>
 
 
 ---
- gc.c                              |  174 ++++++++++++++++++++++++++++++++++++-
- gc.rb                             |   86 ++++++++++++++++++
- include/ruby/internal/intern/gc.h |    9 ++
- 3 files changed, 265 insertions(+), 4 deletions(-)
+ gc.c                  |  176 ++++++++++++++++++++++++++++++++++++++++++++++++-
+ gc.rb                 |   86 ++++++++++++++++++++++++
+ include/ruby/intern.h |    8 ++
+ 3 files changed, 266 insertions(+), 4 deletions(-)
 
 diff --git a/gc.c b/gc.c
-index 6a81a5e4b3..041db49193 100644
+index 67a709ff79..b21867b57b 100644
 --- a/gc.c
 +++ b/gc.c
-@@ -727,6 +727,8 @@ typedef struct rb_objspace {
+@@ -698,6 +698,8 @@ typedef struct rb_objspace {
+ #if GC_ENABLE_INCREMENTAL_MARK
  	unsigned int during_incremental_marking : 1;
  #endif
-         unsigned int measure_gc : 1;
-+        unsigned int collect_gc_stats : 1;
-+        unsigned int verbose_gc_stats : 1;
++        int collect_gc_stats;
++        int verbose_gc_stats;
      } flags;
  
      rb_event_flag_t hook_events;
-@@ -794,14 +796,19 @@ typedef struct rb_objspace {
+@@ -772,14 +774,21 @@ typedef struct rb_objspace {
  
  	/* temporary profiling space */
  	double gc_sweep_start_time;
 +        double gc_mark_start_time;
++
  	size_t total_allocated_objects_at_gc_start;
  	size_t heap_used_at_gc_start;
  
@@ -39,18 +40,19 @@ index 6a81a5e4b3..041db49193 100644
 +        size_t total_mallocs;
 +        size_t total_malloced_bytes;
 +        size_t live_after_last_sweep;
-         uint64_t total_time_ns;
-         struct timespec start_time;
++
      } profile;
-@@ -954,6 +961,7 @@ VALUE *ruby_initial_gc_stress_ptr = &ruby_initial_gc_stress;
- #define heap_pages_deferred_final	objspace->heap_pages.deferred_final
- #define size_pools              objspace->size_pools
+     struct gc_list *global_list;
+ 
+@@ -920,6 +929,7 @@ VALUE *ruby_initial_gc_stress_ptr = &ruby_initial_gc_stress;
+ #define heap_tomb               (&objspace->tomb_heap)
+ #define dont_gc 		objspace->flags.dont_gc
  #define during_gc		objspace->flags.during_gc
 +#define collect_gc_stats        objspace->flags.collect_gc_stats
  #define finalizing		objspace->atomic_flags.finalizing
  #define finalizer_table 	objspace->finalizer_table
  #define global_list		objspace->global_list
-@@ -8554,6 +8562,107 @@ rb_gc_writebarrier_remember(VALUE obj)
+@@ -6908,6 +6918,107 @@ rb_gc_writebarrier_remember(VALUE obj)
  
  static st_table *rgengc_unprotect_logging_table;
  
@@ -158,7 +160,7 @@ index 6a81a5e4b3..041db49193 100644
  static int
  rgengc_unprotect_logging_exit_func_i(st_data_t key, st_data_t val, st_data_t arg)
  {
-@@ -11297,6 +11406,10 @@ objspace_malloc_increase_body(rb_objspace_t *objspace, void *mem, size_t new_siz
+@@ -9734,6 +9845,10 @@ objspace_malloc_increase(rb_objspace_t *objspace, void *mem, size_t new_size, si
  {
      if (new_size > old_size) {
  	ATOMIC_SIZE_ADD(malloc_increase, new_size - old_size);
@@ -169,7 +171,7 @@ index 6a81a5e4b3..041db49193 100644
  #if RGENGC_ESTIMATE_OLDMALLOC
  	ATOMIC_SIZE_ADD(objspace->rgengc.oldmalloc_increase, new_size - old_size);
  #endif
-@@ -11903,6 +12016,12 @@ gc_malloc_allocated_size(VALUE self)
+@@ -10313,6 +10428,12 @@ gc_malloc_allocated_size(VALUE self)
      return UINT2NUM(rb_objspace.malloc_params.allocated_size);
  }
  
@@ -182,7 +184,7 @@ index 6a81a5e4b3..041db49193 100644
  /*
   *  call-seq:
   *     GC.malloc_allocations -> Integer
-@@ -11917,6 +12036,12 @@ gc_malloc_allocations(VALUE self)
+@@ -10327,6 +10448,12 @@ gc_malloc_allocations(VALUE self)
  {
      return UINT2NUM(rb_objspace.malloc_params.allocations);
  }
@@ -195,7 +197,7 @@ index 6a81a5e4b3..041db49193 100644
  #endif
  
  void
-@@ -12576,6 +12701,14 @@ gc_prof_mark_timer_start(rb_objspace_t *objspace)
+@@ -10934,6 +11061,14 @@ gc_prof_mark_timer_start(rb_objspace_t *objspace)
  #if GC_PROFILE_MORE_DETAIL
      if (gc_prof_enabled(objspace)) {
  	gc_prof_record(objspace)->gc_mark_time = getrusage_time();
@@ -210,7 +212,7 @@ index 6a81a5e4b3..041db49193 100644
      }
  #endif
  }
-@@ -12588,6 +12721,17 @@ gc_prof_mark_timer_stop(rb_objspace_t *objspace)
+@@ -10946,6 +11081,17 @@ gc_prof_mark_timer_stop(rb_objspace_t *objspace)
      if (gc_prof_enabled(objspace)) {
          gc_profile_record *record = gc_prof_record(objspace);
  	record->gc_mark_time = elapsed_time_from(record->gc_mark_time);
@@ -228,7 +230,7 @@ index 6a81a5e4b3..041db49193 100644
      }
  #endif
  }
-@@ -12599,9 +12743,13 @@ gc_prof_sweep_timer_start(rb_objspace_t *objspace)
+@@ -10957,9 +11103,13 @@ gc_prof_sweep_timer_start(rb_objspace_t *objspace)
      if (gc_prof_enabled(objspace)) {
  	gc_profile_record *record = gc_prof_record(objspace);
  
@@ -244,7 +246,7 @@ index 6a81a5e4b3..041db49193 100644
      }
  }
  
-@@ -12618,16 +12766,30 @@ gc_prof_sweep_timer_stop(rb_objspace_t *objspace)
+@@ -10976,16 +11126,30 @@ gc_prof_sweep_timer_stop(rb_objspace_t *objspace)
  	    sweep_time = elapsed_time_from(objspace->profile.gc_sweep_start_time);
  	    /* need to accumulate GC time for lazy sweep after gc() */
  	    record->gc_time += sweep_time;
@@ -276,7 +278,7 @@ index 6a81a5e4b3..041db49193 100644
      }
  }
  
-@@ -12646,9 +12808,13 @@ gc_prof_set_malloc_info(rb_objspace_t *objspace)
+@@ -11004,9 +11168,13 @@ gc_prof_set_malloc_info(rb_objspace_t *objspace)
  static inline void
  gc_prof_set_heap_info(rb_objspace_t *objspace)
  {
@@ -292,12 +294,12 @@ index 6a81a5e4b3..041db49193 100644
  
  #if GC_PROFILE_MORE_DETAIL
 diff --git a/gc.rb b/gc.rb
-index 72637f3796..369bab3d67 100644
+index fcfa48fbe1..d4f6482131 100644
 --- a/gc.rb
 +++ b/gc.rb
-@@ -300,6 +300,92 @@ def self.total_time
-       ULL2NUM(rb_objspace.profile.total_time_ns)
-     }
+@@ -158,6 +158,92 @@ def self.latest_gc_info hash_or_key = nil
+   def self.compact
+     __builtin_rb_gc_compact
    end
 +
 +  # call-seq:
@@ -388,23 +390,29 @@ index 72637f3796..369bab3d67 100644
  end
  
  module ObjectSpace
-diff --git a/include/ruby/internal/intern/gc.h b/include/ruby/internal/intern/gc.h
-index e7b8008729..181b1ca190 100644
---- a/include/ruby/internal/intern/gc.h
-+++ b/include/ruby/internal/intern/gc.h
-@@ -387,6 +387,15 @@ VALUE rb_gc_latest_gc_info(VALUE key_or_buf);
-  */
- void rb_gc_adjust_memory_usage(ssize_t diff);
- 
+diff --git a/include/ruby/intern.h b/include/ruby/intern.h
+index 2f60fb569e..3e3ed90927 100644
+--- a/include/ruby/intern.h
++++ b/include/ruby/intern.h
+@@ -544,6 +544,9 @@ void rb_gc(void);
+ void rb_gc_copy_finalizer(VALUE,VALUE);
+ VALUE rb_gc_enable(void);
+ VALUE rb_gc_disable(void);
 +VALUE rb_gc_enable_stats(void);
 +VALUE rb_gc_disable_stats(void);
 +VALUE rb_gc_stats_enabled(void);
+ VALUE rb_gc_start(void);
+ VALUE rb_define_finalizer(VALUE, VALUE);
+ VALUE rb_undefine_finalizer(VALUE);
+@@ -551,6 +554,11 @@ size_t rb_gc_count(void);
+ size_t rb_gc_stat(VALUE);
+ VALUE rb_gc_latest_gc_info(VALUE);
+ void rb_gc_adjust_memory_usage(ssize_t);
 +double rb_gc_total_time(void);
 +VALUE rb_gc_heap_slots(void);
 +VALUE rb_gc_heap_slots_live_after_last_gc(void);
 +size_t rb_gc_total_mallocs(void);
 +size_t rb_gc_total_malloced_bytes(void);
-+
- RBIMPL_SYMBOL_EXPORT_END()
- 
- #endif /* RBIMPL_INTERN_GC_H */
+ /* hash.c */
+ void rb_st_foreach_safe(struct st_table *, int (*)(st_data_t, st_data_t, st_data_t), st_data_t);
+ #define st_foreach_safe rb_st_foreach_safe
