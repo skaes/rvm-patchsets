@@ -1,1 +1,2 @@
 railsexpress/01-improve-gc-stats.patch
+railsexpress/02-fix-configure-for-arm64-under-docker.patch
