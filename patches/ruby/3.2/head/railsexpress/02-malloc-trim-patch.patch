@@ -9,10 +9,10 @@ From: Stefan Kaes <skaes@railsexpress.de>
  2 files changed, 17 insertions(+)
 
 diff --git a/configure.ac b/configure.ac
-index 151a0da970..e320d4b3a0 100644
+index 7a69f2e5ea..eb03257b7f 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -2078,6 +2078,7 @@ AC_CHECK_FUNCS(lstat)
+@@ -2084,6 +2084,7 @@ AC_CHECK_FUNCS(lstat)
  AC_CHECK_FUNCS(lutimes)
  AC_CHECK_FUNCS(malloc_usable_size)
  AC_CHECK_FUNCS(malloc_size)
@@ -21,7 +21,7 @@ index 151a0da970..e320d4b3a0 100644
  AC_CHECK_FUNCS(memalign)
  AC_CHECK_FUNCS(memset_s)
 diff --git a/gc.c b/gc.c
-index a0bacd99e9..61551666af 100644
+index 75645e3a79..4bb5776cd1 100644
 --- a/gc.c
 +++ b/gc.c
 @@ -314,6 +314,9 @@ rb_gc_guarded_ptr_val(volatile VALUE *ptr, VALUE val)
@@ -50,7 +50,7 @@ index a0bacd99e9..61551666af 100644
  
      GC_OLDMALLOC_LIMIT_MIN,
      GC_OLDMALLOC_LIMIT_MAX,
-@@ -9654,6 +9659,16 @@ gc_start(rb_objspace_t *objspace, unsigned int reason)
+@@ -9668,6 +9673,16 @@ gc_start(rb_objspace_t *objspace, unsigned int reason)
      gc_prof_timer_start(objspace);
      {
          gc_marks(objspace, do_full_mark);
@@ -67,7 +67,7 @@ index a0bacd99e9..61551666af 100644
      }
      gc_prof_timer_stop(objspace);
  
-@@ -11933,6 +11948,7 @@ ruby_gc_set_params(void)
+@@ -11972,6 +11987,7 @@ ruby_gc_set_params(void)
      get_envparam_size  ("RUBY_GC_OLDMALLOC_LIMIT_MAX", &gc_params.oldmalloc_limit_max, 0);
      get_envparam_double("RUBY_GC_OLDMALLOC_LIMIT_GROWTH_FACTOR", &gc_params.oldmalloc_limit_growth_factor, 1.0, 0.0, FALSE);
  #endif
