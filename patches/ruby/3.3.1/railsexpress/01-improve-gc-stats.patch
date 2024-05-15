@@ -1,0 +1,405 @@
+
+
+From: Stefan Kaes <skaes@railsexpress.de>
+
+
+---
+ gc.c                       |  172 +++++++++++++++++++++++++++++++++++++++++++-
+ gc.rb                      |   86 ++++++++++++++++++++++
+ include/ruby/internal/gc.h |    9 ++
+ 3 files changed, 265 insertions(+), 2 deletions(-)
+
+diff --git a/gc.c b/gc.c
+index 378e4a31cb..164becf5c2 100644
+--- a/gc.c
++++ b/gc.c
+@@ -824,6 +824,8 @@ typedef struct rb_objspace {
+         unsigned int during_minor_gc : 1;
+         unsigned int during_incremental_marking : 1;
+         unsigned int measure_gc : 1;
++        unsigned int collect_gc_stats : 1;
++        unsigned int verbose_gc_stats : 1;
+     } flags;
+ 
+     rb_event_flag_t hook_events;
+@@ -890,11 +892,18 @@ typedef struct rb_objspace {
+ 
+         /* temporary profiling space */
+         double gc_sweep_start_time;
++        double gc_mark_start_time;
++
+         size_t total_allocated_objects_at_gc_start;
+         size_t heap_used_at_gc_start;
+ 
+         /* basic statistics */
+         size_t count;
++        double time;
++        size_t total_mallocs;
++        size_t total_malloced_bytes;
++        size_t live_after_last_sweep;
++
+         uint64_t marking_time_ns;
+         struct timespec marking_start_time;
+         uint64_t sweeping_time_ns;
+@@ -1153,6 +1162,7 @@ VALUE *ruby_initial_gc_stress_ptr = &ruby_initial_gc_stress;
+ #define heap_pages_deferred_final	objspace->heap_pages.deferred_final
+ #define size_pools              objspace->size_pools
+ #define during_gc		objspace->flags.during_gc
++#define collect_gc_stats        objspace->flags.collect_gc_stats
+ #define finalizing		objspace->atomic_flags.finalizing
+ #define finalizer_table 	objspace->finalizer_table
+ #define global_list		objspace->global_list
+@@ -9387,6 +9397,107 @@ heap_ready_to_gc(rb_objspace_t *objspace, rb_size_pool_t *size_pool, rb_heap_t *
+     }
+ }
+ 
++VALUE
++rb_gc_enable_stats(void)
++{
++    rb_objspace_t *objspace = &rb_objspace;
++    int old = collect_gc_stats;
++    collect_gc_stats = 1;
++    return old ? Qtrue : Qfalse;
++}
++
++static VALUE
++gc_enable_stats(rb_execution_context_t *ec, VALUE _)
++{
++    return rb_gc_enable_stats();
++}
++
++VALUE
++rb_gc_disable_stats(void)
++{
++    rb_objspace_t *objspace = &rb_objspace;
++    int old = collect_gc_stats;
++    collect_gc_stats = 0;
++    return old ? Qtrue : Qfalse;
++}
++
++static VALUE
++gc_disable_stats(rb_execution_context_t *ec, VALUE _)
++{
++    return rb_gc_disable_stats();
++}
++
++
++VALUE
++rb_gc_stats_enabled(void)
++{
++    rb_objspace_t *objspace = &rb_objspace;
++    return collect_gc_stats ? Qtrue : Qfalse;
++}
++
++static VALUE
++gc_stats_enabled(rb_execution_context_t *ec, VALUE _)
++{
++    return rb_gc_stats_enabled();
++}
++
++double rb_gc_total_time(void)
++{
++    return rb_objspace.profile.time;
++}
++
++static VALUE
++gc_time(rb_execution_context_t *ec, VALUE _)
++{
++    return DBL2NUM(1000000*rb_objspace.profile.time);
++}
++
++VALUE
++rb_gc_heap_slots(void)
++{
++    rb_objspace_t *objspace = &rb_objspace;
++    return SIZET2NUM(heap_allocated_pages * HEAP_PAGE_OBJ_LIMIT);
++}
++
++static
++VALUE gc_heap_slots(rb_execution_context_t *ec, VALUE _)
++{
++    return rb_gc_heap_slots();
++}
++
++VALUE
++rb_gc_heap_slots_live_after_last_gc(void)
++{
++    rb_objspace_t *objspace = &rb_objspace;
++    return SIZET2NUM(objspace->profile.live_after_last_sweep);
++}
++
++static
++VALUE gc_heap_slots_live_after_last_gc(rb_execution_context_t *ec, VALUE _)
++{
++    return rb_gc_heap_slots_live_after_last_gc();
++}
++
++size_t rb_gc_total_mallocs(void) {
++    return rb_objspace.profile.total_mallocs;
++}
++
++static VALUE
++gc_total_mallocs(rb_execution_context_t *ec, VALUE _)
++{
++    return SIZET2NUM(rb_objspace.profile.total_mallocs);
++}
++
++size_t rb_gc_total_malloced_bytes(void) {
++    return rb_objspace.profile.total_malloced_bytes;
++}
++
++static VALUE
++gc_total_malloced_bytes(rb_execution_context_t *ec, VALUE _)
++{
++    return SIZET2NUM(rb_objspace.profile.total_malloced_bytes);
++}
++
+ static int
+ ready_to_gc(rb_objspace_t *objspace)
+ {
+@@ -12433,6 +12544,10 @@ objspace_malloc_increase_body(rb_objspace_t *objspace, void *mem, size_t new_siz
+ {
+     if (new_size > old_size) {
+         ATOMIC_SIZE_ADD(malloc_increase, new_size - old_size);
++        if (collect_gc_stats) {
++            ATOMIC_SIZE_ADD(objspace->profile.total_mallocs, 1);
++            ATOMIC_SIZE_ADD(objspace->profile.total_malloced_bytes, new_size - old_size);
++        }
+ #if RGENGC_ESTIMATE_OLDMALLOC
+         ATOMIC_SIZE_ADD(objspace->rgengc.oldmalloc_increase, new_size - old_size);
+ #endif
+@@ -13080,6 +13195,12 @@ gc_malloc_allocated_size(VALUE self)
+     return UINT2NUM(rb_objspace.malloc_params.allocated_size);
+ }
+ 
++size_t
++rb_gc_malloc_allocated_size(void)
++{
++    return rb_objspace.malloc_params.allocated_size;
++}
++
+ /*
+  *  call-seq:
+  *     GC.malloc_allocations -> Integer
+@@ -13094,6 +13215,12 @@ gc_malloc_allocations(VALUE self)
+ {
+     return UINT2NUM(rb_objspace.malloc_params.allocations);
+ }
++
++size_t
++rb_gc_malloc_allocations(void)
++{
++    return rb_objspace.malloc_params.allocations;
++}
+ #endif
+ 
+ void
+@@ -13266,6 +13393,14 @@ gc_prof_mark_timer_start(rb_objspace_t *objspace)
+ #if GC_PROFILE_MORE_DETAIL
+     if (gc_prof_enabled(objspace)) {
+         gc_prof_record(objspace)->gc_mark_time = getrusage_time();
++    } else {
++        if (collect_gc_stats) {
++          objspace->profile.gc_mark_start_time = getrusage_time();
++        }
++    }
++#else
++    if (collect_gc_stats) {
++        objspace->profile.gc_mark_start_time = getrusage_time();
+     }
+ #endif
+ }
+@@ -13278,6 +13413,17 @@ gc_prof_mark_timer_stop(rb_objspace_t *objspace)
+     if (gc_prof_enabled(objspace)) {
+         gc_profile_record *record = gc_prof_record(objspace);
+         record->gc_mark_time = elapsed_time_from(record->gc_mark_time);
++        if (collect_gc_stats) {
++            objspace->profile.time += record->gc_mark_time;
++        }
++    } else {
++        if (collect_gc_stats) {
++            objspace->profile.time += elapsed_time_from(objspace->profile.gc_mark_start_time);
++        }
++    }
++#else
++    if (collect_gc_stats) {
++        objspace->profile.time += elapsed_time_from(objspace->profile.gc_mark_start_time);
+     }
+ #endif
+ }
+@@ -13289,7 +13435,11 @@ gc_prof_sweep_timer_start(rb_objspace_t *objspace)
+     if (gc_prof_enabled(objspace)) {
+         gc_profile_record *record = gc_prof_record(objspace);
+ 
+-        if (record->gc_time > 0 || GC_PROFILE_MORE_DETAIL) {
++        if (record->gc_time > 0 || GC_PROFILE_MORE_DETAIL || collect_gc_stats) {
++            objspace->profile.gc_sweep_start_time = getrusage_time();
++        }
++    } else {
++        if (collect_gc_stats) {
+             objspace->profile.gc_sweep_start_time = getrusage_time();
+         }
+     }
+@@ -13308,9 +13458,19 @@ gc_prof_sweep_timer_stop(rb_objspace_t *objspace)
+             sweep_time = elapsed_time_from(objspace->profile.gc_sweep_start_time);
+             /* need to accumulate GC time for lazy sweep after gc() */
+             record->gc_time += sweep_time;
++            if (collect_gc_stats) {
++                objspace->profile.time += sweep_time;
++            }
+         }
+         else if (GC_PROFILE_MORE_DETAIL) {
+             sweep_time = elapsed_time_from(objspace->profile.gc_sweep_start_time);
++            if (collect_gc_stats) {
++		objspace->profile.time += sweep_time;
++	    }
++	} else {
++	    if (collect_gc_stats) {
++		objspace->profile.time += elapsed_time_from(objspace->profile.gc_sweep_start_time);
++	    }
+         }
+ 
+ #if GC_PROFILE_MORE_DETAIL
+@@ -13318,6 +13478,10 @@ gc_prof_sweep_timer_stop(rb_objspace_t *objspace)
+         if (heap_pages_deferred_final) record->flags |= GPR_FLAG_HAVE_FINALIZE;
+ #endif
+         if (heap_pages_deferred_final) objspace->profile.latest_gc_info |= GPR_FLAG_HAVE_FINALIZE;
++    } else {
++        if (collect_gc_stats) {
++            objspace->profile.time += elapsed_time_from(objspace->profile.gc_sweep_start_time);
++        }
+     }
+ }
+ 
+@@ -13336,9 +13500,13 @@ gc_prof_set_malloc_info(rb_objspace_t *objspace)
+ static inline void
+ gc_prof_set_heap_info(rb_objspace_t *objspace)
+ {
++    if (objspace->profile.total_allocated_objects_at_gc_start > total_freed_objects(objspace))
++	objspace->profile.live_after_last_sweep =
++	    objspace->profile.total_allocated_objects_at_gc_start - total_freed_objects(objspace);
++
+     if (gc_prof_enabled(objspace)) {
+         gc_profile_record *record = gc_prof_record(objspace);
+-        size_t live = objspace->profile.total_allocated_objects_at_gc_start - total_freed_objects(objspace);
++        size_t live = objspace->profile.live_after_last_sweep;
+         size_t total = objspace->profile.heap_used_at_gc_start * HEAP_PAGE_OBJ_LIMIT;
+ 
+ #if GC_PROFILE_MORE_DETAIL
+diff --git a/gc.rb b/gc.rb
+index c9c985b994..69c3d026e5 100644
+--- a/gc.rb
++++ b/gc.rb
+@@ -320,6 +320,92 @@ def self.total_time
+       ULL2NUM(rb_objspace.profile.marking_time_ns + rb_objspace.profile.sweeping_time_ns)
+     }
+   end
++
++  # call-seq:
++  #    GC.enable_stats	  => true or false
++  #
++  # Enables garbage collection statistics, returning <code>true</code> if garbage
++  # collection statistics was already enabled.
++  #
++  #    GC.enable_stats	 #=> false or true
++  #    GC.enable_stats	 #=> true
++  def self.enable_stats
++    Primitive.gc_enable_stats
++  end
++
++  #   call-seq:
++  #    GC.disable_stats	   => true or false
++  #
++  # Disables garbage collection statistics, returning <code>true</code> if garbage
++  # collection statistics was already disabled.
++  #
++  #    GC.disable_stats	  #=> false or true
++  #    GC.disable_stats	  #=> true
++  def self.disable_stats
++    Primitive.gc_disable_stats
++  end
++
++  # call-seq:
++  #    GC.stats_enabled?    => true or false
++  #
++  # Check whether GC stats have been enabled.
++  #
++  #    GC.stats_enabled?   #=> false or true
++  def self.stats_enabled?
++    Primitive.gc_stats_enabled
++  end
++
++  #   call-seq:
++  #    GC.time	  => Integer
++  #
++  # Returns the time spent during garbage collection while GC statistics collection
++  # was enabled (in micro seconds).
++  #
++  #    GC.time	  #=> 20000
++  def self.time
++    Primitive.gc_time
++  end
++
++  #  call-seq:
++  #	GC.heap_slots	=> Integer
++  #
++  #  Returns the number of heap slots available for object allocations.
++  #
++  #	GC.heap_slots	#=> 10000
++  def self.heap_slots
++    Primitive.gc_heap_slots
++  end
++
++  # call-seq:
++  #    GC.heap_slots_live_after_last_gc	   => Integer
++  #
++  # Returns the number of heap slots which were live after the last garbage collection.
++  #
++  #    GC.heap_slots_live_after_last_gc	   #=> 231223
++  def self.heap_slots_live_after_last_gc
++    Primitive.gc_heap_slots_live_after_last_gc
++  end
++
++  #   call-seq:
++  #	 GC.total_mallocs	   => Integer
++  #
++  #   Returns the number malloc calls. Might wrap around.
++  #
++  #	 GC.total_mallocs	   #=> 324234323246
++  def self.total_mallocs
++    Primitive.gc_total_mallocs
++  end
++
++  #   call-seq:
++  #	 GC.total_malloced_bytes	   => Integer
++  #
++  #   Returns the number of bytes allocated. Might wrap around.
++  #
++  #	 GC.total_malloced_bytes	   #=> 354656256432446
++  def self.total_malloced_bytes
++    Primitive.gc_total_malloced_bytes
++  end
++
+ end
+ 
+ module ObjectSpace
+diff --git a/include/ruby/internal/gc.h b/include/ruby/internal/gc.h
+index ac9dfd8842..855757ef02 100644
+--- a/include/ruby/internal/gc.h
++++ b/include/ruby/internal/gc.h
+@@ -431,6 +431,15 @@ void rb_gc_unregister_address(VALUE *valptr);
+  */
+ void rb_gc_register_mark_object(VALUE object);
+ 
++VALUE rb_gc_enable_stats(void);
++VALUE rb_gc_disable_stats(void);
++VALUE rb_gc_stats_enabled(void);
++double rb_gc_total_time(void);
++VALUE rb_gc_heap_slots(void);
++VALUE rb_gc_heap_slots_live_after_last_gc(void);
++size_t rb_gc_total_mallocs(void);
++size_t rb_gc_total_malloced_bytes(void);
++
+ RBIMPL_SYMBOL_EXPORT_END()
+ 
+ /**
