@@ -9,7 +9,7 @@ From: Stefan Kaes <skaes@railsexpress.de>
  2 files changed, 17 insertions(+)
 
 diff --git a/configure.ac b/configure.ac
-index 7a69f2e5ea..eb03257b7f 100644
+index 5ca1ffbedb..8cc91ba4bb 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -2084,6 +2084,7 @@ AC_CHECK_FUNCS(lstat)
